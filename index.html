@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>SYS_ERR_LUMINANCE_OVERLOAD</title>
+    <style>
+        /* 終端機風格設定 */
+        body {
+            background-color: black;
+            color: #00ff00; /* 經典終端機綠色 */
+            font-family: "Courier New", Courier, monospace;
+            padding: 20px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+        
+        /* 隱藏超連結的外觀，讓它混入亂碼中 */
+        a {
+            color: #00ff00;
+            text-decoration: none;
+            cursor: text; /* 滑鼠移過去不會變成手指 */
+        }
+        
+        /* 點選全選 (Ctrl+A) 時的特效，讓隱藏的 c 微微發光 */
+        a::selection {
+            background-color: #003300;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        /* 開機畫面與主要內容的切換 */
+        #content { display: none; }
+        
+        #boot-screen {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BGM 音軌 (請將 src 換成你的音檔網址或上傳的檔案名稱) -->
+    <audio id="bgm" src="你的音樂檔案網址.mp3" loop></audio>
+
+    <!-- 開機點擊畫面 (用來觸發音樂) -->
+    <div id="boot-screen" onclick="startSystem()">
+        [ SYSTEM OVERRIDE - CLICK TO INITIALIZE ]
+    </div>
+
+    <!-- 亂碼內容區 -->
+    <div id="content">
+        colors are lies<br><br>
+        a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜<br>
+        銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝<br>
+        0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F<br>
+        a銝剖銝蝝隢隤芷銝璆剖憿<a href="你的Google試算表網址" target="_blank">c</a>嚗翩璆剖銝瘜<br>
+        0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F<br>
+        SYS_ERR_LUMINANCE_OVERLOAD
+    </div>
+
+    <!-- 觸發邏輯 -->
+    <script>
+        function startSystem() {
+            // 播放音樂
+            document.getElementById('bgm').play();
+            // 隱藏開機畫面
+            document.getElementById('boot-screen').style.display = 'none';
+            // 顯示亂碼內容
+            document.getElementById('content').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
