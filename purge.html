@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -14,51 +13,43 @@
             padding: 2rem;
             line-height: 1.6;
             overflow-x: hidden;
-            /* 讓整個頁面允許被選取，為了觸發隱藏字 */
             user-select: text; 
+            margin: 0;
         }
         
-        /* 避免某些瀏覽器預設將選取顏色改掉，強制設定反白樣式 */
         ::selection {
             background-color: #ffffff;
             color: #000000;
         }
 
-        /* 隱藏字體的 CSS 魔法 */
+        /* 隱藏字體 CSS */
         .hidden-text {
-            color: #050505; /* 字體顏色與背景色完全相同 */
+            color: #050505;
             cursor: text;
         }
-        /* 當隱藏字被反白時的顏色 (這個設定確保相容性) */
         .hidden-text::selection {
             background-color: #ffffff;
             color: #000000;
         }
 
-        /* 隱藏字排版位置 */
-        .top-right-hidden {
-            text-align: right;
-            font-size: 0.9em;
-            margin-bottom: 20px;
-        }
         .bottom-center-hidden {
             text-align: center;
             margin-top: 40px;
             font-size: 0.9em;
         }
 
-        /* 駭入動畫與閃爍文字樣式 */
+        /* 駭入動畫區 */
         #boot-sequence {
             white-space: pre-wrap;
             font-size: 1.1em;
-            /* 動畫區塊不允許選取，避免破壞體驗 */
             user-select: none; 
         }
         
+        /* 報告本體區 */
         #report {
-            display: none; /* 初始隱藏，駭入動畫結束後才顯示 */
+            display: none; 
             white-space: pre-wrap;
-            word-wrap: break-word; /* 避免過長的亂碼把版面撐破 */
+            word-wrap: break-word;
             max-width: 900px;
             margin: 0 auto;
         }
@@ -69,30 +60,106 @@
             text-shadow: 2px 0 red, -2px 0 blue;
         }
 
-        /* 超連結樣式 (針對文件中的 [c]) */
         a {
             color: #00ff00;
             text-decoration: none;
             font-weight: bold;
+            cursor: pointer;
         }
         a:hover {
             background-color: #00ff00;
             color: #000;
         }
+
+        /* --- 新增：轉場黑畫面與閃爍文字 --- */
+        #transition-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: black;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #flash-text {
+            color: white;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            opacity: 0;
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.2s; /* 快速閃爍的效果 */
+        }
+
+        /* --- 新增：內建的系統試算表 (解謎區) --- */
+        #excel-container {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #111;
+            border: 1px solid #333;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,255,0,0.2);
+        }
+        .excel-header {
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .filter-btn {
+            background-color: #000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 8px 15px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .filter-btn:hover {
+            background-color: #00ff00;
+            color: #000;
+        }
+        /* 試算表網格 */
+        .spreadsheet {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            background-color: #333;
+            border: 2px solid #555;
+        }
+        .cell {
+            background-color: #222;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 1s ease; /* 褪色的過渡動畫 */
+        }
+        /* 初始狀態：文字顏色等於背景顏色 (隱藏起來) */
+        .color-camouflaged {
+            color: transparent; 
+        }
+        
     </style>
 </head>
 <body>
 
-    <!-- 新增：第二階段的 BGM，初始音量設為 0 以便淡入 -->
+    <!-- 這是第一階段的 BGM -->
     <audio id="purge-bgm" src="駭入.mp3" loop></audio>
+    <!-- 這是解謎階段的 BGM (初始不播放) -->
+    <audio id="excel-bgm" src="彩色密碼.mp3" loop></audio>
 
     <!-- 過場駭入動畫區 -->
     <div id="boot-sequence"></div>
 
     <!-- 報告本體區 -->
     <div id="report">
-<div class="hidden-text top-right-hidden">"c"olors are lies</div>
-
 ======================================================
 [ 機密 ] 審查與肅清報告 - 第36週期
 ======================================================
@@ -103,15 +170,15 @@
 
 [ 資產_01 // 滲透節點：阿斯蘭朵區域 ]
 > 任務觀測：資產_01已受污染。與當地農民建立了未經授權的家庭羈絆。
-> 管理員裁決：情感污染。武器不需要羈絆。
+> 管理員裁決：情感污染。武器不需要家庭羈絆。
 > [執行]：焦土協定。
-> 結果：農舍焚毀。資產_01於灰燼中被處決，以儆效尤。
+> 結果：農舍焚毀。資產_01於灰燼中銷毀，以儆效尤。
 
 [ 資產_02 // 滲透節點：新星聯邦 ]
 > 任務觀測：資產_02發生故障，於慶典中向平民發放了管理員級別的物品。
 > 管理員裁決：嚴重違反世界秩序。必須進行收容控制。
 > [執行]：局部結構崩塌。
-> 結果：慶典廣場爆炸。資產_02於爆炸半徑內被銷毀。
+> 結果：慶典廣場爆炸。資產_02於爆炸半徑內銷毀。
 
 [ 資產_03 // 滲透節點：灰燼之地 ]
 > 任務觀測：資產_03已滲透反抗軍首領核心圈。資產_03在暗殺目標時猶豫不決，並表現出危險的同理心跡象。
@@ -135,68 +202,15 @@ a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
 [SYS_WARN] COLOR_PROFILE_CORRUPT_DETECTED
 憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝a銝剖銝蝝隢
-蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
-0x0000003B 0x0000007E 0x0000000A 0x00000050 0x0000001A 0x000000EF
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝a銝剖銝蝝
-[FATAL] THREAD_DESYNC_AT_0xFFFFF800
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜銝之摮貉銝行撟渡蝝
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-0x00000116 0x00000119 0x0000010E 0x00000101 0x0000009F 0x000000FE
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-[SYS_WARN] LUMINANCE_OVERLOAD
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝a銝剖銝蝝
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
-蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
-0x0000007B 0x000000ED 0x000000F4 0x00000024 0x0000000F 0x0000000F
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-DUMPING_PHYSICAL_MEMORY_START...
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝a銝剖銝蝝隢
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-0x80004005 0x80070002 0x80070005 0x80070057 0x80092004 0x800B0109
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝a銝剖銝蝝
-[FATAL] UNEXPECTED_STORE_EXCEPTION
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
-蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
 隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
-a銝剖銝蝝隢隤芷銝璆剖憿<a href="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/edit?usp=sharing" target="_blank">[c]</a>嚗翩璆剖銝瘜
+a銝剖銝蝝隢隤芷銝璆剖憿<a onclick="startPuzzleTransition()">[c]</a>嚗翩璆剖銝瘜
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
 0x00000139 0x000000C4 0x000000C5 0x0000001E 0x000000D1 0x0000009F
 [SYS_WARN] MEMORY_MANAGEMENT_FAILURE
 a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
 憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
-蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
-0x00000109 0x0000007E 0x0000003B 0x000000A 0x00000050 0x0000001A
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝a銝剖銝蝝
-[FATAL] CRITICAL_PROCESS_DIED
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝a銝剖銝蝝隢
-蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-[SYS_WARN] DISPLAY_DRIVER_STOPPED_RESPONDING
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
-蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
 SYS_ERR_LUMINANCE_OVERLOAD
 PHYSICAL_MEMORY_DUMP_COMPLETE.
@@ -204,55 +218,180 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
 <div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
     </div>
 
-    <!-- 控制動畫與音樂的腳本 -->
+    <!-- --- 新增：轉場畫面 --- -->
+    <div id="transition-screen">
+        <div id="flash-text"></div>
+    </div>
+
+    <!-- --- 新增：試算表解謎區 --- -->
+    <div id="excel-container">
+        <div class="excel-header">
+            <div>
+                <strong>[ DATABASE // CORRUPTED_LOG_0x00F ]</strong><br>
+                <span style="font-size:0.8em; color:#888;">SYS_WARN: Color hexes are masking true data strings.</span>
+            </div>
+            <button class="filter-btn" onclick="revealTruth()">> 執行：強制色彩歸零 (OVERRIDE_COLORS)</button>
+        </div>
+        
+        <div class="spreadsheet" id="grid">
+            <!-- JavaScript 會在這裡動態生成彩色格子與隱藏的摩斯密碼 -->
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center; display: none;" id="next-stage-link">
+            <p style="color: #ff0000; font-weight: bold;">密碼已破解。</p>
+            <a href="stage2.html" style="border: 1px solid #00ff00; padding: 10px; display: inline-block;">> 追蹤 IP 來源，進入幽靈軌跡日誌...</a>
+        </div>
+    </div>
+
     <script>
-        // 頁面一載入，就開始播放並淡入新的駭入音樂
+        /* ----------------------------------------------------
+           1. 初始駭入動畫與報告顯示
+        ---------------------------------------------------- */
         window.onload = function() {
             const bgm = document.getElementById("purge-bgm");
-            bgm.volume = 0; // 初始無聲
+            bgm.volume = 0;
             bgm.play().catch(e => console.log("Audio play blocked", e));
             
-            let fadeInInterval = setInterval(() => {
-                if (bgm.volume < 0.8) { // 最高音量設為 0.8，避免太刺耳
-                    bgm.volume += 0.05;
-                } else {
-                    clearInterval(fadeInInterval);
-                }
-            }, 200); // 慢慢變大聲
+            let fadeIn = setInterval(() => {
+                if (bgm.volume < 0.8) bgm.volume += 0.05;
+                else clearInterval(fadeIn);
+            }, 200);
+
+            const bootText = [
+                "Initiating brute force protocol...",
+                "Bypassing outer firewall...",
+                "Success.",
+                "Accessing CORE_0 database...",
+                "==========================================",
+                "[ ROOT_ACCESS ] ... DENIED.",
+                "[ GUEST_ACCESS ] ... GRANTED (BY_ADMIN_OVERRIDE)."
+            ];
+            
+            const bootDiv = document.getElementById("boot-sequence");
+            const reportDiv = document.getElementById("report");
+            let delay = 0;
+
+            bootText.forEach((line) => {
+                setTimeout(() => { bootDiv.innerHTML += line + "<br>"; }, delay);
+                delay += 800; 
+            });
+
+            setTimeout(() => {
+                bootDiv.innerHTML += "<br><span class='glitch-flash'>[ SYS_MSG ]: \"Let them read it. Let them hate.\"</span><br>";
+            }, delay + 500);
+
+            setTimeout(() => {
+                bootDiv.style.display = "none";
+                reportDiv.style.display = "block";
+            }, delay + 3500);
         };
 
-        const bootText = [
-            "Initiating brute force protocol...",
-            "Bypassing outer firewall...",
-            "Success.",
-            "Accessing CORE_0 database...",
-            "==========================================",
-            "[ ROOT_ACCESS ] ... DENIED.",
-            "[ GUEST_ACCESS ] ... GRANTED (BY_ADMIN_OVERRIDE)."
-        ];
-        
-        const bootDiv = document.getElementById("boot-sequence");
-        const reportDiv = document.getElementById("report");
-        let delay = 0;
+        /* ----------------------------------------------------
+           2. 點擊 [c] 後的過場動畫與音樂切換
+        ---------------------------------------------------- */
+        function startPuzzleTransition() {
+            // 音樂淡出
+            const oldBgm = document.getElementById("purge-bgm");
+            const newBgm = document.getElementById("excel-bgm");
+            let volume = oldBgm.volume;
+            const fadeOut = setInterval(() => {
+                if (volume > 0.05) {
+                    volume -= 0.05;
+                    oldBgm.volume = volume;
+                } else {
+                    clearInterval(fadeOut);
+                    oldBgm.pause();
+                }
+            }, 100);
 
-        // 模擬終端機逐行顯示
-        bootText.forEach((line) => {
+            // 切換畫面至黑屏
+            document.getElementById("report").style.display = "none";
+            const transScreen = document.getElementById("transition-screen");
+            const flashText = document.getElementById("flash-text");
+            transScreen.style.display = "flex";
+
+            // 閃爍文字時間軸
+            setTimeout(() => { flashText.style.opacity = 1; flashText.innerText = "colors are lies"; }, 1000);
+            setTimeout(() => { flashText.style.opacity = 0; }, 3000);
+            setTimeout(() => { flashText.style.opacity = 1; flashText.innerText = "I just wanted them to experience this world for me."; }, 4000);
+            setTimeout(() => { flashText.style.opacity = 0; }, 7500);
+
+            // 進入試算表解謎畫面
             setTimeout(() => {
-                bootDiv.innerHTML += line + "<br>";
-            }, delay);
-            delay += 800; 
-        });
+                transScreen.style.display = "none";
+                document.getElementById("excel-container").style.display = "block";
+                generateSpreadsheet(); // 繪製彩色表格
+                
+                // 新音樂淡入
+                newBgm.volume = 0;
+                newBgm.play().catch(e => console.log(e));
+                let newVol = 0;
+                const fadeInNew = setInterval(() => {
+                    if (newVol < 0.8) {
+                        newVol += 0.05;
+                        newBgm.volume = newVol;
+                    } else {
+                        clearInterval(fadeInNew);
+                    }
+                }, 200);
+            }, 8500);
+        }
 
-        // 顯示閃爍的紅字陷阱訊息
-        setTimeout(() => {
-            bootDiv.innerHTML += "<br><span class='glitch-flash'>[ SYS_MSG ]: \"Let them read it. Let them hate.\"</span><br>";
-        }, delay + 500);
+        /* ----------------------------------------------------
+           3. 動態生成試算表與解碼邏輯 (IT WAS NEVER MEANT TO BE)
+        ---------------------------------------------------- */
+        // 摩斯密碼字串拆分放入格子中，為了排版好看，加入空白雜訊
+        const secretMessage = [
+            ".", ".", " ", "-", " ", " ", " ", // I T
+            ".", "-", "-", " ", ".", "-", " ", // W A
+            ".", ".", ".", " ", " ", " ", " ", // S
+            "-", ".", " ", ".", " ", " ", " ", // N E
+            ".", ".", ".", "-", " ", ".", " ", // V E
+            ".", "-", ".", " ", " ", " ", " ", // R
+            "-", "-", " ", ".", " ", " ", " ", // M E
+            ".", "-", " ", "-", ".", " ", "-", // A N T
+            "-", " ", "-", "-", "-", " ", " ", // T O
+            "-", ".", ".", ".", " ", ".", " "  // B E
+        ];
 
-        // 隱藏動畫，正式顯示報告本體
-        setTimeout(() => {
-            bootDiv.style.display = "none";
-            reportDiv.style.display = "block";
-        }, delay + 3500);
+        // 鮮豔的顏色庫，用來偽裝 (Hexahue 的視覺感)
+        const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF"];
+
+        function generateSpreadsheet() {
+            const grid = document.getElementById("grid");
+            grid.innerHTML = ""; // 清空
+
+            for(let i = 0; i < secretMessage.length; i++) {
+                let cell = document.createElement("div");
+                cell.className = "cell color-camouflaged";
+                
+                // 隨機賦予一個亮色背景
+                let randomColor = colors[Math.floor(Math.random() * colors.length)];
+                cell.style.backgroundColor = randomColor;
+                
+                // 將摩斯密碼寫在裡面，但用相同的顏色隱藏起來
+                cell.innerText = secretMessage[i];
+                cell.style.color = randomColor; 
+
+                grid.appendChild(cell);
+            }
+        }
+
+        // 玩家點擊「強制色彩歸零」按鈕時觸發
+        function revealTruth() {
+            const cells = document.querySelectorAll(".cell");
+            cells.forEach(cell => {
+                // 將所有格子的背景變成黑色，字體變成白色，失去色彩偽裝
+                cell.style.backgroundColor = "#000000";
+                cell.style.color = "#ffffff";
+                cell.style.border = "1px solid #333";
+            });
+            
+            // 顯示通往下一關的連結
+            setTimeout(() => {
+                document.getElementById("next-stage-link").style.display = "block";
+            }, 2000);
+        }
     </script>
 </body>
 </html>
