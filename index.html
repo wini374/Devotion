@@ -342,8 +342,8 @@
                 > [ 目標伺服器：CORE_0_INQUISITION_LOGS ]
             </div>
 
-            <!-- 連接到下一關 purge.html -->
-            <a href="purge.html" class="btn">> 啟動隧道協議，駭入管理員資料庫...</a>
+            <!-- 觸發淡出與換頁腳本 -->
+            <a href="#" onclick="fadeAndNavigate(event, 'purge.html')" class="btn">> 啟動隧道協議，駭入管理員資料庫...</a>
         </div>
     </div>
 
@@ -466,6 +466,29 @@
             document.getElementById('part2').style.display = 'none';
             document.getElementById('part3').style.display = 'block';
             window.scrollTo(0, 0);
+        }
+        // --- 新增：處理音樂淡出與換頁的函數 ---
+        function fadeAndNavigate(event, url) {
+            event.preventDefault(); // 阻止原本的瞬間換頁
+            const bgm = document.getElementById('bgm');
+            let volume = bgm.volume;
+            
+            // 讓整個畫面也跟著慢慢變黑，增加駭入前的沉浸感
+            document.body.style.transition = "opacity 2s";
+            document.body.style.opacity = 0;
+
+            // 每 100 毫秒降低一點音量，直到音量為 0
+            const fadeOutInterval = setInterval(() => {
+                if (volume > 0.05) {
+                    volume -= 0.05;
+                    bgm.volume = volume;
+                } else {
+                    clearInterval(fadeOutInterval);
+                    bgm.pause();
+                    // 音樂淡出完畢，正式跳轉到 purge.html
+                    window.location.href = url;
+                }
+            }, 100);
         }
     </script>
 </body>
