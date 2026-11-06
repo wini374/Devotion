@@ -35,12 +35,14 @@
 
         #boot-sequence { white-space: pre-wrap; font-size: 1.1em; user-select: none; }
         #report { display: none; white-space: pre-wrap; word-wrap: break-word; max-width: 900px; margin: 0 auto; }
+        
+        /* 原本的 SYS_MSG 紅字特效 */
         .glitch-flash { color: #ff0000; font-weight: bold; text-shadow: 2px 0 red, -2px 0 blue; }
         
         a { color: #00ff00; text-decoration: none; font-weight: bold; cursor: pointer; }
         a:hover { background-color: #00ff00; color: #000; }
 
-        /* ================= 轉場與極致故障特效 (對齊圖片的青/洋紅色偏) ================= */
+        /* ================= 低調的轉場故障特效 ================= */
         #transition-screen {
             display: none;
             position: fixed;
@@ -52,66 +54,27 @@
             align-items: center;
         }
         
-        .glitch-wrapper {
-            position: relative;
-            color: white;
-            font-size: 2.5rem;
+        /* 模仿 Let them hate 的微弱錯位效果，顏色調暗更不顯眼 */
+        .subtle-glitch {
+            color: #aa0000; /* 偏暗的血紅色 */
+            font-size: 1.1rem; /* 與終端機文字大小相近 */
             font-weight: bold;
-            letter-spacing: 3px;
-            text-align: center;
+            font-family: "Courier New", Courier, monospace;
+            text-shadow: 1.5px 0 red, -1.5px 0 #0000aa; /* 輕微的紅藍色偏 */
+            letter-spacing: 1px;
             opacity: 0;
-            /* 避免換行破壞故障效果 */
-            white-space: nowrap; 
-        }
-
-        .glitch-wrapper::before, .glitch-wrapper::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: black;
-        }
-
-        /* 青色 (Cyan) 錯位 */
-        .glitch-wrapper::before {
-            left: 4px;
-            text-shadow: -3px 0 #00FFFF;
-            clip-path: inset(10% 0 60% 0);
-            animation: glitch-anim-1 0.2s infinite linear alternate-reverse;
-        }
-
-        /* 洋紅 (Magenta) 錯位 */
-        .glitch-wrapper::after {
-            left: -4px;
-            text-shadow: 3px 0 #FF00FF;
-            clip-path: inset(60% 0 10% 0);
-            animation: glitch-anim-2 0.3s infinite linear alternate-reverse;
-        }
-
-        @keyframes glitch-anim-1 {
-            0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
-            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
-            40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
-            60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
-            80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 1px); }
-            100% { clip-path: inset(30% 0 50% 0); transform: translate(1px, -1px); }
-        }
-
-        @keyframes glitch-anim-2 {
-            0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, -1px); }
-            20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, 1px); }
-            40% { clip-path: inset(70% 0 10% 0); transform: translate(2px, -2px); }
-            60% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, 2px); }
-            80% { clip-path: inset(50% 0 30% 0); transform: translate(1px, -1px); }
-            100% { clip-path: inset(5% 0 80% 0); transform: translate(-1px, 1px); }
+            text-align: center;
+            transition: opacity 0.1s;
         }
 
         /* ================= 嵌入 Google 試算表容器 ================= */
         #excel-container {
             display: none;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             background-color: #000;
+            margin-top: 20px;
         }
         
         .matrix-header {
@@ -124,17 +87,18 @@
         
         iframe {
             width: 100%;
-            height: 700px;
+            height: 600px; /* 根據試算表範圍適度調整高度 */
             border: 2px solid #333;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+            background-color: #000;
         }
     </style>
 </head>
 <body>
 
     <!-- BGM 設定 -->
-    <audio id="purge-bgm" src="駭入.mp3" loop></audio>
-    <audio id="excel-bgm" src="彩色密碼.mp3" loop></audio>
+    <audio id="purge-bgm" src="第一階段音樂.mp3" loop></audio>
+    <audio id="excel-bgm" src="解謎音樂.mp3" loop></audio>
 
     <!-- 駭入動畫區 -->
     <div id="boot-sequence"></div>
@@ -196,7 +160,7 @@ a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
 憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-[SYS_WARN] MEMORY_MANAGEMENT_FAILURE
+        [SYS_WARN] MEMORY_MANAGEMENT_FAILURE
 a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
 憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
@@ -232,17 +196,17 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
 <div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
     </div>
 
-    <!-- 青/洋紅 故障轉場畫面 -->
+    <!-- 低調的轉場畫面 -->
     <div id="transition-screen">
-        <div id="glitch-text" class="glitch-wrapper" data-text=""></div>
+        <div id="glitch-text" class="subtle-glitch"></div>
     </div>
 
-    <!-- 內嵌原始 Google 試算表畫面 -->
+    <!-- 內嵌原始 Google 試算表畫面 (使用無邊框純淨模式) -->
     <div id="excel-container">
         <div class="matrix-header">> [ SYSTEM_OVERRIDE ] ACCESSING EXTERNAL DATABASE: WORLD_ORDER.xlsx</div>
         
-        <!-- 使用 iframe 直接將你的 Google 試算表鑲嵌在網頁中 -->
-        <iframe src="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/edit?usp=sharing"></iframe>
+        <!-- 修改了 src 參數：加入 htmlembed?widget=false&chrome=false 來隱藏所有工具列與標籤 -->
+        <iframe src="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/htmlembed?widget=false&chrome=false"></iframe>
         
         <!-- 破解後的下一關連結 -->
         <div style="margin-top: 20px; text-align: right;">
@@ -290,7 +254,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }, delay + 3500);
         };
 
-        /* ================= 2. 點擊 [c] 的故障轉場與音樂切換 ================= */
+        /* ================= 2. 點擊 [c] 的轉場與音樂切換 ================= */
         function startPuzzleTransition() {
             const oldBgm = document.getElementById("purge-bgm");
             const newBgm = document.getElementById("excel-bgm");
@@ -302,33 +266,29 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                 else { clearInterval(fadeOut); oldBgm.pause(); }
             }, 100);
 
-            // 切換至黑屏與故障文字
+            // 切換至黑屏與文字
             document.getElementById("report").style.display = "none";
             const transScreen = document.getElementById("transition-screen");
             const glitchText = document.getElementById("glitch-text");
             transScreen.style.display = "flex";
 
-            // 第一句：colors are lies (帶有故障撕裂感)
+            // 第一句：colors are lies (低調閃現)
             setTimeout(() => { 
                 glitchText.style.opacity = 1; 
-                glitchText.setAttribute('data-text', 'colors are lies');
                 glitchText.innerText = 'colors are lies';
             }, 500);
             
             setTimeout(() => { glitchText.style.opacity = 0; }, 3000);
             
-            // 第二句：I just wanted them... 
+            // 第二句：I just wanted them... (低調閃現)
             setTimeout(() => { 
                 glitchText.style.opacity = 1; 
-                // 調整字體大小以適應長句子
-                glitchText.style.fontSize = "1.5rem"; 
-                glitchText.setAttribute('data-text', 'I just wanted them to experience this world for me.');
                 glitchText.innerText = 'I just wanted them to experience this world for me.';
             }, 4000);
             
             setTimeout(() => { glitchText.style.opacity = 0; }, 7500);
 
-            // 轉場結束，顯示原本的 Google 試算表
+            // 轉場結束，顯示乾淨版 Google 試算表
             setTimeout(() => {
                 transScreen.style.display = "none";
                 document.getElementById("excel-container").style.display = "block";
