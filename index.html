@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>SERVER_BACKUP_000.LOG/n*watch out for the valume</title>
+    <title>SERVER_BACKUP_000.LOG/n*watch out for the valume*</title>
     <style>
         /* 基礎終端機設定 */
         body { 
@@ -50,35 +50,30 @@
             50% { opacity: 0.3; } 
         }
 
-        /* 階段二：代碼雨過場 & DEVOTION 閃爍 */
-        #glitch-screen {
+        /* 階段二：代碼拼成 DEVOTION */
+        #ascii-devotion-screen {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: black;
             z-index: 50;
-            overflow: hidden;
-            font-size: 12px;
-            line-height: 12px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            opacity: 0.8;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out; /* 淡出動畫 */
         }
 
-        #flash-devotion {
-            display: none;
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 5rem;
-            font-weight: bold;
-            letter-spacing: 15px;
-            color: #ffffff;
-            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000; /* 紅色光暈 */
-            z-index: 60;
+        #ascii-art {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+            font-size: max(1.2vw, 12px); /* 自動縮放以適應螢幕 */
+            line-height: 1.2;
+            white-space: pre;
+            text-align: left;
         }
 
-        /* 階段三：專案編號 (淡入淡出) */
+        /* 階段三：專案編號 */
         #project-id-screen {
             display: none;
             position: fixed;
@@ -90,11 +85,11 @@
             align-items: center;
             font-size: 2rem;
             letter-spacing: 3px;
-            opacity: 0; /* 初始透明，由 JavaScript 控制淡入 */
+            opacity: 0; 
             transition: opacity 0.5s ease-in-out;
         }
 
-        /* 階段四：打字機標題畫面 */
+        /* 階段四：打字機畫面 */
         #typewriter-screen {
             display: none;
             position: fixed;
@@ -148,7 +143,6 @@
             text-shadow: 0 0 5px #00ff00;
         }
 
-        /* 資料夾樣式 */
         details {
             margin: 20px 0;
             border: 1px solid #00ff00;
@@ -191,36 +185,36 @@
     <!-- BGM 音軌 -->
     <audio id="bgm" src="開頭1.mp3" loop></audio>
 
-    <!-- 階段一：開機畫面 (加上音量警告) -->
+    <!-- 階段一 -->
     <div id="boot-screen">
         <div>SERVER_BACKUP_000.LOG</div>
         <div class="warning-text">* watch out for the volume *</div>
         <div class="blink-text">[ CLICK TO INITIALIZE ]</div>
     </div>
 
-    <!-- 階段二：代碼雨與閃爍大字 -->
-    <div id="glitch-screen"></div>
-    <div id="flash-devotion">DEVOTION</div>
+    <!-- 階段二：動態代碼字樣 -->
+    <div id="ascii-devotion-screen">
+        <pre id="ascii-art"></pre>
+    </div>
 
-    <!-- 階段三：專案編號 (預設隱藏) -->
+    <!-- 階段三 -->
     <div id="project-id-screen">
         PROJECT_ID: THE_SPECTRAL_STRAIN
     </div>
 
-    <!-- 階段四：打字機畫面 -->
+    <!-- 階段四 -->
     <div id="typewriter-screen">
         <div><span id="tw-text"></span><span class="cursor"></span></div>
         <div id="click-to-continue">[ 系統解密完成 - 點擊畫面繼續載入資料夾 ]</div>
     </div>
 
-    <!-- 階段五：零號檔案內容 -->
+    <!-- 階段五 -->
     <div id="content">
         <p>「致每一個還活在殘酷色彩劃分下的倖存者：」</p>
         <p>在這個世界，有一條不成文的規矩——<span class="highlight">不要隨便抬頭看天</span>。</p>
         <p>因為那個自稱為「管理員（The Admin）」的傢伙，正坐在我們觸碰不到的基岩王座上，冷冷地看著我們。在他眼裡，我們不是生命，只是這個伺服器裡隨時可以被刪除、覆寫的代碼。</p>
         <p>他用六種顏色劃分了世界的邊界，告訴我們這叫「和平（Peace）」。但我們都知道，那是一座巨大的牢籠。 為了維持他那病態的控制欲，他甚至會派出沒有名字的「幽靈特務」潛伏在我們身邊。只要有一點點忤逆他的跡象，他就會降下毫無理性的毀滅。</p>
 
-        <!-- 資料夾 1 -->
         <details>
             <summary>【阿斯蘭朵的無名火】</summary>
             <div class="folder-content">
@@ -234,7 +228,6 @@
             </div>
         </details>
 
-        <!-- 資料夾 2 -->
         <details>
             <summary>【新星節的血色煙火】</summary>
             <div class="folder-content">
@@ -249,7 +242,6 @@
             </div>
         </details>
 
-        <!-- 資料夾 3 -->
         <details>
             <summary>【灰燼之地的背叛】</summary>
             <div class="folder-content">
@@ -273,54 +265,62 @@
         </p>
     </div>
 
-    <!-- 流程控制腳本 -->
     <script>
         let currentStage = 0;
 
+        // DEVOTION 粗體字模版 (用 # 定義字體實體區塊)
+        const baseArt = `
+######  ####### #     # ####### ####### ### ####### #     # 
+#     # #       #     # #     #    #     #  #     # ##    # 
+#     # #       #     # #     #    #     #  #     # # #   # 
+#     # #####   #     # #     #    #     #  #     # #  #  # 
+#     # #        #   #  #     #    #     #  #     # #   # # 
+#     # #         # #   #     #    #     #  #     # #    ## 
+######  #######    #    #######    #    ### ####### #     # 
+`;
+
         function handleScreenClick() {
             if (currentStage === 0) {
-                // 階段一：啟動音樂與代碼雨
                 currentStage = 1;
                 document.getElementById('bgm').play();
                 document.getElementById('boot-screen').style.display = 'none';
                 
-                const glitchScreen = document.getElementById('glitch-screen');
-                const devotionFlash = document.getElementById('flash-devotion');
-                glitchScreen.style.display = 'block';
+                const asciiScreen = document.getElementById('ascii-devotion-screen');
+                const artContainer = document.getElementById('ascii-art');
+                asciiScreen.style.display = 'flex';
                 
-                // 代碼刷頻邏輯
+                // 動態代碼生成邏輯
+                const codeChars = "0189ABCDEF"; // 用來替換的系統代碼
                 let glitchInterval = setInterval(() => {
-                    let randomText = '';
-                    for(let i = 0; i < 100; i++){
-                        randomText += (Math.random() > 0.9 ? 'SYS_ERR_CORRUPTED ' : '0x' + Math.floor(Math.random()*16777215).toString(16).toUpperCase() + ' ');
+                    let newArt = '';
+                    for (let i = 0; i < baseArt.length; i++) {
+                        if (baseArt[i] === '#') {
+                            // 每 50 毫秒將 # 隨機替換成代碼
+                            newArt += codeChars[Math.floor(Math.random() * codeChars.length)];
+                        } else {
+                            newArt += baseArt[i];
+                        }
                     }
-                    glitchScreen.innerText += randomText + '\n';
-                    glitchScreen.scrollTop = glitchScreen.scrollHeight; 
+                    artContainer.innerText = newArt;
                 }, 50);
 
-                // DEVOTION 隨機閃爍邏輯
-                let flashInterval = setInterval(() => {
-                    devotionFlash.style.display = Math.random() > 0.5 ? 'block' : 'none';
-                }, 100);
-
-                // 2.5 秒後結束代碼雨，進入專案編號展示
+                // 2.5秒後，淡出 DEVOTION 代碼畫面並切換到專案編號
                 setTimeout(() => {
-                    clearInterval(glitchInterval);
-                    clearInterval(flashInterval);
-                    glitchScreen.style.display = 'none';
-                    devotionFlash.style.display = 'none';
-                    showProjectID();
+                    asciiScreen.style.opacity = 0;
+                    setTimeout(() => {
+                        clearInterval(glitchInterval);
+                        asciiScreen.style.display = 'none';
+                        showProjectID();
+                    }, 500); // 配合 CSS 的 0.5s 淡出
                 }, 2500);
 
             } else if (currentStage === 2) {
-                // 階段三：玩家再次點擊，載入資料夾文件
                 currentStage = 3;
                 document.getElementById('typewriter-screen').style.display = 'none';
                 
                 const content = document.getElementById('content');
                 content.style.display = 'block';
                 
-                // 淡入效果
                 content.style.opacity = 0;
                 let opacity = 0;
                 let fadeIn = setInterval(() => {
@@ -334,22 +334,15 @@
             }
         }
 
-        // 獨立函式：處理專案編號的淡入淡出
         function showProjectID() {
             const pidScreen = document.getElementById('project-id-screen');
             pidScreen.style.display = 'flex';
             
-            // 觸發重新繪製以確保過場動畫生效
             void pidScreen.offsetWidth; 
-            
-            // 淡入
             pidScreen.style.opacity = 1;
             
-            // 停留 2 秒後淡出
             setTimeout(() => {
                 pidScreen.style.opacity = 0;
-                
-                // 等待淡出動畫 (0.5s) 結束後隱藏該元素並啟動打字機
                 setTimeout(() => {
                     pidScreen.style.display = 'none';
                     startTypewriter();
@@ -357,7 +350,6 @@
             }, 2000);
         }
 
-        // 獨立函式：打字機效果
         function startTypewriter() {
             const twScreen = document.getElementById('typewriter-screen');
             twScreen.style.display = 'flex'; 
@@ -373,7 +365,7 @@
                     setTimeout(type, Math.random() * 100 + 50);
                 } else {
                     document.getElementById('click-to-continue').style.display = 'block';
-                    currentStage = 2; // 開放玩家點擊進入最後的資料夾畫面
+                    currentStage = 2; 
                 }
             }
             setTimeout(type, 500);
