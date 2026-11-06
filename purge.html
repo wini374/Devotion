@@ -40,7 +40,7 @@
         a { color: #00ff00; text-decoration: none; font-weight: bold; cursor: pointer; }
         a:hover { background-color: #00ff00; color: #000; }
 
-        /* ================= 故障文字轉場特效 (Glitch) ================= */
+        /* ================= 轉場與極致故障特效 (對齊圖片的青/洋紅色偏) ================= */
         #transition-screen {
             display: none;
             position: fixed;
@@ -52,136 +52,81 @@
             align-items: center;
         }
         
-        /* 故障雜訊核心 CSS */
-        .glitch-effect {
-            color: white;
-            font-size: 1.8rem;
-            letter-spacing: 2px;
+        .glitch-wrapper {
             position: relative;
-            opacity: 0;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 3px;
             text-align: center;
-            padding: 20px;
+            opacity: 0;
+            /* 避免換行破壞故障效果 */
+            white-space: nowrap; 
         }
-        
-        /* 利用偽元素製作紅藍色偏與錯位效果 */
-        .glitch-effect::before, .glitch-effect::after {
+
+        .glitch-wrapper::before, .glitch-wrapper::after {
             content: attr(data-text);
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: black;
-            opacity: 0.8;
         }
-        .glitch-effect::before {
-            left: 3px;
-            text-shadow: -2px 0 red;
-            clip-path: polygon(0 0, 100% 0, 100% 30%, 0 30%);
-            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+
+        /* 青色 (Cyan) 錯位 */
+        .glitch-wrapper::before {
+            left: 4px;
+            text-shadow: -3px 0 #00FFFF;
+            clip-path: inset(10% 0 60% 0);
+            animation: glitch-anim-1 0.2s infinite linear alternate-reverse;
         }
-        .glitch-effect::after {
-            left: -3px;
-            text-shadow: -2px 0 blue;
-            clip-path: polygon(0 70%, 100% 70%, 100% 100%, 0 100%);
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+
+        /* 洋紅 (Magenta) 錯位 */
+        .glitch-wrapper::after {
+            left: -4px;
+            text-shadow: 3px 0 #FF00FF;
+            clip-path: inset(60% 0 10% 0);
+            animation: glitch-anim-2 0.3s infinite linear alternate-reverse;
         }
 
         @keyframes glitch-anim-1 {
-            0% { clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%); transform: translate(-2px, 2px); }
-            20% { clip-path: polygon(0 40%, 100% 40%, 100% 50%, 0 50%); transform: translate(2px, -2px); }
-            40% { clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%); transform: translate(2px, 2px); }
-            60% { clip-path: polygon(0 15%, 100% 15%, 100% 25%, 0 25%); transform: translate(-2px, -2px); }
-            80% { clip-path: polygon(0 80%, 100% 80%, 100% 90%, 0 90%); transform: translate(2px, -2px); }
-            100% { clip-path: polygon(0 30%, 100% 30%, 100% 40%, 0 40%); transform: translate(-2px, 2px); }
-        }
-        @keyframes glitch-anim-2 {
-            0% { clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%); transform: translate(2px, -2px); }
-            20% { clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%); transform: translate(-2px, 2px); }
-            40% { clip-path: polygon(0 85%, 100% 85%, 100% 95%, 0 95%); transform: translate(-2px, -2px); }
-            60% { clip-path: polygon(0 45%, 100% 45%, 100% 55%, 0 55%); transform: translate(2px, 2px); }
-            80% { clip-path: polygon(0 5%, 100% 5%, 100% 15%, 0 15%); transform: translate(-2px, -2px); }
-            100% { clip-path: polygon(0 75%, 100% 75%, 100% 85%, 0 85%); transform: translate(2px, 2px); }
+            0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
+            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+            40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
+            80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 1px); }
+            100% { clip-path: inset(30% 0 50% 0); transform: translate(1px, -1px); }
         }
 
-        /* ================= 系統色彩矩陣 (完美還原圖片) ================= */
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, -1px); }
+            20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, 1px); }
+            40% { clip-path: inset(70% 0 10% 0); transform: translate(2px, -2px); }
+            60% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, 2px); }
+            80% { clip-path: inset(50% 0 30% 0); transform: translate(1px, -1px); }
+            100% { clip-path: inset(5% 0 80% 0); transform: translate(-1px, 1px); }
+        }
+
+        /* ================= 嵌入 Google 試算表容器 ================= */
         #excel-container {
             display: none;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             background-color: #000;
-            padding: 20px;
         }
         
         .matrix-header {
-            color: #555;
-            font-size: 0.9em;
-            text-align: center;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
-        
-        .matrix-top-info {
             color: #00ff00;
-            font-size: 0.85em;
+            font-size: 1.1em;
             margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .filter-btn {
-            background-color: #000;
-            color: #ff3333;
-            border: 1px solid #ff3333;
-            padding: 5px 10px;
-            font-family: inherit;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .filter-btn:hover {
-            background-color: #ff3333;
-            color: #000;
-        }
-
-        .matrix-body {
-            display: flex;
-            border: 1px solid #333;
-            background-color: #0a0a0a;
-        }
-
-        /* 左側實體狀態區 */
-        .entity-list {
-            flex: 0 0 350px;
-            padding: 10px;
-            font-size: 0.85em;
-            line-height: 1.8;
-            color: #55aaff;
-            border-right: 1px solid #333;
-        }
-        .entity-status { color: #00ff00; }
-        .entity-status.contained { color: #00aaff; }
-        .entity-status.isolated { color: #55ff55; }
-
-        /* 右側色彩網格區 (6列 x 36欄) */
-        .grid-container {
-            flex: 1;
-            padding: 2px;
-            display: grid;
-            grid-template-columns: repeat(36, 1fr);
-            grid-template-rows: repeat(6, 25px); /* 固定高度，看起來像色帶 */
-        }
-        .cell {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 1.5s ease; /* 顏色褪去的平滑動畫 */
+            border-left: 3px solid #00ff00;
+            padding-left: 10px;
         }
         
-        /* 隱藏密碼的偽裝顏色 */
-        .color-camouflaged {
-            color: transparent; 
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 2px solid #333;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
         }
     </style>
 </head>
@@ -194,7 +139,7 @@
     <!-- 駭入動畫區 -->
     <div id="boot-sequence"></div>
 
-    <!-- 報告本體區 (維持原本的亂碼與報告) -->
+    <!-- 報告本體區 -->
     <div id="report">
 <div class="hidden-text top-right-hidden">"c"olors are lies</div>
 
@@ -231,6 +176,7 @@
 
 > 目前世界熵值已降至 12% (穩定)
 > 他們只不過是工具。他們毫無意義。
+
 
 a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
@@ -286,43 +232,21 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
 <div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
     </div>
 
-    <!-- 故障轉場畫面 -->
+    <!-- 青/洋紅 故障轉場畫面 -->
     <div id="transition-screen">
-        <div id="glitch-text" class="glitch-effect" data-text=""></div>
+        <div id="glitch-text" class="glitch-wrapper" data-text=""></div>
     </div>
 
-    <!-- 系統矩陣畫面 (完美還原) -->
+    <!-- 內嵌原始 Google 試算表畫面 -->
     <div id="excel-container">
-        <div class="matrix-header">[ SECTOR_MONITORING_MATRIX // 區域監控色彩矩陣 - 36 CYCLES ]</div>
+        <div class="matrix-header">> [ SYSTEM_OVERRIDE ] ACCESSING EXTERNAL DATABASE: WORLD_ORDER.xlsx</div>
         
-        <div class="matrix-top-info">
-            <div>SYS_DIR://WORLD_ORDER_v2.4.1 <span style="color:#ff3333;">[ADMIN_OVERRIDE_ENABLED]</span></div>
-            <button class="filter-btn" onclick="revealTruth()">> 執行：強制色彩歸零</button>
-        </div>
-
-        <div class="matrix-body">
-            <!-- 左側實體狀態 -->
-            <div class="entity-list">
-                [ENTITY_01] Faction: Aslandor<br>
-                Status: <span class="entity-status contained">CONTAINED</span><br><br>
-                
-                [ENTITY_02] Faction: Nova Syndicate<br>
-                Status: <span class="entity-status">MONITORING</span><br><br>
-                
-                [ENTITY_03] Faction: The Ashlands<br>
-                Status: <span class="entity-status isolated">ISOLATED</span>
-            </div>
-            
-            <!-- 右側色彩網格區 (6列 x 36欄 = 216格) -->
-            <div class="grid-container" id="grid">
-                <!-- 由 JavaScript 渲染 -->
-            </div>
-        </div>
+        <!-- 使用 iframe 直接將你的 Google 試算表鑲嵌在網頁中 -->
+        <iframe src="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/edit?usp=sharing"></iframe>
         
         <!-- 破解後的下一關連結 -->
-        <div style="margin-top: 20px; text-align: right; display: none;" id="next-stage-link">
-            <span style="color: #ff0000; font-weight: bold; margin-right: 15px;">[ 檢測到異常底層資料 ]</span>
-            <a href="stage2.html" style="border: 1px solid #00ff00; padding: 5px 10px;">> 追蹤異常源頭，進入幽靈軌跡日誌...</a>
+        <div style="margin-top: 20px; text-align: right;">
+            <a href="stage2.html" style="border: 1px solid #00ff00; padding: 10px 15px;">> 已完成色彩歸零解碼？進入下一階段...</a>
         </div>
     </div>
 
@@ -384,7 +308,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             const glitchText = document.getElementById("glitch-text");
             transScreen.style.display = "flex";
 
-            // 設定故障動畫時間軸
+            // 第一句：colors are lies (帶有故障撕裂感)
             setTimeout(() => { 
                 glitchText.style.opacity = 1; 
                 glitchText.setAttribute('data-text', 'colors are lies');
@@ -393,19 +317,21 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             
             setTimeout(() => { glitchText.style.opacity = 0; }, 3000);
             
+            // 第二句：I just wanted them... 
             setTimeout(() => { 
                 glitchText.style.opacity = 1; 
+                // 調整字體大小以適應長句子
+                glitchText.style.fontSize = "1.5rem"; 
                 glitchText.setAttribute('data-text', 'I just wanted them to experience this world for me.');
                 glitchText.innerText = 'I just wanted them to experience this world for me.';
             }, 4000);
             
             setTimeout(() => { glitchText.style.opacity = 0; }, 7500);
 
-            // 進入還原版矩陣畫面
+            // 轉場結束，顯示原本的 Google 試算表
             setTimeout(() => {
                 transScreen.style.display = "none";
                 document.getElementById("excel-container").style.display = "block";
-                generateMatrix(); // 渲染 6x36 彩色矩陣
                 
                 // 新音樂淡入
                 newBgm.volume = 0;
@@ -416,65 +342,6 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                     else { clearInterval(fadeInNew); }
                 }, 200);
             }, 8500);
-        }
-
-        /* ================= 3. 渲染 6x36 矩陣與隱藏密碼 ================= */
-        // "IT WAS NEVER MEANT TO BE" 轉摩斯密碼，含間距共 56 字元，可完美放進一行 36 格中，分為兩行。
-        const morseMessage = ".. -  .-- .- ...  -. . ...- . .-.  -- . .- -. -  - --- -... .";
-        const hexahueColors = ["#00FFFF", "#FF00FF", "#FFFF00", "#0000FF", "#FF0000", "#00FF00"]; 
-        const ROWS = 6;
-        const COLS = 36;
-        const TOTAL_CELLS = ROWS * COLS;
-
-        function generateMatrix() {
-            const grid = document.getElementById("grid");
-            grid.innerHTML = "";
-            
-            // 決定密碼埋在第 3 行跟第 4 行
-            const messageStartIndex = (2 * COLS) + 4; 
-
-            for(let i = 0; i < TOTAL_CELLS; i++) {
-                let cell = document.createElement("div");
-                cell.className = "cell color-camouflaged";
-                
-                // 隨機賦予鮮豔色彩，模擬 Hexahue 色塊
-                let randomColor = hexahueColors[Math.floor(Math.random() * hexahueColors.length)];
-                cell.style.backgroundColor = randomColor;
-                cell.style.color = randomColor; // 隱藏文字
-                
-                // 填入摩斯密碼
-                if (i >= messageStartIndex && i < messageStartIndex + morseMessage.length) {
-                    let char = morseMessage[i - messageStartIndex];
-                    cell.innerText = char;
-                    // 將密碼格標記，歸零時才顯示字
-                    cell.setAttribute("data-is-msg", "true");
-                } else {
-                    cell.setAttribute("data-is-msg", "false");
-                }
-
-                grid.appendChild(cell);
-            }
-        }
-
-        // 強制色彩歸零 (OVERRIDE)
-        function revealTruth() {
-            const cells = document.querySelectorAll(".cell");
-            cells.forEach(cell => {
-                // 將所有格子背景變黑，失去彩色偽裝
-                cell.style.backgroundColor = "#050505";
-                
-                // 只有藏著密碼的格子，字體變成白色顯示出來
-                if (cell.getAttribute("data-is-msg") === "true") {
-                    cell.style.color = "#ffffff";
-                } else {
-                    cell.style.color = "#050505";
-                }
-            });
-            
-            // 延遲顯示通往下一關的連結
-            setTimeout(() => {
-                document.getElementById("next-stage-link").style.display = "block";
-            }, 2500);
         }
     </script>
 </body>
