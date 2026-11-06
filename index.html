@@ -2,28 +2,31 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>SERVER_BACKUP_000.LOG</title>
-    <title>*watch out for the valum*</title>
+    <title>DEVOTION
+        
+        SERVER_BACKUP_000.LOG
+    *watch out for the volume*</title>
     <style>
         /* 基礎終端機設定 */
         body { 
             margin: 0; 
+            min-height: 100vh;
             background-color: black; 
             color: #00ff00; 
             font-family: "Courier New", Courier, monospace; 
             overflow-x: hidden; 
             padding: 20px;
             box-sizing: border-box;
+            cursor: crosshair; /* 讓鼠標變成十字準星，增加駭客感 */
         }
 
-        /* 開機畫面 */
+        /* 第一階段：開機畫面 */
         #boot-screen { 
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            cursor: pointer; 
             background-color: black;
             z-index: 100;
             font-size: 1.2rem;
@@ -31,6 +34,7 @@
             animation: blink 2s infinite; 
         }
 
+        /* 閃爍動畫 */
         @keyframes blink { 
             0%, 100% { opacity: 1; } 
             50% { opacity: 0.3; } 
@@ -51,7 +55,39 @@
             opacity: 0.8;
         }
 
-        /* 主要文件區 */
+        /* 第二階段：打字機標題畫面 */
+        #typewriter-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: black;
+            z-index: 40;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.8rem;
+            white-space: pre-wrap;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 12px; height: 1.8rem;
+            background-color: #00ff00;
+            animation: blink 1s infinite;
+            vertical-align: bottom;
+            margin-left: 5px;
+        }
+
+        #click-to-continue {
+            display: none;
+            font-size: 1rem;
+            color: #005500;
+            margin-top: 30px;
+            animation: blink 2s infinite;
+        }
+
+        /* 第三/四階段：主要文件與資料夾區 */
         #content { 
             display: none; 
             max-width: 800px;
@@ -65,6 +101,7 @@
             border-bottom: 1px solid #00ff00;
             padding-bottom: 10px;
             text-align: center;
+            font-size: 1.5rem;
         }
 
         .highlight {
@@ -78,10 +115,10 @@
             border: 1px solid #00ff00;
             padding: 10px;
             background-color: rgba(0, 255, 0, 0.05);
+            cursor: pointer;
         }
 
         summary {
-            cursor: pointer;
             font-weight: bold;
             font-size: 1.1rem;
             outline: none;
@@ -92,52 +129,53 @@
             display: none;
         }
 
-        summary::before {
-            content: "📁 ";
-        }
-
-        details[open] summary::before {
-            content: "📂 ";
-        }
+        summary::before { content: "📁 "; }
+        details[open] summary::before { content: "📂 "; }
 
         .folder-content {
             margin-top: 15px;
             padding-left: 20px;
             border-left: 2px solid #004400;
             color: #aaffaa;
+            cursor: text;
         }
 
         .warning {
             margin-top: 40px;
             text-align: center;
             font-size: 1.2rem;
-            color: #ff3333; /* 紅色警告文字 */
+            color: #ff3333;
             text-shadow: 0 0 5px #ff0000;
         }
 
     </style>
 </head>
-<body>
+<body onclick="handleScreenClick()">
 
-    <!-- BGM 音軌：請確認你的 GitHub 內有名為 bgm.mp3 的檔案 -->
+    <!-- BGM 音軌：使用你指定的開頭音樂檔案 -->
     <audio id="bgm" src="開頭1.mp3" loop></audio>
 
-    <!-- 開機畫面 -->
-    <div id="boot-screen" onclick="startSystem()">
+    <!-- 階段一：開機畫面 -->
+    <div id="boot-screen">
         [ SYSTEM OVERRIDE - CLICK TO INITIALIZE ]
     </div>
 
-    <!-- 狂刷代碼的過場畫面 -->
+    <!-- 代碼雨過場畫面 -->
     <div id="glitch-screen"></div>
 
-    <!-- 零號檔案內容 -->
+    <!-- 階段二：打字機畫面 -->
+    <div id="typewriter-screen">
+        <div><span id="tw-text"></span><span class="cursor"></span></div>
+        <div id="click-to-continue">[ 系統解密完成 - 點擊畫面繼續載入資料夾 ]</div>
+    </div>
+
+    <!-- 階段三與四：零號檔案內容 -->
     <div id="content">
-        <h1>【零號檔案 —— 不要抬頭看天】</h1>
+        <!-- 內容已替換為你設定的故事文本 -->
         <p>「致每一個還活在殘酷色彩劃分下的倖存者：」</p>
         <p>在這個世界，有一條不成文的規矩——<span class="highlight">不要隨便抬頭看天</span>。</p>
         <p>因為那個自稱為「管理員（The Admin）」的傢伙，正坐在我們觸碰不到的基岩王座上，冷冷地看著我們。在他眼裡，我們不是生命，只是這個伺服器裡隨時可以被刪除、覆寫的代碼。</p>
         <p>他用六種顏色劃分了世界的邊界，告訴我們這叫「和平（Peace）」。但我們都知道，那是一座巨大的牢籠。 為了維持他那病態的控制欲，他甚至會派出沒有名字的「幽靈特務」潛伏在我們身邊。只要有一點點忤逆他的跡象，他就會降下毫無理性的毀滅。</p>
-        <p>你們應該都聽過這三年來，流傳在三大陣營裡的那些可怕傳說吧？</p>
 
         <!-- 資料夾 1 -->
         <details>
@@ -193,38 +231,45 @@
 
     </div>
 
-    <!-- 駭客過場與流程控制腳本 -->
+    <!-- 流程控制腳本 -->
     <script>
-        function startSystem() {
-            // 1. 播放背景音樂
-            document.getElementById('bgm').play();
-            
-            // 2. 隱藏開機畫面
-            document.getElementById('boot-screen').style.display = 'none';
-            
-            // 3. 啟動代碼雨
-            const glitchScreen = document.getElementById('glitch-screen');
-            glitchScreen.style.display = 'block';
-            
-            // 產生無意義的十六進位代碼刷頻效果
-            let glitchInterval = setInterval(() => {
-                let randomText = '';
-                for(let i=0; i<100; i++){
-                    // 隨機產生 0x 開頭的十六進位字串，混雜一些 SYS_ERR
-                    randomText += (Math.random() > 0.9 ? 'SYS_ERR_CORRUPTED ' : '0x' + Math.floor(Math.random()*16777215).toString(16).toUpperCase() + ' ');
-                }
-                glitchScreen.innerText += randomText + '\n';
-                glitchScreen.scrollTop = glitchScreen.scrollHeight; // 自動捲動到底部
-            }, 50);
+        let currentStage = 0; // 用來追蹤目前到了哪一個階段
 
-            // 4. 三秒後，結束代碼雨，顯示零號檔案
-            setTimeout(() => {
-                clearInterval(glitchInterval);
-                glitchScreen.style.display = 'none';
+        function handleScreenClick() {
+            if (currentStage === 0) {
+                // 進入階段 1：播放音樂與代碼雨
+                currentStage = 1;
+                document.getElementById('bgm').play();
+                document.getElementById('boot-screen').style.display = 'none';
                 
-                // 為了讓出現不要太突兀，加上一點淡入效果
+                const glitchScreen = document.getElementById('glitch-screen');
+                glitchScreen.style.display = 'block';
+                
+                let glitchInterval = setInterval(() => {
+                    let randomText = '';
+                    for(let i=0; i<100; i++){
+                        randomText += (Math.random() > 0.9 ? 'SYS_ERR_CORRUPTED ' : '0x' + Math.floor(Math.random()*16777215).toString(16).toUpperCase() + ' ');
+                    }
+                    glitchScreen.innerText += randomText + '\n';
+                    glitchScreen.scrollTop = glitchScreen.scrollHeight; 
+                }, 50);
+
+                // 2.5 秒後停止代碼雨，自動進入打字機畫面
+                setTimeout(() => {
+                    clearInterval(glitchInterval);
+                    glitchScreen.style.display = 'none';
+                    startTypewriter();
+                }, 2500);
+
+            } else if (currentStage === 2) {
+                // 進入階段 3：玩家再次點擊，顯示最終資料夾文件
+                currentStage = 3;
+                document.getElementById('typewriter-screen').style.display = 'none';
+                
                 const content = document.getElementById('content');
                 content.style.display = 'block';
+                
+                // 淡入效果
                 content.style.opacity = 0;
                 let opacity = 0;
                 let fadeIn = setInterval(() => {
@@ -235,8 +280,33 @@
                         clearInterval(fadeIn);
                     }
                 }, 50);
+            }
+        }
 
-            }, 2500); // 3000毫秒 = 3秒，可依喜好調整代碼雨的時間
+        // 階段 2：打字機效果邏輯
+        function startTypewriter() {
+            const twScreen = document.getElementById('typewriter-screen');
+            twScreen.style.display = 'flex'; // 顯示打字機畫面
+            
+            // 這裡可以修改你想打出來的名字
+            const textToType = "PROJECT_ID: THE_SPECTRAL_STRAIN\n【零號檔案 —— 不要抬頭看天】";
+            const twElement = document.getElementById('tw-text');
+            let i = 0;
+            
+            function type() {
+                if (i < textToType.length) {
+                    twElement.innerText += textToType.charAt(i);
+                    i++;
+                    // 設定隨機打字速度 (50ms ~ 150ms 之間)，讓它看起來像真人在打字
+                    setTimeout(type, Math.random() * 100 + 50);
+                } else {
+                    // 打字完成，顯示提示文字，並將階段推進到 2 (等待下一次點擊)
+                    document.getElementById('click-to-continue').style.display = 'block';
+                    currentStage = 2;
+                }
+            }
+            // 延遲 0.5 秒後開始打字
+            setTimeout(type, 500);
         }
     </script>
 </body>
