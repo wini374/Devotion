@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PURGE_REPORT_001.log</title>
     <style>
-        /* 基礎終端機樣式 */
+        /* ================= 基礎終端機樣式 ================= */
         body {
             background-color: #050505;
             color: #00ff00;
@@ -22,7 +22,6 @@
             color: #000000;
         }
 
-        /* 隱藏字體 CSS */
         .hidden-text {
             color: #050505;
             cursor: text;
@@ -31,47 +30,17 @@
             background-color: #ffffff;
             color: #000000;
         }
+        .top-right-hidden { text-align: right; font-size: 0.9em; margin-bottom: 20px; }
+        .bottom-center-hidden { text-align: center; margin-top: 40px; font-size: 0.9em; }
 
-        .bottom-center-hidden {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 0.9em;
-        }
-
-        /* 駭入動畫區 */
-        #boot-sequence {
-            white-space: pre-wrap;
-            font-size: 1.1em;
-            user-select: none; 
-        }
+        #boot-sequence { white-space: pre-wrap; font-size: 1.1em; user-select: none; }
+        #report { display: none; white-space: pre-wrap; word-wrap: break-word; max-width: 900px; margin: 0 auto; }
+        .glitch-flash { color: #ff0000; font-weight: bold; text-shadow: 2px 0 red, -2px 0 blue; }
         
-        /* 報告本體區 */
-        #report {
-            display: none; 
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        .glitch-flash {
-            color: #ff0000;
-            font-weight: bold;
-            text-shadow: 2px 0 red, -2px 0 blue;
-        }
+        a { color: #00ff00; text-decoration: none; font-weight: bold; cursor: pointer; }
+        a:hover { background-color: #00ff00; color: #000; }
 
-        a {
-            color: #00ff00;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        a:hover {
-            background-color: #00ff00;
-            color: #000;
-        }
-
-        /* --- 新增：轉場黑畫面與閃爍文字 --- */
+        /* ================= 故障文字轉場特效 (Glitch) ================= */
         #transition-screen {
             display: none;
             position: fixed;
@@ -82,84 +51,153 @@
             justify-content: center;
             align-items: center;
         }
-        #flash-text {
+        
+        /* 故障雜訊核心 CSS */
+        .glitch-effect {
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             letter-spacing: 2px;
+            position: relative;
             opacity: 0;
             text-align: center;
             padding: 20px;
-            transition: opacity 0.2s; /* 快速閃爍的效果 */
+        }
+        
+        /* 利用偽元素製作紅藍色偏與錯位效果 */
+        .glitch-effect::before, .glitch-effect::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            opacity: 0.8;
+        }
+        .glitch-effect::before {
+            left: 3px;
+            text-shadow: -2px 0 red;
+            clip-path: polygon(0 0, 100% 0, 100% 30%, 0 30%);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        .glitch-effect::after {
+            left: -3px;
+            text-shadow: -2px 0 blue;
+            clip-path: polygon(0 70%, 100% 70%, 100% 100%, 0 100%);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
         }
 
-        /* --- 新增：內建的系統試算表 (解謎區) --- */
+        @keyframes glitch-anim-1 {
+            0% { clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%); transform: translate(-2px, 2px); }
+            20% { clip-path: polygon(0 40%, 100% 40%, 100% 50%, 0 50%); transform: translate(2px, -2px); }
+            40% { clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%); transform: translate(2px, 2px); }
+            60% { clip-path: polygon(0 15%, 100% 15%, 100% 25%, 0 25%); transform: translate(-2px, -2px); }
+            80% { clip-path: polygon(0 80%, 100% 80%, 100% 90%, 0 90%); transform: translate(2px, -2px); }
+            100% { clip-path: polygon(0 30%, 100% 30%, 100% 40%, 0 40%); transform: translate(-2px, 2px); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%); transform: translate(2px, -2px); }
+            20% { clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%); transform: translate(-2px, 2px); }
+            40% { clip-path: polygon(0 85%, 100% 85%, 100% 95%, 0 95%); transform: translate(-2px, -2px); }
+            60% { clip-path: polygon(0 45%, 100% 45%, 100% 55%, 0 55%); transform: translate(2px, 2px); }
+            80% { clip-path: polygon(0 5%, 100% 5%, 100% 15%, 0 15%); transform: translate(-2px, -2px); }
+            100% { clip-path: polygon(0 75%, 100% 75%, 100% 85%, 0 85%); transform: translate(2px, 2px); }
+        }
+
+        /* ================= 系統色彩矩陣 (完美還原圖片) ================= */
         #excel-container {
             display: none;
-            max-width: 1000px;
+            width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
-            background-color: #111;
-            border: 1px solid #333;
+            background-color: #000;
             padding: 20px;
-            box-shadow: 0 0 20px rgba(0,255,0,0.2);
         }
-        .excel-header {
-            border-bottom: 2px solid #00ff00;
-            padding-bottom: 10px;
+        
+        .matrix-header {
+            color: #555;
+            font-size: 0.9em;
+            text-align: center;
             margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        
+        .matrix-top-info {
+            color: #00ff00;
+            font-size: 0.85em;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end;
         }
+
         .filter-btn {
             background-color: #000;
-            color: #00ff00;
-            border: 1px solid #00ff00;
-            padding: 8px 15px;
+            color: #ff3333;
+            border: 1px solid #ff3333;
+            padding: 5px 10px;
             font-family: inherit;
+            font-size: 0.9em;
             cursor: pointer;
             transition: 0.3s;
         }
         .filter-btn:hover {
-            background-color: #00ff00;
+            background-color: #ff3333;
             color: #000;
         }
-        /* 試算表網格 */
-        .spreadsheet {
+
+        .matrix-body {
+            display: flex;
+            border: 1px solid #333;
+            background-color: #0a0a0a;
+        }
+
+        /* 左側實體狀態區 */
+        .entity-list {
+            flex: 0 0 350px;
+            padding: 10px;
+            font-size: 0.85em;
+            line-height: 1.8;
+            color: #55aaff;
+            border-right: 1px solid #333;
+        }
+        .entity-status { color: #00ff00; }
+        .entity-status.contained { color: #00aaff; }
+        .entity-status.isolated { color: #55ff55; }
+
+        /* 右側色彩網格區 (6列 x 36欄) */
+        .grid-container {
+            flex: 1;
+            padding: 2px;
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            background-color: #333;
-            border: 2px solid #555;
+            grid-template-columns: repeat(36, 1fr);
+            grid-template-rows: repeat(6, 25px); /* 固定高度，看起來像色帶 */
         }
         .cell {
-            background-color: #222;
-            height: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.2rem;
+            font-size: 12px;
             font-weight: bold;
-            transition: all 1s ease; /* 褪色的過渡動畫 */
+            transition: all 1.5s ease; /* 顏色褪去的平滑動畫 */
         }
-        /* 初始狀態：文字顏色等於背景顏色 (隱藏起來) */
+        
+        /* 隱藏密碼的偽裝顏色 */
         .color-camouflaged {
             color: transparent; 
         }
-        
     </style>
 </head>
 <body>
 
-    <!-- 這是第一階段的 BGM -->
-    <audio id="purge-bgm" src="駭入.mp3" loop></audio>
-    <!-- 這是解謎階段的 BGM (初始不播放) -->
-    <audio id="excel-bgm" src="彩色密碼.mp3" loop></audio>
+    <!-- BGM 設定 -->
+    <audio id="purge-bgm" src="第一階段音樂.mp3" loop></audio>
+    <audio id="excel-bgm" src="解謎音樂.mp3" loop></audio>
 
-    <!-- 過場駭入動畫區 -->
+    <!-- 駭入動畫區 -->
     <div id="boot-sequence"></div>
 
-    <!-- 報告本體區 -->
+    <!-- 報告本體區 (維持原本的亂碼與報告) -->
     <div id="report">
+<div class="hidden-text top-right-hidden">colors are lies</div>
+
 ======================================================
 [ 機密 ] 審查與肅清報告 - 第36週期
 ======================================================
@@ -216,6 +254,11 @@ a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
 a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
 憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+[SYS_WARN] MEMORY_MANAGEMENT_FAILURE
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
+憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
 蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
 隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
@@ -240,46 +283,55 @@ a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
 SYS_ERR_LUMINANCE_OVERLOAD
 PHYSICAL_MEMORY_DUMP_COMPLETE.
 
-SYS_ERR_LUMINANCE_OVERLOAD
-PHYSICAL_MEMORY_DUMP_COMPLETE.
-
 <div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
     </div>
 
-    <!-- --- 新增：轉場畫面 --- -->
+    <!-- 故障轉場畫面 -->
     <div id="transition-screen">
-        <div id="flash-text"></div>
+        <div id="glitch-text" class="glitch-effect" data-text=""></div>
     </div>
 
-    <!-- --- 新增：試算表解謎區 --- -->
+    <!-- 系統矩陣畫面 (完美還原) -->
     <div id="excel-container">
-        <div class="excel-header">
-            <div>
-                <strong>[ DATABASE // CORRUPTED_LOG_0x00F ]</strong><br>
-                <span style="font-size:0.8em; color:#888;">SYS_WARN: Color hexes are masking true data strings.</span>
+        <div class="matrix-header">[ SECTOR_MONITORING_MATRIX // 區域監控色彩矩陣 - 36 CYCLES ]</div>
+        
+        <div class="matrix-top-info">
+            <div>SYS_DIR://WORLD_ORDER_v2.4.1 <span style="color:#ff3333;">[ADMIN_OVERRIDE_ENABLED]</span></div>
+            <button class="filter-btn" onclick="revealTruth()">> 執行：強制色彩歸零</button>
+        </div>
+
+        <div class="matrix-body">
+            <!-- 左側實體狀態 -->
+            <div class="entity-list">
+                [ENTITY_01] Faction: Aslandor<br>
+                Status: <span class="entity-status contained">CONTAINED</span><br><br>
+                
+                [ENTITY_02] Faction: Nova Syndicate<br>
+                Status: <span class="entity-status">MONITORING</span><br><br>
+                
+                [ENTITY_03] Faction: The Ashlands<br>
+                Status: <span class="entity-status isolated">ISOLATED</span>
             </div>
-            <button class="filter-btn" onclick="revealTruth()">> 執行：強制色彩歸零 (OVERRIDE_COLORS)</button>
+            
+            <!-- 右側色彩網格區 (6列 x 36欄 = 216格) -->
+            <div class="grid-container" id="grid">
+                <!-- 由 JavaScript 渲染 -->
+            </div>
         </div>
         
-        <div class="spreadsheet" id="grid">
-            <!-- JavaScript 會在這裡動態生成彩色格子與隱藏的摩斯密碼 -->
-        </div>
-        
-        <div style="margin-top: 20px; text-align: center; display: none;" id="next-stage-link">
-            <p style="color: #ff0000; font-weight: bold;">密碼已破解。</p>
-            <a href="stage2.html" style="border: 1px solid #00ff00; padding: 10px; display: inline-block;">> 追蹤 IP 來源，進入幽靈軌跡日誌...</a>
+        <!-- 破解後的下一關連結 -->
+        <div style="margin-top: 20px; text-align: right; display: none;" id="next-stage-link">
+            <span style="color: #ff0000; font-weight: bold; margin-right: 15px;">[ 檢測到異常底層資料 ]</span>
+            <a href="stage2.html" style="border: 1px solid #00ff00; padding: 5px 10px;">> 追蹤異常源頭，進入幽靈軌跡日誌...</a>
         </div>
     </div>
 
     <script>
-        /* ----------------------------------------------------
-           1. 初始駭入動畫與報告顯示
-        ---------------------------------------------------- */
+        /* ================= 1. 駭入動畫載入 ================= */
         window.onload = function() {
             const bgm = document.getElementById("purge-bgm");
             bgm.volume = 0;
             bgm.play().catch(e => console.log("Audio play blocked", e));
-            
             let fadeIn = setInterval(() => {
                 if (bgm.volume < 0.8) bgm.volume += 0.05;
                 else clearInterval(fadeIn);
@@ -314,111 +366,115 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }, delay + 3500);
         };
 
-        /* ----------------------------------------------------
-           2. 點擊 [c] 後的過場動畫與音樂切換
-        ---------------------------------------------------- */
+        /* ================= 2. 點擊 [c] 的故障轉場與音樂切換 ================= */
         function startPuzzleTransition() {
-            // 音樂淡出
             const oldBgm = document.getElementById("purge-bgm");
             const newBgm = document.getElementById("excel-bgm");
             let volume = oldBgm.volume;
+            
+            // 音樂淡出
             const fadeOut = setInterval(() => {
-                if (volume > 0.05) {
-                    volume -= 0.05;
-                    oldBgm.volume = volume;
-                } else {
-                    clearInterval(fadeOut);
-                    oldBgm.pause();
-                }
+                if (volume > 0.05) { volume -= 0.05; oldBgm.volume = volume; } 
+                else { clearInterval(fadeOut); oldBgm.pause(); }
             }, 100);
 
-            // 切換畫面至黑屏
+            // 切換至黑屏與故障文字
             document.getElementById("report").style.display = "none";
             const transScreen = document.getElementById("transition-screen");
-            const flashText = document.getElementById("flash-text");
+            const glitchText = document.getElementById("glitch-text");
             transScreen.style.display = "flex";
 
-            // 閃爍文字時間軸
-            setTimeout(() => { flashText.style.opacity = 1; flashText.innerText = "colors are lies"; }, 1000);
-            setTimeout(() => { flashText.style.opacity = 0; }, 3000);
-            setTimeout(() => { flashText.style.opacity = 1; flashText.innerText = "I just wanted them to experience this world for me."; }, 4000);
-            setTimeout(() => { flashText.style.opacity = 0; }, 7500);
+            // 設定故障動畫時間軸
+            setTimeout(() => { 
+                glitchText.style.opacity = 1; 
+                glitchText.setAttribute('data-text', 'colors are lies');
+                glitchText.innerText = 'colors are lies';
+            }, 500);
+            
+            setTimeout(() => { glitchText.style.opacity = 0; }, 3000);
+            
+            setTimeout(() => { 
+                glitchText.style.opacity = 1; 
+                glitchText.setAttribute('data-text', 'I just wanted them to experience this world for me.');
+                glitchText.innerText = 'I just wanted them to experience this world for me.';
+            }, 4000);
+            
+            setTimeout(() => { glitchText.style.opacity = 0; }, 7500);
 
-            // 進入試算表解謎畫面
+            // 進入還原版矩陣畫面
             setTimeout(() => {
                 transScreen.style.display = "none";
                 document.getElementById("excel-container").style.display = "block";
-                generateSpreadsheet(); // 繪製彩色表格
+                generateMatrix(); // 渲染 6x36 彩色矩陣
                 
                 // 新音樂淡入
                 newBgm.volume = 0;
                 newBgm.play().catch(e => console.log(e));
                 let newVol = 0;
                 const fadeInNew = setInterval(() => {
-                    if (newVol < 0.8) {
-                        newVol += 0.05;
-                        newBgm.volume = newVol;
-                    } else {
-                        clearInterval(fadeInNew);
-                    }
+                    if (newVol < 0.8) { newVol += 0.05; newBgm.volume = newVol; } 
+                    else { clearInterval(fadeInNew); }
                 }, 200);
             }, 8500);
         }
 
-        /* ----------------------------------------------------
-           3. 動態生成試算表與解碼邏輯 (IT WAS NEVER MEANT TO BE)
-        ---------------------------------------------------- */
-        // 摩斯密碼字串拆分放入格子中，為了排版好看，加入空白雜訊
-        const secretMessage = [
-            ".", ".", " ", "-", " ", " ", " ", // I T
-            ".", "-", "-", " ", ".", "-", " ", // W A
-            ".", ".", ".", " ", " ", " ", " ", // S
-            "-", ".", " ", ".", " ", " ", " ", // N E
-            ".", ".", ".", "-", " ", ".", " ", // V E
-            ".", "-", ".", " ", " ", " ", " ", // R
-            "-", "-", " ", ".", " ", " ", " ", // M E
-            ".", "-", " ", "-", ".", " ", "-", // A N T
-            "-", " ", "-", "-", "-", " ", " ", // T O
-            "-", ".", ".", ".", " ", ".", " "  // B E
-        ];
+        /* ================= 3. 渲染 6x36 矩陣與隱藏密碼 ================= */
+        // "IT WAS NEVER MEANT TO BE" 轉摩斯密碼，含間距共 56 字元，可完美放進一行 36 格中，分為兩行。
+        const morseMessage = ".. -  .-- .- ...  -. . ...- . .-.  -- . .- -. -  - --- -... .";
+        const hexahueColors = ["#00FFFF", "#FF00FF", "#FFFF00", "#0000FF", "#FF0000", "#00FF00"]; 
+        const ROWS = 6;
+        const COLS = 36;
+        const TOTAL_CELLS = ROWS * COLS;
 
-        // 鮮豔的顏色庫，用來偽裝 (Hexahue 的視覺感)
-        const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF"];
-
-        function generateSpreadsheet() {
+        function generateMatrix() {
             const grid = document.getElementById("grid");
-            grid.innerHTML = ""; // 清空
+            grid.innerHTML = "";
+            
+            // 決定密碼埋在第 3 行跟第 4 行
+            const messageStartIndex = (2 * COLS) + 4; 
 
-            for(let i = 0; i < secretMessage.length; i++) {
+            for(let i = 0; i < TOTAL_CELLS; i++) {
                 let cell = document.createElement("div");
                 cell.className = "cell color-camouflaged";
                 
-                // 隨機賦予一個亮色背景
-                let randomColor = colors[Math.floor(Math.random() * colors.length)];
+                // 隨機賦予鮮豔色彩，模擬 Hexahue 色塊
+                let randomColor = hexahueColors[Math.floor(Math.random() * hexahueColors.length)];
                 cell.style.backgroundColor = randomColor;
+                cell.style.color = randomColor; // 隱藏文字
                 
-                // 將摩斯密碼寫在裡面，但用相同的顏色隱藏起來
-                cell.innerText = secretMessage[i];
-                cell.style.color = randomColor; 
+                // 填入摩斯密碼
+                if (i >= messageStartIndex && i < messageStartIndex + morseMessage.length) {
+                    let char = morseMessage[i - messageStartIndex];
+                    cell.innerText = char;
+                    // 將密碼格標記，歸零時才顯示字
+                    cell.setAttribute("data-is-msg", "true");
+                } else {
+                    cell.setAttribute("data-is-msg", "false");
+                }
 
                 grid.appendChild(cell);
             }
         }
 
-        // 玩家點擊「強制色彩歸零」按鈕時觸發
+        // 強制色彩歸零 (OVERRIDE)
         function revealTruth() {
             const cells = document.querySelectorAll(".cell");
             cells.forEach(cell => {
-                // 將所有格子的背景變成黑色，字體變成白色，失去色彩偽裝
-                cell.style.backgroundColor = "#000000";
-                cell.style.color = "#ffffff";
-                cell.style.border = "1px solid #333";
+                // 將所有格子背景變黑，失去彩色偽裝
+                cell.style.backgroundColor = "#050505";
+                
+                // 只有藏著密碼的格子，字體變成白色顯示出來
+                if (cell.getAttribute("data-is-msg") === "true") {
+                    cell.style.color = "#ffffff";
+                } else {
+                    cell.style.color = "#050505";
+                }
             });
             
-            // 顯示通往下一關的連結
+            // 延遲顯示通往下一關的連結
             setTimeout(() => {
                 document.getElementById("next-stage-link").style.display = "block";
-            }, 2000);
+            }, 2500);
         }
     </script>
 </body>
