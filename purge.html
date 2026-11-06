@@ -262,6 +262,35 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
     </div>
 
     <!-- 內嵌原始 Google 試算表畫面 -->
+    <!-- 玩家自白過場畫面 (密碼正確後顯示) -->
+    <div id="monologue-screen">
+        <div class="sys-prompt" style="border-color: #aaffaa; color: #aaffaa;">
+            > [ 系統提示：覆寫指令核准。矩陣偽裝已解除。 ]<br>
+            > [ 正在載入底層軌跡與作廢日誌... ]
+        </div>
+        <div class="monologue-text">
+            「IT WAS NEVER MEANT TO BE...（這注定不會有結果）？」
+        </div>
+        <div class="monologue-text">
+            看著螢幕上褪去色彩後浮現的字串，我不禁愣住了。
+        </div>
+        <div class="monologue-text">
+            一個視生命如草芥、為了維持統治不惜燒毀整個農莊與反抗軍營地的冷血暴君...為什麼會在這個用來監視我們顏色的底層矩陣裡，藏著這樣一句充滿無力與哀傷的話？
+        </div>
+        <div class="monologue-text">
+            「colors are lies（顏色是謊言）」...
+        </div>
+        <div class="monologue-text">
+            如果我們被劃分的顏色、我們所仇恨的一切，都只是一層刻意設計的偽裝，那我們這三年來到底在跟什麼東西戰鬥？他到底在隱瞞什麼？
+        </div>
+        <div class="monologue-text">
+            系統顯示，隨著色彩矩陣被破解，更深層的底層目錄已經對我敞開。我必須挖下去。
+        </div>
+        <div style="text-align: right; margin-top: 40px;">
+            <!-- 導向下一關 -->
+            <a href="stage2.html" class="btn">> 進入作廢日誌與幽靈軌跡...</a>
+        </div>
+    </div>
     <div id="excel-container">
         <div class="matrix-header">> [ SYSTEM_OVERRIDE ] ACCESSING EXTERNAL DATABASE: WORLD_ORDER.xlsx</div>
         
@@ -383,20 +412,27 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             document.getElementById("puzzle-input").focus();
         }
 
-        function verifyAnswer() {
+       function verifyAnswer() {
             const inputField = document.getElementById("puzzle-input");
             const errorMsg = document.getElementById("error-msg");
             
-            // 轉換為小寫並去除前後空白，方便判斷
-            // 同時移除輸入字串內的所有空白，確保玩家多打或少打空格都能通關
             let answer = inputField.value.toLowerCase().replace(/\s+/g, '');
             
             if (answer === "itwasnevermeanttobe") {
                 errorMsg.style.display = "none";
-                // 密碼正確，跳轉至第二階段 (管理者日誌)
-                window.location.href = "stage2.html"; 
+                
+                // 密碼正確：隱藏試算表區域
+                document.getElementById("excel-container").style.display = "none";
+                
+                // 顯示自白畫面並淡入
+                const monoScreen = document.getElementById("monologue-screen");
+                monoScreen.style.display = "block";
+                setTimeout(() => {
+                    monoScreen.style.opacity = 1;
+                }, 100);
+
             } else {
-                // 密碼錯誤，顯示紅字警告並清空輸入框
+                // 密碼錯誤：顯示紅字警告並清空輸入框
                 errorMsg.style.display = "block";
                 inputField.value = "";
                 inputField.focus();
@@ -410,6 +446,25 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                 verifyAnswer();
             }
         });
+        /* ================= 玩家自白過場 ================= */
+        #monologue-screen {
+            display: none;
+            max-width: 800px;
+            margin: 60px auto;
+            background-color: rgba(5, 5, 5, 0.95);
+            border: 1px solid #00aa00;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+            line-height: 1.8;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        .monologue-text {
+            color: #aaffaa;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 2px rgba(170, 255, 170, 0.3);
+        }
     </script>
 </body>
 </html>
