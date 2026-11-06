@@ -41,7 +41,7 @@
         a { color: #00ff00; text-decoration: none; font-weight: bold; cursor: pointer; }
         a:hover { background-color: #00ff00; color: #000; }
 
-        /* ================= 轉場：打字機與雪花屏故障特效 ================= */
+       /* ================= 轉場：打字機與文字粉碎特效 ================= */
         #transition-screen {
             display: none;
             position: fixed;
@@ -52,21 +52,10 @@
             justify-content: center;
             align-items: center;
         }
-        
-        /* 覆蓋整個螢幕的靜電雪花圖層 (初始透明) */
-        #noise-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
-            opacity: 0;
-            z-index: 101;
-            mix-blend-mode: screen;
-            pointer-events: none;
-        }
 
         #type-container {
             opacity: 1;
-            z-index: 102; /* 確保文字在雪花之上 */
+            z-index: 102;
         }
 
         .typewriter-text {
@@ -91,27 +80,16 @@
             50% { opacity: 0; }
         }
 
-        /* 觸發雪花屏：文字溶解動畫 */
-        .text-dissolve {
-            animation: dissolve-anim 0.5s forwards;
+        /* 觸發文字粉碎崩塌動畫 */
+        .text-shatter {
+            animation: shatter-anim 0.6s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        @keyframes dissolve-anim {
-            0% { opacity: 1; filter: blur(0); transform: scale(1); }
-            50% { filter: blur(4px) brightness(1.5); }
-            100% { opacity: 0; filter: blur(10px) brightness(2); transform: scale(1.05); }
+        @keyframes shatter-anim {
+            0% { opacity: 1; filter: blur(0); transform: scale(1) translateY(0); letter-spacing: 1px; }
+            20% { opacity: 1; filter: blur(1px); transform: scale(1.1) translateY(-2px); letter-spacing: 3px; color: #fff; }
+            50% { opacity: 0.6; filter: blur(4px); transform: scale(1.2) translateY(10px) skew(15deg); letter-spacing: 15px; }
+            100% { opacity: 0; filter: blur(10px); transform: scale(1.5) translateY(30px) skew(-25deg); letter-spacing: 30px; }
         }
-
-        /* 觸發雪花屏：雜訊爆發動畫 */
-        .snow-burst {
-            animation: snow-anim 0.5s forwards;
-        }
-        @keyframes snow-anim {
-            0% { opacity: 0; }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.6; }
-            100% { opacity: 0; }
-        }
-
         /* ================= 嵌入 Google 試算表與互動輸入區 ================= */
         #excel-container {
             display: none;
@@ -278,7 +256,6 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
 
     <!-- 打字機與雪花屏故障轉場畫面 -->
     <div id="transition-screen">
-        <div id="noise-overlay"></div>
         <div id="type-container">
             <span id="type-text" class="typewriter-text"></span><span class="cursor"></span>
         </div>
@@ -344,7 +321,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }, delay + 3500);
         };
 
-        /* ================= 2. 點擊 [c] 的打字機與雪花屏切換 ================= */
+      /* ================= 2. 點擊 [c] 的打字機與文字粉碎切換 ================= */
         async function startPuzzleTransition() {
             const oldBgm = document.getElementById("purge-bgm");
             const newBgm = document.getElementById("excel-bgm");
@@ -359,14 +336,12 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             const transScreen = document.getElementById("transition-screen");
             const typeContainer = document.getElementById("type-container");
             const typeText = document.getElementById("type-text");
-            const noiseOverlay = document.getElementById("noise-overlay");
             transScreen.style.display = "flex";
 
             const typeLine = async (text, speed) => {
                 typeText.innerText = "";
                 // 重置動畫狀態
-                typeContainer.classList.remove("text-dissolve");
-                noiseOverlay.classList.remove("snow-burst");
+                typeContainer.classList.remove("text-shatter");
                 typeContainer.style.opacity = 1;
                 
                 for (let i = 0; i < text.length; i++) {
@@ -376,9 +351,8 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                 
                 await new Promise(r => setTimeout(r, 1200)); 
                 
-                // 觸發雪花屏故障與文字溶解
-                typeContainer.classList.add("text-dissolve");
-                noiseOverlay.classList.add("snow-burst");
+                // 觸發文字粉碎動畫
+                typeContainer.classList.add("text-shatter");
                 await new Promise(r => setTimeout(r, 600)); 
             };
 
