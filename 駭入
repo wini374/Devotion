@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PURGE_REPORT_001.log</title>
+    <style>
+        /* 基礎終端機樣式 */
+        body {
+            background-color: #050505;
+            color: #00ff00;
+            font-family: "Courier New", Courier, monospace;
+            padding: 2rem;
+            line-height: 1.6;
+            overflow-x: hidden;
+            /* 讓整個頁面允許被選取，為了觸發隱藏字 */
+            user-select: text; 
+        }
+        
+        /* 避免某些瀏覽器預設將選取顏色改掉，強制設定反白樣式 */
+        ::selection {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        /* 隱藏字體的 CSS 魔法 */
+        .hidden-text {
+            color: #050505; /* 字體顏色與背景色完全相同 */
+            cursor: text;
+        }
+        /* 當隱藏字被反白時的顏色 (這個設定確保相容性) */
+        .hidden-text::selection {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        /* 隱藏字排版位置 */
+        .top-right-hidden {
+            text-align: right;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+        .bottom-center-hidden {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+
+        /* 駭入動畫與閃爍文字樣式 */
+        #boot-sequence {
+            white-space: pre-wrap;
+            font-size: 1.1em;
+            /* 動畫區塊不允許選取，避免破壞體驗 */
+            user-select: none; 
+        }
+        
+        #report {
+            display: none; /* 初始隱藏，駭入動畫結束後才顯示 */
+            white-space: pre-wrap;
+            word-wrap: break-word; /* 避免過長的亂碼把版面撐破 */
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .glitch-flash {
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 2px 0 red, -2px 0 blue;
+        }
+
+        /* 超連結樣式 (針對文件中的 [c]) */
+        a {
+            color: #00ff00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            background-color: #00ff00;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 過場駭入動畫區 -->
+    <div id="boot-sequence"></div>
+
+    <!-- 報告本體區 -->
+    <div id="report">
+<div class="hidden-text top-right-hidden">colors are lies</div>
+
+======================================================
+[ CLASSIFIED ] INQUISITION & PURGE REPORT - CYCLE 36
+======================================================
+> AUTHOR: ADMIN
+> SYSTEM_STATUS: WORLD_ENTROPY AT 89% (CRITICAL)
+> WARNING: EXCESSIVE CONFLICT WILL CAUSE FATAL WORLD CORRUPTION.
+> SUBJECT: ELIMINATION OF COMPROMISED ASSETS TO ENFORCE PEACE
+
+[ ASSET_01 // INFILTRATION_NODE: Aslandor_Sector ]
+> MISSION_OBSERVATION: Asset compromised. Formed unauthorized familial bond with local farmers. 
+> ADMIN_VERDICT: Emotional contamination. A weapon does not need a home.
+> [EXECUTE]: Scorched Earth Protocol.
+> RESULT: Farmhouse incinerated. Asset executed in the ashes to serve as a warning.
+
+[ ASSET_02 // INFILTRATION_NODE: Nova_Syndicate ]
+> MISSION_OBSERVATION: Asset glitched, dropping Admin-level items to civilians at festival. 
+> ADMIN_VERDICT: Severe breach of World Order. Containment required.
+> [EXECUTE]: Localized Structural Collapse.
+> RESULT: Festival Square destroyed. Asset terminated in the blast radius.
+
+[ ASSET_03 // INFILTRATION_NODE: The Ashlands ]
+> MISSION_OBSERVATION: Asset infiltrated Rebel Leader's inner circle. Asset hesitated to assassinate the target and displayed signs of dangerous empathy.
+> ADMIN_VERDICT: Disgusting display of weakness. Such flaws must be excised manually.
+> [EXECUTE]: Manual Override. Physical Intervention.
+> RESULT: I descended to the camp. I executed ASSET_03 personally to demonstrate the cost of sentimentality. I detonated the Safehouse to bury the remains. The Rebel Leader survives, properly motivated by hatred. 
+
+------------------------------------------------------
+> SYSTEM_NOTE: ALL TRACES OF ASSETS REMOVED. 
+> LET THEM HATE THE SKY. FEAR MAINTAINS THE PEACE.
+> [ PEACE_MAINTAINS_THE_WORLD ]
+
+> CURRENT WORLD_ENTROPY REDUCED TO 12% (STABLE)
+> THEY WERE NOTHING BUT TOOLS. THEY MEAN NOTHING.
+
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
+0x0000000F 0x00000000 0xFFFFFFFF 0x80070057 0x00000109
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
+[SYS_WARN] COLOR_PROFILE_CORRUPT_DETECTED
+憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
+隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝a銝剖銝蝝隢
+蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
+0x0000003B 0x0000007E 0x0000000A 0x00000050 0x0000001A 0x000000EF
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝a銝剖銝蝝
+[FATAL] THREAD_DESYNC_AT_0xFFFFF800
+隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜銝之摮貉銝行撟渡蝝
+憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
+0x00000116 0x00000119 0x0000010E 0x00000101 0x0000009F 0x000000FE
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+[SYS_WARN] LUMINANCE_OVERLOAD
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝a銝剖銝蝝
+隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
+蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
+0x0000007B 0x000000ED 0x000000F4 0x00000024 0x0000000F 0x0000000F
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
+憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
+DUMPING_PHYSICAL_MEMORY_START...
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
+隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝a銝剖銝蝝隢
+憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
+0x80004005 0x80070002 0x80070005 0x80070057 0x80092004 0x800B0109
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝a銝剖銝蝝
+[FATAL] UNEXPECTED_STORE_EXCEPTION
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
+蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
+憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
+a銝剖銝蝝隢隤芷銝璆剖憿<a href="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/edit?usp=sharing" target="_blank">[c]</a>嚗翩璆剖銝瘜
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
+0x00000139 0x000000C4 0x000000C5 0x0000001E 0x000000D1 0x0000009F
+[SYS_WARN] MEMORY_MANAGEMENT_FAILURE
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
+憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
+蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
+0x00000109 0x0000007E 0x0000003B 0x000000A 0x00000050 0x0000001A
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝a銝剖銝蝝
+[FATAL] CRITICAL_PROCESS_DIED
+憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
+隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝a銝剖銝蝝隢
+蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
+銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
+憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
+[SYS_WARN] DISPLAY_DRIVER_STOPPED_RESPONDING
+隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
+a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
+蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
+0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
+SYS_ERR_LUMINANCE_OVERLOAD
+PHYSICAL_MEMORY_DUMP_COMPLETE.
+
+<div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
+    </div>
+
+    <!-- 控制動畫的腳本 -->
+    <script>
+        const bootText = [
+            "Initiating brute force protocol...",
+            "Bypassing outer firewall...",
+            "Success.",
+            "Accessing CORE_0 database...",
+            "==========================================",
+            "[ ROOT_ACCESS ] ... DENIED.",
+            "[ GUEST_ACCESS ] ... GRANTED (BY_ADMIN_OVERRIDE)."
+        ];
+        
+        const bootDiv = document.getElementById("boot-sequence");
+        const reportDiv = document.getElementById("report");
+        let delay = 0;
+
+        // 模擬終端機逐行顯示
+        bootText.forEach((line) => {
+            setTimeout(() => {
+                bootDiv.innerHTML += line + "<br>";
+            }, delay);
+            delay += 800; // 每行間隔 0.8 秒
+        });
+
+        // 顯示閃爍的紅字陷阱訊息
+        setTimeout(() => {
+            bootDiv.innerHTML += "<br><span class='glitch-flash'>[ SYS_MSG ]: \"Let them read it. Let them hate.\"</span><br>";
+        }, delay + 500);
+
+        // 隱藏動畫，正式顯示報告本體
+        setTimeout(() => {
+            bootDiv.style.display = "none";
+            reportDiv.style.display = "block";
+        }, delay + 3500);
+    </script>
+</body>
+</html>
