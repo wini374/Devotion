@@ -82,6 +82,9 @@
 </head>
 <body>
 
+    <!-- 新增：第二階段的 BGM，初始音量設為 0 以便淡入 -->
+    <audio id="purge-bgm" src="駭入.mp3" loop></audio>
+
     <!-- 過場駭入動畫區 -->
     <div id="boot-sequence"></div>
 
@@ -200,8 +203,23 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
 <div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
     </div>
 
-    <!-- 控制動畫的腳本 -->
+    <!-- 控制動畫與音樂的腳本 -->
     <script>
+        // 頁面一載入，就開始播放並淡入新的駭入音樂
+        window.onload = function() {
+            const bgm = document.getElementById("purge-bgm");
+            bgm.volume = 0; // 初始無聲
+            bgm.play().catch(e => console.log("Audio play blocked", e));
+            
+            let fadeInInterval = setInterval(() => {
+                if (bgm.volume < 0.8) { // 最高音量設為 0.8，避免太刺耳
+                    bgm.volume += 0.05;
+                } else {
+                    clearInterval(fadeInInterval);
+                }
+            }, 200); // 慢慢變大聲
+        };
+
         const bootText = [
             "Initiating brute force protocol...",
             "Bypassing outer firewall...",
@@ -221,7 +239,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             setTimeout(() => {
                 bootDiv.innerHTML += line + "<br>";
             }, delay);
-            delay += 800; // 每行間隔 0.8 秒
+            delay += 800; 
         });
 
         // 顯示閃爍的紅字陷阱訊息
