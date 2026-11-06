@@ -41,7 +41,7 @@
         a { color: #00ff00; text-decoration: none; font-weight: bold; cursor: pointer; }
         a:hover { background-color: #00ff00; color: #000; }
 
-       /* ================= 轉場：打字機與文字粉碎特效 ================= */
+        /* ================= 轉場：打字機與文字粉碎特效 ================= */
         #transition-screen {
             display: none;
             position: fixed;
@@ -90,6 +90,7 @@
             50% { opacity: 0.6; filter: blur(4px); transform: scale(1.2) translateY(10px) skew(15deg); letter-spacing: 15px; }
             100% { opacity: 0; filter: blur(10px); transform: scale(1.5) translateY(30px) skew(-25deg); letter-spacing: 30px; }
         }
+
         /* ================= 嵌入 Google 試算表與互動輸入區 ================= */
         #excel-container {
             display: none;
@@ -150,6 +151,26 @@
         #puzzle-input::placeholder {
             color: #005500;
         }
+
+        /* ================= 玩家自白過場 ================= */
+        #monologue-screen {
+            display: none;
+            max-width: 800px;
+            margin: 60px auto;
+            background-color: rgba(5, 5, 5, 0.95);
+            border: 1px solid #00aa00;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+            line-height: 1.8;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        .monologue-text {
+            color: #aaffaa;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 2px rgba(170, 255, 170, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -158,10 +179,10 @@
     <audio id="purge-bgm" src="駭入.mp3" loop></audio>
     <audio id="excel-bgm" src="彩色密碼.mp3" loop></audio>
 
-    <!-- 駭入動畫區 -->
+    <!-- 1. 駭入動畫區 -->
     <div id="boot-sequence"></div>
 
-    <!-- 報告本體區 -->
+    <!-- 2. 報告本體區 (包含隱藏字與亂碼) -->
     <div id="report">
 <div class="hidden-text top-right-hidden">"c"olors are lies</div>
 
@@ -198,7 +219,6 @@
 
 > 目前世界熵值已降至 12% (穩定)
 > 他們只不過是工具。他們毫無意義。
-
 
 a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
@@ -254,15 +274,19 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
 <div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
     </div>
 
-    <!-- 打字機與雪花屏故障轉場畫面 -->
+    <!-- 3. 打字機與文字粉碎轉場畫面 -->
     <div id="transition-screen">
         <div id="type-container">
             <span id="type-text" class="typewriter-text"></span><span class="cursor"></span>
         </div>
     </div>
 
-    <!-- 內嵌原始 Google 試算表畫面 -->
-
+    <!-- 4. 內嵌 Google 試算表畫面 -->
+    <div id="excel-container">
+        <div class="matrix-header">> [ SYSTEM_OVERRIDE ] ACCESSING EXTERNAL DATABASE: WORLD_ORDER.xlsx</div>
+        
+        <iframe src="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/htmlembed?widget=false&chrome=false"></iframe>
+        
         <!-- 互動驗證區 -->
         <div style="margin-top: 20px; text-align: right;">
             <!-- 初始顯示的謎底按鈕 -->
@@ -276,9 +300,10 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             </div>
         </div>
     </div>
-    <!-- 玩家自白過場畫面 (密碼正確後顯示) -->
+
+    <!-- 5. 玩家自白過場畫面 (密碼正確後顯示) -->
     <div id="monologue-screen">
-        <div class="sys-prompt" style="border-color: #aaffaa; color: #aaffaa;">
+        <div class="sys-prompt" style="border-color: #aaffaa; color: #aaffaa; margin-bottom: 20px; border-left: 3px solid #aaffaa; padding-left: 15px;">
             > [ 系統提示：覆寫指令核准。矩陣偽裝已解除。 ]<br>
             > [ 正在載入底層軌跡與作廢日誌... ]
         </div>
@@ -305,11 +330,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             <a href="stage2.html" class="btn">> 進入作廢日誌與幽靈軌跡...</a>
         </div>
     </div>
-    <div id="excel-container">
-        <div class="matrix-header">> [ SYSTEM_OVERRIDE ] ACCESSING EXTERNAL DATABASE: WORLD_ORDER.xlsx</div>
-        
-        <iframe src="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/htmlembed?widget=false&chrome=false"></iframe>
-        
+
     <script>
         /* ================= 1. 駭入動畫載入 ================= */
         window.onload = function() {
@@ -350,7 +371,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }, delay + 3500);
         };
 
-      /* ================= 2. 點擊 [c] 的打字機與文字粉碎切換 ================= */
+        /* ================= 2. 點擊 [c] 的打字機與文字粉碎切換 ================= */
         async function startPuzzleTransition() {
             const oldBgm = document.getElementById("purge-bgm");
             const newBgm = document.getElementById("excel-bgm");
@@ -369,7 +390,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
 
             const typeLine = async (text, speed) => {
                 typeText.innerText = "";
-                // 重置動畫狀態
+                // 重置粉碎狀態
                 typeContainer.classList.remove("text-shatter");
                 typeContainer.style.opacity = 1;
                 
@@ -380,7 +401,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                 
                 await new Promise(r => setTimeout(r, 1200)); 
                 
-                // 觸發文字粉碎動畫
+                // 觸發文字粉碎
                 typeContainer.classList.add("text-shatter");
                 await new Promise(r => setTimeout(r, 600)); 
             };
@@ -390,7 +411,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             await typeLine("WHY...", 80);
             await new Promise(r => setTimeout(r, 600)); 
             
-            await typeLine("HOW DID IT GET THIS WAY? ", 60);
+            await typeLine("HOW DID IT COME ABOUT THAT? ", 60);
 
             transScreen.style.display = "none";
             document.getElementById("excel-container").style.display = "block";
@@ -404,7 +425,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }, 200);
         }
 
-        /* ================= 3. 謎底輸入與驗證邏輯 ================= */
+        /* ================= 3. 謎底輸入與過場驗證邏輯 ================= */
         function showInput() {
             document.getElementById("reveal-btn").style.display = "none";
             const inputSection = document.getElementById("input-section");
@@ -412,7 +433,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             document.getElementById("puzzle-input").focus();
         }
 
-       function verifyAnswer() {
+        function verifyAnswer() {
             const inputField = document.getElementById("puzzle-input");
             const errorMsg = document.getElementById("error-msg");
             
@@ -421,50 +442,30 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             if (answer === "itwasnevermeanttobe") {
                 errorMsg.style.display = "none";
                 
-                // 密碼正確：隱藏試算表區域
+                // 密碼正確：隱藏試算表，顯示自白畫面
                 document.getElementById("excel-container").style.display = "none";
-                
-                // 顯示自白畫面並淡入
                 const monoScreen = document.getElementById("monologue-screen");
                 monoScreen.style.display = "block";
+                
                 setTimeout(() => {
                     monoScreen.style.opacity = 1;
                 }, 100);
 
             } else {
-                // 密碼錯誤：顯示紅字警告並清空輸入框
+                // 密碼錯誤
                 errorMsg.style.display = "block";
                 inputField.value = "";
                 inputField.focus();
             }
         }
 
-        // 支援按下 Enter 鍵送出驗證
+        // 支援 Enter 鍵送出驗證
         document.getElementById("puzzle-input").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
                 verifyAnswer();
             }
         });
-        /* ================= 玩家自白過場 ================= */
-        #monologue-screen {
-            display: none;
-            max-width: 800px;
-            margin: 60px auto;
-            background-color: rgba(5, 5, 5, 0.95);
-            border: 1px solid #00aa00;
-            padding: 40px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
-            line-height: 1.8;
-            opacity: 0;
-            transition: opacity 1.5s ease;
-        }
-        .monologue-text {
-            color: #aaffaa;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            text-shadow: 0 0 2px rgba(170, 255, 170, 0.3);
-        }
     </script>
 </body>
 </html>
