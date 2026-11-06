@@ -41,7 +41,7 @@
         a { color: #00ff00; text-decoration: none; font-weight: bold; cursor: pointer; }
         a:hover { background-color: #00ff00; color: #000; }
 
-        /* ================= 轉場：打字機與崩潰故障特效 ================= */
+        /* ================= 轉場：打字機與雪花屏故障特效 ================= */
         #transition-screen {
             display: none;
             position: fixed;
@@ -53,12 +53,24 @@
             align-items: center;
         }
         
+        /* 覆蓋整個螢幕的靜電雪花圖層 (初始透明) */
+        #noise-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+            opacity: 0;
+            z-index: 101;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
         #type-container {
             opacity: 1;
+            z-index: 102; /* 確保文字在雪花之上 */
         }
 
         .typewriter-text {
-            color: #d3d3d3; /* 偏暗的白色，帶出幽靈般的感覺 */
+            color: #d3d3d3; 
             font-size: 1.2rem;
             letter-spacing: 1px;
             text-shadow: 0 0 5px rgba(255,255,255,0.3);
@@ -79,21 +91,28 @@
             50% { opacity: 0; }
         }
 
-        /* 系統強制抹除的故障動畫 */
-        .glitch-crash {
-            animation: crash-anim 0.4s forwards;
+        /* 觸發雪花屏：文字溶解動畫 */
+        .text-dissolve {
+            animation: dissolve-anim 0.5s forwards;
+        }
+        @keyframes dissolve-anim {
+            0% { opacity: 1; filter: blur(0); transform: scale(1); }
+            50% { filter: blur(4px) brightness(1.5); }
+            100% { opacity: 0; filter: blur(10px) brightness(2); transform: scale(1.05); }
         }
 
-        @keyframes crash-anim {
-            0% { opacity: 1; transform: translate(0, 0) skew(0deg); text-shadow: none; filter: none; }
-            20% { opacity: 0.8; transform: translate(-3px, 1px) skew(-10deg); text-shadow: 3px 0 red, -3px 0 blue; }
-            40% { opacity: 0.9; transform: translate(3px, -2px) skew(15deg); text-shadow: -4px 0 lime, 4px 0 magenta; filter: contrast(200%); }
-            60% { opacity: 0.5; transform: translate(-3px, 3px) skew(-5deg); text-shadow: 2px 0 red, -2px 0 blue; }
-            80% { opacity: 0.2; transform: translate(1px, -1px) skew(20deg); filter: blur(2px); }
-            100% { opacity: 0; transform: translate(0, 0); filter: blur(5px); }
+        /* 觸發雪花屏：雜訊爆發動畫 */
+        .snow-burst {
+            animation: snow-anim 0.5s forwards;
+        }
+        @keyframes snow-anim {
+            0% { opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { opacity: 0; }
         }
 
-        /* ================= 嵌入 Google 試算表容器 ================= */
+        /* ================= 嵌入 Google 試算表與互動輸入區 ================= */
         #excel-container {
             display: none;
             width: 100%;
@@ -119,21 +138,39 @@
             background-color: #000;
         }
 
+        /* 按鈕與輸入框設計 */
         .btn {
             background-color: transparent;
             border: 1px solid #00ff00;
             color: #00ff00;
-            padding: 10px 25px;
+            padding: 8px 20px;
             font-family: "Courier New", Courier, monospace;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-block;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
         .btn:hover {
             background-color: #00ff00;
             color: #000;
+        }
+
+        #puzzle-input {
+            background-color: #000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 8px 10px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 1rem;
+            outline: none;
+            width: 300px;
+        }
+        #puzzle-input:focus {
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+        }
+        #puzzle-input::placeholder {
+            color: #005500;
         }
     </style>
 </head>
@@ -208,8 +245,9 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
 <div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
     </div>
 
-    <!-- 打字機與故障崩潰轉場畫面 -->
+    <!-- 打字機與雪花屏故障轉場畫面 -->
     <div id="transition-screen">
+        <div id="noise-overlay"></div>
         <div id="type-container">
             <span id="type-text" class="typewriter-text"></span><span class="cursor"></span>
         </div>
@@ -221,9 +259,17 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
         
         <iframe src="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/htmlembed?widget=false&chrome=false"></iframe>
         
-        <!-- 更新：右下角精簡按鈕 -->
+        <!-- 互動驗證區 -->
         <div style="margin-top: 20px; text-align: right;">
-            <a href="stage2.html" class="btn">> 謎底？</a>
+            <!-- 初始顯示的謎底按鈕 -->
+            <button id="reveal-btn" class="btn" onclick="showInput()">> 謎底？</button>
+            
+            <!-- 點擊後展開的輸入框 (初始隱藏) -->
+            <div id="input-section" style="display: none; justify-content: flex-end; align-items: center; gap: 10px;">
+                <span id="error-msg" style="color: #ff0000; font-weight: bold; display: none; text-shadow: 0 0 3px red;">[ 存取拒絕：代碼不符 ]</span>
+                <input type="text" id="puzzle-input" placeholder="輸入解碼字串...">
+                <button class="btn" onclick="verifyAnswer()">> 驗證</button>
+            </div>
         </div>
     </div>
 
@@ -267,60 +313,54 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }, delay + 3500);
         };
 
-        /* ================= 2. 點擊 [c] 的打字機轉場與音樂切換 ================= */
-        // 使用 async/await 讓打字與故障的時間軸更精確
+        /* ================= 2. 點擊 [c] 的打字機與雪花屏切換 ================= */
         async function startPuzzleTransition() {
             const oldBgm = document.getElementById("purge-bgm");
             const newBgm = document.getElementById("excel-bgm");
             let volume = oldBgm.volume;
             
-            // 音樂淡出
             const fadeOut = setInterval(() => {
                 if (volume > 0.05) { volume -= 0.05; oldBgm.volume = volume; } 
                 else { clearInterval(fadeOut); oldBgm.pause(); }
             }, 100);
 
-            // 切換至黑屏
             document.getElementById("report").style.display = "none";
             const transScreen = document.getElementById("transition-screen");
             const typeContainer = document.getElementById("type-container");
             const typeText = document.getElementById("type-text");
+            const noiseOverlay = document.getElementById("noise-overlay");
             transScreen.style.display = "flex";
 
-            // 輔助函數：模擬打字機
             const typeLine = async (text, speed) => {
                 typeText.innerText = "";
-                typeContainer.classList.remove("glitch-crash"); // 移除之前的故障
-                typeContainer.style.opacity = 1; // 恢復可見度
+                // 重置動畫狀態
+                typeContainer.classList.remove("text-dissolve");
+                noiseOverlay.classList.remove("snow-burst");
+                typeContainer.style.opacity = 1;
                 
                 for (let i = 0; i < text.length; i++) {
                     typeText.innerText += text.charAt(i);
                     await new Promise(r => setTimeout(r, speed));
                 }
                 
-                await new Promise(r => setTimeout(r, 1200)); // 停頓一下讓玩家看清楚
+                await new Promise(r => setTimeout(r, 1200)); 
                 
-                // 觸發系統故障抹除動畫
-                typeContainer.classList.add("glitch-crash");
-                await new Promise(r => setTimeout(r, 600)); // 等待故障動畫跑完
+                // 觸發雪花屏故障與文字溶解
+                typeContainer.classList.add("text-dissolve");
+                noiseOverlay.classList.add("snow-burst");
+                await new Promise(r => setTimeout(r, 600)); 
             };
 
-            // 啟動時間軸
-            await new Promise(r => setTimeout(r, 1000)); // 先黑屏一秒
+            await new Promise(r => setTimeout(r, 1000)); 
             
-            // 第一句
             await typeLine("colors are lies", 80);
+            await new Promise(r => setTimeout(r, 600)); 
             
-            await new Promise(r => setTimeout(r, 500)); // 句與句的間隔
-            
-            // 第二句 (稍微打快一點點)
             await typeLine("I just wanted them to experience this world for me.", 60);
 
-            // 轉場結束，顯示乾淨版 Google 試算表
             transScreen.style.display = "none";
             document.getElementById("excel-container").style.display = "block";
             
-            // 新音樂淡入
             newBgm.volume = 0;
             newBgm.play().catch(e => console.log(e));
             let newVol = 0;
@@ -329,6 +369,42 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                 else { clearInterval(fadeInNew); }
             }, 200);
         }
+
+        /* ================= 3. 謎底輸入與驗證邏輯 ================= */
+        function showInput() {
+            document.getElementById("reveal-btn").style.display = "none";
+            const inputSection = document.getElementById("input-section");
+            inputSection.style.display = "flex";
+            document.getElementById("puzzle-input").focus();
+        }
+
+        function verifyAnswer() {
+            const inputField = document.getElementById("puzzle-input");
+            const errorMsg = document.getElementById("error-msg");
+            
+            // 轉換為小寫並去除前後空白，方便判斷
+            // 同時移除輸入字串內的所有空白，確保玩家多打或少打空格都能通關
+            let answer = inputField.value.toLowerCase().replace(/\s+/g, '');
+            
+            if (answer === "itwasnevermeanttobe") {
+                errorMsg.style.display = "none";
+                // 密碼正確，跳轉至第二階段 (管理者日誌)
+                window.location.href = "stage2.html"; 
+            } else {
+                // 密碼錯誤，顯示紅字警告並清空輸入框
+                errorMsg.style.display = "block";
+                inputField.value = "";
+                inputField.focus();
+            }
+        }
+
+        // 支援按下 Enter 鍵送出驗證
+        document.getElementById("puzzle-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                verifyAnswer();
+            }
+        });
     </script>
 </body>
 </html>
