@@ -36,13 +36,12 @@
         #boot-sequence { white-space: pre-wrap; font-size: 1.1em; user-select: none; }
         #report { display: none; white-space: pre-wrap; word-wrap: break-word; max-width: 900px; margin: 0 auto; }
         
-        /* 原本的 SYS_MSG 紅字特效 */
         .glitch-flash { color: #ff0000; font-weight: bold; text-shadow: 2px 0 red, -2px 0 blue; }
         
         a { color: #00ff00; text-decoration: none; font-weight: bold; cursor: pointer; }
         a:hover { background-color: #00ff00; color: #000; }
 
-        /* ================= 低調的轉場故障特效 ================= */
+        /* ================= 轉場：打字機與崩潰故障特效 ================= */
         #transition-screen {
             display: none;
             position: fixed;
@@ -54,17 +53,44 @@
             align-items: center;
         }
         
-        /* 模仿 Let them hate 的微弱錯位效果，顏色調暗更不顯眼 */
-        .subtle-glitch {
-            color: #aa0000; /* 偏暗的血紅色 */
-            font-size: 1.1rem; /* 與終端機文字大小相近 */
-            font-weight: bold;
-            font-family: "Courier New", Courier, monospace;
-            text-shadow: 1.5px 0 red, -1.5px 0 #0000aa; /* 輕微的紅藍色偏 */
+        #type-container {
+            opacity: 1;
+        }
+
+        .typewriter-text {
+            color: #d3d3d3; /* 偏暗的白色，帶出幽靈般的感覺 */
+            font-size: 1.2rem;
             letter-spacing: 1px;
-            opacity: 0;
-            text-align: center;
-            transition: opacity 0.1s;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2rem;
+            background-color: #d3d3d3;
+            animation: blink 1s infinite;
+            vertical-align: bottom;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* 系統強制抹除的故障動畫 */
+        .glitch-crash {
+            animation: crash-anim 0.4s forwards;
+        }
+
+        @keyframes crash-anim {
+            0% { opacity: 1; transform: translate(0, 0) skew(0deg); text-shadow: none; filter: none; }
+            20% { opacity: 0.8; transform: translate(-3px, 1px) skew(-10deg); text-shadow: 3px 0 red, -3px 0 blue; }
+            40% { opacity: 0.9; transform: translate(3px, -2px) skew(15deg); text-shadow: -4px 0 lime, 4px 0 magenta; filter: contrast(200%); }
+            60% { opacity: 0.5; transform: translate(-3px, 3px) skew(-5deg); text-shadow: 2px 0 red, -2px 0 blue; }
+            80% { opacity: 0.2; transform: translate(1px, -1px) skew(20deg); filter: blur(2px); }
+            100% { opacity: 0; transform: translate(0, 0); filter: blur(5px); }
         }
 
         /* ================= 嵌入 Google 試算表容器 ================= */
@@ -87,18 +113,35 @@
         
         iframe {
             width: 100%;
-            height: 600px; /* 根據試算表範圍適度調整高度 */
+            height: 600px;
             border: 2px solid #333;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
             background-color: #000;
+        }
+
+        .btn {
+            background-color: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px 25px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            letter-spacing: 2px;
+        }
+        .btn:hover {
+            background-color: #00ff00;
+            color: #000;
         }
     </style>
 </head>
 <body>
 
     <!-- BGM 設定 -->
-    <audio id="purge-bgm" src="第一階段音樂.mp3" loop></audio>
-    <audio id="excel-bgm" src="解謎音樂.mp3" loop></audio>
+    <audio id="purge-bgm" src="駭入.mp3" loop></audio>
+    <audio id="excel-bgm" src="彩色密碼.mp3" loop></audio>
 
     <!-- 駭入動畫區 -->
     <div id="boot-sequence"></div>
@@ -110,25 +153,25 @@
 ======================================================
 [ 機密 ] 審查與肅清報告 - 第36週期
 ======================================================
-授權者：Null
+> 授權者：管理員 (ADMIN)
 > 系統狀態：世界熵值達 89% (臨界危險)
 > 警告：過度的衝突將導致致命的世界崩壞。
 > 主旨：抹殺受損資產以強制執行和平
 
 [ 資產_01 // 滲透節點：阿斯蘭朵區域 ]
-> 任務觀測：資產_01已受污染。與當地農民建立了未經授權的家庭羈絆。
-> 管理員裁決：情感污染。武器不需要家庭羈絆。
+> 任務觀測：資產已受污染。與當地農民建立了未經授權的家庭羈絆。
+> 管理員裁決：情感污染。武器不需要家。
 > [執行]：焦土協定。
-> 結果：農舍焚毀。資產_01於灰燼中銷毀，以儆效尤。
+> 結果：農舍焚毀。資產於灰燼中被處決，以儆效尤。
 
 [ 資產_02 // 滲透節點：新星聯邦 ]
-> 任務觀測：資產_02發生故障，於慶典中向平民發放了管理員級別的物品。
+> 任務觀測：資產發生故障，於慶典中向平民發放了管理員級別的物品。
 > 管理員裁決：嚴重違反世界秩序。必須進行收容控制。
 > [執行]：局部結構崩塌。
-> 結果：慶典廣場爆炸。資產_02於爆炸半徑內銷毀。
+> 結果：慶典廣場被毀。資產於爆炸半徑內被銷毀。
 
 [ 資產_03 // 滲透節點：灰燼之地 ]
-> 任務觀測：資產_03已滲透反抗軍首領核心圈。資產_03在暗殺目標時猶豫不決，並表現出危險的同理心跡象。
+> 任務觀測：資產已滲透反抗軍首領核心圈。資產在暗殺目標時猶豫不決，並表現出危險的同理心跡象。
 > 管理員裁決：令人作嘔的軟弱表現。此等瑕疵必須手動切除。
 > [執行]：手動覆寫。實體介入。
 > 結果：我降臨了營地。我親手處決了 資產_03，以展示感情用事的代價。我引爆了避難所來掩埋殘骸。反抗軍首領倖存，被仇恨正確地驅動著。
@@ -140,7 +183,6 @@
 
 > 目前世界熵值已降至 12% (穩定)
 > 他們只不過是工具。他們毫無意義。
-
 
 a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
@@ -160,57 +202,28 @@ a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
 憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-        [SYS_WARN] MEMORY_MANAGEMENT_FAILURE
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-[SYS_WARN] MEMORY_MANAGEMENT_FAILURE
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行
-蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
-0x00000109 0x0000007E 0x0000003B 0x000000A 0x00000050 0x0000001A
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝a銝剖銝蝝
-[FATAL] CRITICAL_PROCESS_DIED
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝a銝剖銝蝝隢
-蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
-銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
-憿嚗翩璆剖銝瘜a銝剖銝蝝隢隤芷銝銝之摮貉銝行撟渡蝝
-[SYS_WARN] DISPLAY_DRIVER_STOPPED_RESPONDING
-隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝銝之摮貉銝行撟渡
-a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
-蝝憿銝隢隤芷銝銝剖銝蝝銝之摮貉銝行撟a銝剖銝蝝隢隤
-0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
 SYS_ERR_LUMINANCE_OVERLOAD
 PHYSICAL_MEMORY_DUMP_COMPLETE.
 
 <div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
     </div>
 
-    <!-- 低調的轉場畫面 -->
+    <!-- 打字機與故障崩潰轉場畫面 -->
     <div id="transition-screen">
-        <div id="glitch-text" class="subtle-glitch"></div>
+        <div id="type-container">
+            <span id="type-text" class="typewriter-text"></span><span class="cursor"></span>
+        </div>
     </div>
 
-    <!-- 內嵌原始 Google 試算表畫面 (使用無邊框純淨模式) -->
+    <!-- 內嵌原始 Google 試算表畫面 -->
     <div id="excel-container">
         <div class="matrix-header">> [ SYSTEM_OVERRIDE ] ACCESSING EXTERNAL DATABASE: WORLD_ORDER.xlsx</div>
         
-        <!-- 修改了 src 參數：加入 htmlembed?widget=false&chrome=false 來隱藏所有工具列與標籤 -->
         <iframe src="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/htmlembed?widget=false&chrome=false"></iframe>
         
-        <!-- 破解後的下一關連結 -->
+        <!-- 更新：右下角精簡按鈕 -->
         <div style="margin-top: 20px; text-align: right;">
-            <a href="stage2.html" style="border: 1px solid #00ff00; padding: 10px 15px;">> 已完成色彩歸零解碼？進入下一階段...</a>
+            <a href="stage2.html" class="btn">> 謎底？</a>
         </div>
     </div>
 
@@ -254,8 +267,9 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }, delay + 3500);
         };
 
-        /* ================= 2. 點擊 [c] 的轉場與音樂切換 ================= */
-        function startPuzzleTransition() {
+        /* ================= 2. 點擊 [c] 的打字機轉場與音樂切換 ================= */
+        // 使用 async/await 讓打字與故障的時間軸更精確
+        async function startPuzzleTransition() {
             const oldBgm = document.getElementById("purge-bgm");
             const newBgm = document.getElementById("excel-bgm");
             let volume = oldBgm.volume;
@@ -266,42 +280,54 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                 else { clearInterval(fadeOut); oldBgm.pause(); }
             }, 100);
 
-            // 切換至黑屏與文字
+            // 切換至黑屏
             document.getElementById("report").style.display = "none";
             const transScreen = document.getElementById("transition-screen");
-            const glitchText = document.getElementById("glitch-text");
+            const typeContainer = document.getElementById("type-container");
+            const typeText = document.getElementById("type-text");
             transScreen.style.display = "flex";
 
-            // 第一句：colors are lies (低調閃現)
-            setTimeout(() => { 
-                glitchText.style.opacity = 1; 
-                glitchText.innerText = 'colors are lies';
-            }, 500);
+            // 輔助函數：模擬打字機
+            const typeLine = async (text, speed) => {
+                typeText.innerText = "";
+                typeContainer.classList.remove("glitch-crash"); // 移除之前的故障
+                typeContainer.style.opacity = 1; // 恢復可見度
+                
+                for (let i = 0; i < text.length; i++) {
+                    typeText.innerText += text.charAt(i);
+                    await new Promise(r => setTimeout(r, speed));
+                }
+                
+                await new Promise(r => setTimeout(r, 1200)); // 停頓一下讓玩家看清楚
+                
+                // 觸發系統故障抹除動畫
+                typeContainer.classList.add("glitch-crash");
+                await new Promise(r => setTimeout(r, 600)); // 等待故障動畫跑完
+            };
+
+            // 啟動時間軸
+            await new Promise(r => setTimeout(r, 1000)); // 先黑屏一秒
             
-            setTimeout(() => { glitchText.style.opacity = 0; }, 3000);
+            // 第一句
+            await typeLine("colors are lies", 80);
             
-            // 第二句：I just wanted them... (低調閃現)
-            setTimeout(() => { 
-                glitchText.style.opacity = 1; 
-                glitchText.innerText = 'I just wanted them to experience this world for me.';
-            }, 4000);
+            await new Promise(r => setTimeout(r, 500)); // 句與句的間隔
             
-            setTimeout(() => { glitchText.style.opacity = 0; }, 7500);
+            // 第二句 (稍微打快一點點)
+            await typeLine("I just wanted them to experience this world for me.", 60);
 
             // 轉場結束，顯示乾淨版 Google 試算表
-            setTimeout(() => {
-                transScreen.style.display = "none";
-                document.getElementById("excel-container").style.display = "block";
-                
-                // 新音樂淡入
-                newBgm.volume = 0;
-                newBgm.play().catch(e => console.log(e));
-                let newVol = 0;
-                const fadeInNew = setInterval(() => {
-                    if (newVol < 0.8) { newVol += 0.05; newBgm.volume = newVol; } 
-                    else { clearInterval(fadeInNew); }
-                }, 200);
-            }, 8500);
+            transScreen.style.display = "none";
+            document.getElementById("excel-container").style.display = "block";
+            
+            // 新音樂淡入
+            newBgm.volume = 0;
+            newBgm.play().catch(e => console.log(e));
+            let newVol = 0;
+            const fadeInNew = setInterval(() => {
+                if (newVol < 0.8) { newVol += 0.05; newBgm.volume = newVol; } 
+                else { clearInterval(fadeInNew); }
+            }, 200);
         }
     </script>
 </body>
