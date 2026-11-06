@@ -262,6 +262,20 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
     </div>
 
     <!-- 內嵌原始 Google 試算表畫面 -->
+
+        <!-- 互動驗證區 -->
+        <div style="margin-top: 20px; text-align: right;">
+            <!-- 初始顯示的謎底按鈕 -->
+            <button id="reveal-btn" class="btn" onclick="showInput()">> 謎底？</button>
+            
+            <!-- 點擊後展開的輸入框 (初始隱藏) -->
+            <div id="input-section" style="display: none; justify-content: flex-end; align-items: center; gap: 10px;">
+                <span id="error-msg" style="color: #ff0000; font-weight: bold; display: none; text-shadow: 0 0 3px red;">[ 存取拒絕：代碼不符 ]</span>
+                <input type="text" id="puzzle-input" placeholder="輸入解碼字串...">
+                <button class="btn" onclick="verifyAnswer()">> 驗證</button>
+            </div>
+        </div>
+    </div>
     <!-- 玩家自白過場畫面 (密碼正確後顯示) -->
     <div id="monologue-screen">
         <div class="sys-prompt" style="border-color: #aaffaa; color: #aaffaa;">
@@ -296,20 +310,6 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
         
         <iframe src="https://docs.google.com/spreadsheets/d/1s24xwykhlNP9mMeWRobW1KuMPQMc2bzbyM_MMvry0vw/htmlembed?widget=false&chrome=false"></iframe>
         
-        <!-- 互動驗證區 -->
-        <div style="margin-top: 20px; text-align: right;">
-            <!-- 初始顯示的謎底按鈕 -->
-            <button id="reveal-btn" class="btn" onclick="showInput()">> 謎底？</button>
-            
-            <!-- 點擊後展開的輸入框 (初始隱藏) -->
-            <div id="input-section" style="display: none; justify-content: flex-end; align-items: center; gap: 10px;">
-                <span id="error-msg" style="color: #ff0000; font-weight: bold; display: none; text-shadow: 0 0 3px red;">[ 存取拒絕：代碼不符 ]</span>
-                <input type="text" id="puzzle-input" placeholder="輸入解碼字串...">
-                <button class="btn" onclick="verifyAnswer()">> 驗證</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         /* ================= 1. 駭入動畫載入 ================= */
         window.onload = function() {
