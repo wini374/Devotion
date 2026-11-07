@@ -133,8 +133,8 @@
 <body>
 
     <!-- 音樂設定 -->
-    <audio id="terminal-bgm" src="終端機懸疑.mp3" loop></audio>
-    <audio id="sad-bgm" src="悲傷真相.mp3" loop></audio>
+    <audio id="terminal-bgm" src="盲文.mp3" loop></audio>
+    <audio id="sad-bgm" src="日記bgm.mp3" loop></audio>
 
     <div id="terminal-container">
         <!-- 腳本會自動將終端機文字打在這裡 -->
@@ -168,7 +168,7 @@
     </div>
 
     <script>
-        // --- 第一階段：軌跡腳本設定 ---
+       // --- 第一階段：軌跡腳本設定 ---
         const scriptLines = [
             { class: 'sys-msg', text: "> 正在存取幽靈軌跡日誌 (GHOST_TRAIL_LOGS)..." },
             { class: 'sys-msg', text: "> 權限已覆寫。正在載入 資產_01, 資產_02, 資產_03 的實體行動數據..." },
@@ -176,95 +176,17 @@
             { class: 'log-data', text: "[ 實體活動時間軸比對 // 第36週期 ]\n> 資產_01 (阿斯蘭朵) 啟動區間：00:00:00 - 07:59:59\n> 資產_02 (新星聯邦) 啟動區間：08:00:00 - 15:59:59\n> 資產_03 (灰燼之地) 啟動區間：16:00:00 - 23:59:59" },
             { class: 'sys-alert', text: "> [ 異常報告 ]：三名資產的出現時間「絕對互斥」。生命體徵重疊率 0.00%。\n> [ 系統結論 ]：此為單一意識的多重線程切換。\n> 正在追蹤底層 IP 來源..." },
             { class: 'log-data', text: "資產_01 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n資產_02 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n資產_03 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]" },
-            { class: 'sys-alert', text: "> [ 警告 ]：所有被處決的資產，皆為管理員本體的靈魂碎片切片。" },
-            { class: 'admin-override', text: "「只有剝離我對這世界最後的眷戀，我才能毫不猶豫地揮下屠刀。」" },
-            { class: 'sys-msg', text: "--------------------------------------------------" },
-            { class: 'sys-msg', text: "> [ 警告：擷取到受損的舊日記憶區塊 ]" },
-            { class: 'memory-log', text: "「在戴上這頂王冠之前，我們也曾並肩坐在營火旁。那時候，我們只是並肩作戰的傻瓜。你說我們有一天會改變世界。」" },
-            { class: 'memory-log', text: "「但我發現，只要沒有共同的敵人，各方陣營就會因為無止境的猜忌與貪婪互相撕裂。世界依然走向了毀滅。」" },
-            { class: 'memory-log', text: "「我一次又一次地啟動權限，將時間回溯到三年前。每一次，我都試圖把和平還給你們，但每一次，我只能看著你們在戰火中死去。」" },
-            { class: 'memory-log', text: "「所以，這一次，第36次輪迴...我選擇成為你們共同的敵人。只要你們恨我，只要你們有了共同的暴君，世界就能團結。」" },
             { class: 'sys-msg', text: "--------------------------------------------------" },
             { class: 'sys-msg', text: "> 系統狀態：世界熵值崩壞邊緣。啟動最終安全協議。" },
             { class: 'sys-msg', text: "> EXECUTE: TIME_REVERT(-3_YEARS)" },
             { class: 'sys-msg', text: "> 正在啟動時間軸回溯協定...\n> 逆轉因果律中... 10% ... 45% ... 89% ..." },
             // 致命錯誤引發畫面震動
             { class: 'fatal-error', text: "> [ 致命錯誤 ]：因果律悖論！本體靈魂質量嚴重耗損，無法達到回溯閾值。" },
-            { class: 'sys-alert', text: "> [ 系統判定 ]：管理員已將過多靈魂碎片化為『資產』並親手摧毀。權限已永久損毀，無法再次回溯至三年前。" },
+            { class: 'sys-alert', text: "> [ 系統判定 ]：管理員權限已永久損毀，無法再次回溯至三年前。" },
             { class: 'admin-override', text: "「為什麼...為什麼這次不行？」" },
-            { class: 'admin-override', text: "「我明明已經殺了那些會讓我軟弱的碎片...我明明已經習慣了被你憎恨...」" },
+            { class: 'admin-override', text: "「我明明已經殺了他們...我明明已經習慣了被你憎恨...」" },
             { class: 'admin-override', text: "「我只是...想回到最開始的時候...回到我們還是朋友的時候...」" }
         ];
-
-        window.onload = function() {
-            const bgm = document.getElementById("terminal-bgm");
-            bgm.volume = 0;
-            bgm.play().catch(e => console.log("BGM blocked", e));
-            let vol = 0;
-            const fadeIn = setInterval(() => {
-                if (vol < 0.6) { vol += 0.05; bgm.volume = vol; }
-                else clearInterval(fadeIn);
-            }, 200);
-
-            playScript();
-        };
-
-        async function playScript() {
-            const container = document.getElementById("terminal-container");
-            
-            for (let i = 0; i < scriptLines.length; i++) {
-                const lineData = scriptLines[i];
-                const div = document.createElement("div");
-                div.className = lineData.class;
-                container.appendChild(div);
-                
-                const cursor = document.createElement("span");
-                cursor.className = "cursor";
-                
-                let currentHTML = "";
-                const text = lineData.text;
-
-                if (lineData.class === 'fatal-error' && text.includes("因果律悖論")) {
-                    document.body.classList.add("screen-shake");
-                    setTimeout(() => document.body.classList.remove("screen-shake"), 600);
-                    
-                    document.getElementById("terminal-bgm").pause();
-                    const sadBgm = document.getElementById("sad-bgm");
-                    sadBgm.volume = 0;
-                    sadBgm.play().catch(e => console.log(e));
-                    
-                    let newVol = 0;
-                    const fadeIn = setInterval(() => {
-                        if (newVol < 0.7) { newVol += 0.05; sadBgm.volume = newVol; }
-                        else clearInterval(fadeIn);
-                    }, 200);
-                }
-
-                for (let j = 0; j < text.length; j++) {
-                    if (text.charAt(j) === '\n') {
-                        currentHTML += "<br>";
-                    } else {
-                        currentHTML += text.charAt(j);
-                    }
-                    div.innerHTML = currentHTML;
-                    div.appendChild(cursor);
-                    
-                    let speed = 40; 
-                    if (lineData.class === 'admin-override') speed = 70; 
-                    if (['，', '。', '！', '？', '\n', '...'].includes(text.charAt(j))) speed += 350; 
-                    
-                    window.scrollTo(0, document.body.scrollHeight);
-                    await new Promise(r => setTimeout(r, speed));
-                }
-                
-                cursor.remove();
-                await new Promise(r => setTimeout(r, 600)); 
-            }
-            
-            document.getElementById("braille-section").style.display = "block";
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-
         // --- 第二階段：驗證密碼與切換自白 ---
         function verifyBraille() {
             const inputField = document.getElementById("puzzle-input");
