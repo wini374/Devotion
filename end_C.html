@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8"><title>ENDING C: INHERITANCE</title>
+    <style>
+        body { background-color: #000; color: #cc00cc; font-family: "PingFang TC", sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        #text-container { text-align: center; max-width: 700px; padding: 0 20px; line-height: 2; font-size: 1.1rem; letter-spacing: 2px; }
+        .fade-text { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; transition: opacity 2.5s ease; text-shadow: 0 0 10px rgba(204,0,204,0.3); }
+        #credits { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; transition: opacity 3s; width: 100%; }
+        .title { font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 20px; font-weight: bold; color: #fff; }
+        .sub { font-size: 1.2rem; letter-spacing: 5px; color: #cc00cc; margin-bottom: 50px; }
+        .btn { background: transparent; border: 1px dashed #cc00cc; color: #cc00cc; padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; }
+        .btn:hover { background: #cc00cc; color: #000; }
+    </style>
+</head>
+<body>
+    <div id="text-container"></div>
+    <div id="credits"><div class="title">DEVOTION</div><div class="sub">ENDING C - 繼承 (INHERITANCE)</div><a href="index.html" class="btn">初始化新紀元</a></div>
+    <script>
+        const lines = [
+            "> [ 權限轉移完成。歡迎回來，新任管理員。 ]",
+            "你沒有按下自毀程序。",
+            "你清楚，一旦沒了這個「共同的敵人」，<br>人類的猜忌與貪婪很快又會將世界推向火海。",
+            "他的犧牲不能白費。",
+            "在核心崩潰的前一刻，你接管了所有的系統權限。<br>你把他的靈魂碎片徹底抹除，讓他得到了真正的安息。",
+            "然後，你戴上了那頂沾滿鮮血的王冠。",
+            "外面的天空依舊灰暗。<br>反抗軍驚恐地發現，舊的暴君倒下了，新的神明卻已登基。",
+            "「我會替你把這場戲演完的。」",
+            "在孤獨的基岩王座上，你輕聲說道。"
+        ];
+        window.onload = async () => {
+            const container = document.getElementById("text-container");
+            await new Promise(r => setTimeout(r, 2000));
+            for (let line of lines) {
+                const div = document.createElement("div"); div.className = "fade-text"; div.innerHTML = line; container.appendChild(div);
+                setTimeout(() => div.style.opacity = 1, 100);
+                await new Promise(r => setTimeout(r, 3500 + line.length * 100));
+                div.style.opacity = 0; await new Promise(r => setTimeout(r, 2500)); div.remove();
+            }
+            document.getElementById("credits").style.opacity = 1;
+        };
+    </script>
+</body>
+</html>
