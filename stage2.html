@@ -24,13 +24,12 @@
             padding-bottom: 60px;
         }
 
-        /* 不同的文字層級與顏色 */
+        /* 文字層級與顏色 */
         .sys-msg { color: #00cc00; margin-bottom: 15px; }
         .log-data { color: #88dd88; margin-bottom: 15px; border-left: 2px solid #004400; padding-left: 15px; }
         .sys-alert { color: #ffaa00; margin-bottom: 15px; font-weight: bold; }
         .fatal-error { color: #ff3333; margin-bottom: 15px; text-shadow: 0 0 5px red; font-weight: bold; }
         .admin-override { color: #ffffff; margin-bottom: 15px; font-style: italic; text-shadow: 0 0 3px #ffffff; }
-        .memory-log { color: #aaffaa; margin-bottom: 15px; border-left: 2px solid #aaffaa; padding-left: 15px; font-style: italic;}
 
         /* 打字機游標 */
         .cursor {
@@ -42,40 +41,31 @@
             margin-left: 2px;
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        /* 盲文解謎區 (初始隱藏) */
-        #braille-section {
-            display: none;
-            margin-top: 50px;
-            border: 1px solid #333;
-            padding: 40px;
-            background-color: rgba(10, 10, 10, 0.9);
-            text-align: center;
-            animation: fadeIn 2s ease-in;
-            box-shadow: 0 0 20px rgba(0, 204, 0, 0.1);
+        
+        /* 畫面強烈震動特效 */
+        .screen-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .braille-word {
-            display: inline-block;
-            font-size: 2.5rem;
-            letter-spacing: 5px;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
-            margin: 0 15px 20px 15px;
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-4px, 0, 0); filter: drop-shadow(2px 0 red); }
+            20%, 80% { transform: translate3d(6px, 0, 0); filter: drop-shadow(-2px 0 blue); }
+            30%, 50%, 70% { transform: translate3d(-8px, 0, 0); filter: drop-shadow(4px 0 magenta); }
+            40%, 60% { transform: translate3d(8px, 0, 0); filter: drop-shadow(-4px 0 cyan); }
         }
 
-        .hint-text {
-            color: #ffaa00;
-            font-size: 0.95rem;
-            margin-bottom: 30px;
-            letter-spacing: 1px;
-            border-bottom: 1px dashed #ffaa00;
-            display: inline-block;
-            padding-bottom: 5px;
+        /* 閃爍文字特效 (一閃而過) */
+        .flash-text {
+            animation: flash-anim 1s forwards;
+            opacity: 0;
+        }
+        @keyframes flash-anim {
+            0% { opacity: 0; filter: blur(2px); }
+            10% { opacity: 1; filter: blur(0); }
+            80% { opacity: 1; filter: blur(0); }
+            100% { opacity: 0; filter: blur(5px); }
         }
 
-        /* 互動輸入區 */
+        /* ================= 彈窗與按鈕樣式 ================= */
         .btn {
             background-color: transparent;
             border: 1px solid #00cc00;
@@ -89,6 +79,27 @@
         }
         .btn:hover { background-color: #00cc00; color: #000; }
 
+        /* 密碼彈窗背景 */
+        #password-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+        }
+
+        /* 密碼彈窗本體 */
+        .modal-content {
+            background-color: #050505;
+            border: 1px solid #ffaa00;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.15);
+        }
+
         #puzzle-input {
             background-color: #000;
             color: #00cc00;
@@ -97,91 +108,75 @@
             font-family: "Courier New", Courier, monospace;
             font-size: 1rem;
             outline: none;
-            width: 350px;
+            width: 300px;
             text-align: center;
             letter-spacing: 2px;
+            margin-bottom: 20px;
+            display: block;
         }
         #puzzle-input:focus { box-shadow: 0 0 8px rgba(0, 204, 0, 0.5); }
-        
-        /* 畫面強烈震動特效 */
-        .screen-shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-4px, 0, 0); filter: drop-shadow(2px 0 red); }
-            20%, 80% { transform: translate3d(6px, 0, 0); filter: drop-shadow(-2px 0 blue); }
-            30%, 50%, 70% { transform: translate3d(-8px, 0, 0); filter: drop-shadow(4px 0 magenta); }
-            40%, 60% { transform: translate3d(8px, 0, 0); filter: drop-shadow(-4px 0 cyan); }
-        }
-
-        /* ================= 隱藏的管理員日記區 ================= */
-        #admin-log-screen {
-            display: none;
-            max-width: 800px;
-            margin: 40px auto;
-            background-color: rgba(5, 5, 5, 0.95);
-            border: 1px solid #ffaa00;
-            padding: 40px;
-            box-shadow: 0 0 20px rgba(255, 170, 0, 0.1);
-            line-height: 1.8;
-            opacity: 0;
-            transition: opacity 1.5s ease;
-        }
     </style>
 </head>
 <body>
 
     <!-- 音樂設定 -->
     <audio id="terminal-bgm" src="盲文.mp3" loop></audio>
-    <audio id="sad-bgm" src="日誌bgm.mp3" loop></audio>
 
     <div id="terminal-container">
-        <!-- 第一階段腳本會打在這裡 -->
+        <!-- 腳本會自動將終端機文字打在這裡 -->
     </div>
 
-    <!-- 盲文與凱撒密碼解謎區 -->
-    <div id="braille-section">
-        <div class="hint-text">> [ 系統提示：底層資料發生位移，加密偏移量 (OFFSET) : -3 ]</div>
-        
-        <div style="margin-bottom: 20px;">
-            <div class="braille-word">⠚⠧</div> <!-- JV -->
-            <div class="braille-word">⠞⠋⠏⠑</div> <!-- TFPE -->
-        </div>
-
-        <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 30px;">
-            <input type="text" id="puzzle-input" placeholder="輸入還原後的原始字串...">
-            <button class="btn" onclick="verifyBraille()">> 管理員日誌</button>
-        </div>
-        <div id="error-msg" style="color: #ff3333; margin-top: 15px; display: none; font-weight: bold; text-shadow: 0 0 5px red;">[ 驗證失敗：密鑰不符，存取拒絕 ]</div>
+    <!-- 底部按鈕區 (初始隱藏) -->
+    <div id="action-section" style="display: none; text-align: right; max-width: 900px; margin: 0 auto; margin-top: 30px;">
+        <button class="btn" onclick="openModal()">> 管理員日誌</button>
     </div>
 
-    <!-- 成功解鎖後的管理員自白畫面 -->
-    <div id="admin-log-screen">
-        <div id="admin-log-content"></div>
-        <div id="next-stage-btn" style="display: none; text-align: right; margin-top: 40px;">
-            <a href="stage3.html" class="btn" style="border-color: #ffaa00; color: #ffaa00;">> 終止程序。</a>
+    <!-- 密碼驗證彈窗 -->
+    <div id="password-modal">
+        <div class="modal-content">
+            <div style="color: #ffaa00; margin-bottom: 20px; font-weight: bold; letter-spacing: 2px;">[ 存取權限驗證 ]</div>
+            <input type="text" id="puzzle-input" placeholder="輸入解碼意涵...">
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button class="btn" style="border-color: #ffaa00; color: #ffaa00;" onclick="verifyPassword()">> 執行</button>
+                <button class="btn" onclick="closeModal()">> 取消</button>
+            </div>
+            <div id="error-msg" style="color: #ff3333; margin-top: 15px; display: none; font-weight: bold;">[ 驗證失敗：密鑰不符 ]</div>
         </div>
     </div>
 
     <script>
-        // --- 第一階段：幽靈軌跡腳本設定 ---
+        // --- 劇情腳本設定 ---
         const scriptLines = [
-            { class: 'sys-msg', text: "> 正在存取管理員資產日誌 (GHOST_TRAIL_LOGS)..." },
+            { class: 'sys-msg', text: "> 正在存取幽靈軌跡日誌 (GHOST_TRAIL_LOGS)..." },
             { class: 'sys-msg', text: "> 權限已覆寫。正在載入 資產_01, 資產_02, 資產_03 的實體行動數據..." },
             { class: 'sys-msg', text: "==================================================" },
             { class: 'log-data', text: "[ 實體活動時間軸比對 // 第36週期 ]\n> 資產_01 (阿斯蘭朵) 啟動區間：00:00:00 - 07:59:59\n> 資產_02 (新星聯邦) 啟動區間：08:00:00 - 15:59:59\n> 資產_03 (灰燼之地) 啟動區間：16:00:00 - 23:59:59" },
-            { class: 'sys-alert', text: "> [ 異常報告 ]：三名資產的出現時間「絕對互斥」。生命體徵重疊率 0.00%。\n> [ 系統結論 ]：此為單一意識的多重線程切換。\n> 正在追蹤底層 IP 來源..." },
+            
+            // 異常報告瞬間顯示
+            { class: 'sys-alert', instant: true, text: "> [ 異常報告 ]：三名資產的出現時間「絕對互斥」。生命體徵重疊率 0.00%。\n> [ 系統結論 ]：此為單一意識的多重線程切換。\n> 正在追蹤底層 IP 來源..." },
+            // 加密偏移量直接放在這裡瞬間顯示
+            { class: 'sys-alert', instant: true, text: "> [ 系統提示：底層資料發生位移，加密偏移量 (OFFSET) : -3 ]" },
+            
             { class: 'log-data', text: "資產_01 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n資產_02 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n資產_03 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]" },
-            { class: 'sys-msg', text: "--------------------------------------------------" },
+            
+            // 分隔線瞬間顯示
+            { class: 'sys-msg', instant: true, text: "--------------------------------------------------" },
+            
+            // 盲文區塊 (與系統文字相同格式綠色，字體稍大一點方便辨識)
+            { class: 'sys-msg', text: "⠚⠧&nbsp;&nbsp;&nbsp;⠞⠋⠏⠑", style: "font-size: 2.5rem; letter-spacing: 8px; margin: 20px 0;" },
+
             { class: 'sys-msg', text: "> 系統狀態：世界熵值崩壞邊緣。啟動最終安全協議。" },
             { class: 'sys-msg', text: "> EXECUTE: TIME_REVERT(-3_YEARS)" },
             { class: 'sys-msg', text: "> 正在啟動時間軸回溯協定...\n> 逆轉因果律中... 10% ... 45% ... 89% ..." },
-            // 致命錯誤引發畫面震動
-            { class: 'fatal-error', text: "> [ 致命錯誤 ]：因果律悖論！本體靈魂質量嚴重耗損，無法達到回溯閾值。" },
-            { class: 'sys-alert', text: "> [ 系統判定 ]：管理員靈魂質量不足，無法啟動回溯。" },
-            { class: 'admin-override', text: "「為什麼...為什麼這次不行？」" },
-            { class: 'admin-override', text: "「我明明已經殺了他們...我明明已經習慣了被你憎恨...」" },
-            { class: 'admin-override', text: "「我只是...想回到最開始的時候...回到我們還是朋友的時候...」" }
+            
+            // 致命錯誤瞬間顯示，並引發震動
+            { class: 'fatal-error', instant: true, text: "> [ 致命錯誤 ]：因果律悖論！本體靈魂質量嚴重耗損，無法達到回溯閾值。" },
+            { class: 'sys-alert', instant: true, text: "> [ 系統判定 ]：管理員權限已永久損毀，無法再次回溯至三年前。" },
+            
+            // 心聲一閃而過 (flash: true)
+            { class: 'admin-override', flash: true, text: "「為什麼...為什麼這次不行？」" },
+            { class: 'admin-override', flash: true, text: "「我明明已經殺了他們...我明明已經習慣了被你憎恨...」" },
+            { class: 'admin-override', flash: true, text: "「我只是...想回到最開始的時候...回到我們還是朋友的時候...」" }
         ];
 
         window.onload = function() {
@@ -204,20 +199,18 @@
                 const lineData = scriptLines[i];
                 const div = document.createElement("div");
                 div.className = lineData.class;
+                if (lineData.style) div.style.cssText = lineData.style;
                 container.appendChild(div);
                 
-                const cursor = document.createElement("span");
-                cursor.className = "cursor";
-                
-                let currentHTML = "";
                 const text = lineData.text;
 
+                // 處理震動與切歌
                 if (lineData.class === 'fatal-error' && text.includes("因果律悖論")) {
                     document.body.classList.add("screen-shake");
                     setTimeout(() => document.body.classList.remove("screen-shake"), 600);
                     
                     document.getElementById("terminal-bgm").pause();
-                    const sadBgm = document.getElementById("sad-bgm");
+                    const sadBgm = document.getElementById("terminal-bgm");
                     sadBgm.volume = 0;
                     sadBgm.play().catch(e => console.log(e));
                     
@@ -228,53 +221,71 @@
                     }, 200);
                 }
 
-                for (let j = 0; j < text.length; j++) {
-                    if (text.charAt(j) === '\n') {
-                        currentHTML += "<br>";
-                    } else {
-                        currentHTML += text.charAt(j);
-                    }
-                    div.innerHTML = currentHTML;
-                    div.appendChild(cursor);
-                    
-                    let speed = 40; 
-                    if (lineData.class === 'admin-override') speed = 70; 
-                    if (['，', '。', '！', '？', '\n', '...'].includes(text.charAt(j))) speed += 350; 
-                    
+                // 判斷是否為「瞬間顯示」
+                if (lineData.instant) {
+                    div.innerHTML = text.replace(/\n/g, "<br>");
                     window.scrollTo(0, document.body.scrollHeight);
-                    await new Promise(r => setTimeout(r, speed));
+                    await new Promise(r => setTimeout(r, 400));
+                } 
+                // 判斷是否為「一閃而過」
+                else if (lineData.flash) {
+                    div.classList.add("flash-text"); // 加入閃爍動畫
+                    div.innerHTML = text;
+                    window.scrollTo(0, document.body.scrollHeight);
+                    await new Promise(r => setTimeout(r, 1200)); // 讓閃爍動畫跑完
+                    div.style.display = "none"; // 播完後隱藏
+                } 
+                // 一般打字機效果
+                else {
+                    const cursor = document.createElement("span");
+                    cursor.className = "cursor";
+                    let currentHTML = "";
+
+                    for (let j = 0; j < text.length; j++) {
+                        if (text.charAt(j) === '\n') {
+                            currentHTML += "<br>";
+                        } else {
+                            currentHTML += text.charAt(j);
+                        }
+                        div.innerHTML = currentHTML;
+                        div.appendChild(cursor);
+                        
+                        let speed = 40; 
+                        window.scrollTo(0, document.body.scrollHeight);
+                        await new Promise(r => setTimeout(r, speed));
+                    }
+                    cursor.remove();
+                    await new Promise(r => setTimeout(r, 400)); 
                 }
-                
-                cursor.remove();
-                await new Promise(r => setTimeout(r, 600)); 
             }
             
-            // 顯示解謎區
-            document.getElementById("braille-section").style.display = "block";
+            // 腳本全數結束後，顯示底部的管理員日誌按鈕
+            document.getElementById("action-section").style.display = "block";
             window.scrollTo(0, document.body.scrollHeight);
         }
 
-        // --- 第二階段：驗證密碼與切換自白 ---
-        function verifyBraille() {
+        // --- 彈窗與驗證邏輯 ---
+        function openModal() {
+            document.getElementById("password-modal").style.display = "flex";
+            document.getElementById("puzzle-input").focus();
+        }
+
+        function closeModal() {
+            document.getElementById("password-modal").style.display = "none";
+            document.getElementById("error-msg").style.display = "none";
+            document.getElementById("puzzle-input").value = "";
+        }
+
+        function verifyPassword() {
             const inputField = document.getElementById("puzzle-input");
             const errorMsg = document.getElementById("error-msg");
             
-            // 將玩家輸入轉小寫並消除所有空白
             let answer = inputField.value.toLowerCase().replace(/\s+/g, '');
             
-            // 答案：mywish
+            // 點字 J V   T F P E，退 3 格後明文為 M Y   W I S H
             if (answer === "mywish") {
                 errorMsg.style.display = "none";
-                
-                document.getElementById("braille-section").style.display = "none";
-                const logScreen = document.getElementById("admin-log-screen");
-                logScreen.style.display = "block";
-                
-                setTimeout(() => {
-                    logScreen.style.opacity = 1;
-                    playAdminLog();
-                }, 100);
-                
+                fadeOutAndNavigate("admin.html", "terminal-bgm"); // 音樂漸弱並跳轉
             } else {
                 errorMsg.style.display = "block";
                 inputField.value = "";
@@ -282,77 +293,34 @@
             }
         }
 
-        // 支援 Enter 鍵送出
         document.getElementById("puzzle-input").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
-                verifyBraille();
+                verifyPassword();
             }
         });
 
-        // --- 第三階段：管理員第一視角獨白腳本 ---
-        async function playAdminLog() {
-            const container = document.getElementById("admin-log-content");
-            const actionBtn = document.getElementById("next-stage-btn");
-            
-            // 將記憶區塊與靈魂碎片真相全數移至此處
-            const adminLines = [
-                { class: 'sys-msg', style: 'color: #ffaa00; border-left: 3px solid #ffaa00; padding-left: 15px;', text: "> [ 身份驗證通過。歡迎回來，管理員。 ]\n> [ 正在解密隱藏日誌檔... ]" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "致我的好友:如果這份日誌被解密，說明我的時間已經到了，而你成功駭入了這裡。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "這是我最後的心願。也是我唯一能留下來的真相。" },
-                
-                { class: 'sys-alert', style: 'color: #ff3333; margin-top: 20px;', text: "> [ 警告：擷取到受損的舊日記憶區塊 ]" },
-                { class: 'memory-log', style: 'color: #aaffaa;', text: "「這是我的第36次輪迴」" },
-                { class: 'memory-log', style: 'color: #aaffaa;', text: "「在戴上這頂王冠之前，我們也曾並肩坐在營火旁。那時候，我們只是並肩作戰的傻瓜。你說我們有一天會改變世界。」" },
-                { class: 'memory-log', style: 'color: #aaffaa;', text: "「但我發現，只要沒有共同的敵人，各方陣營就會因為無止境的猜忌與貪婪互相撕裂。世界走向了毀滅。」" },
-                { class: 'memory-log', style: 'color: #aaffaa;', text: "「我一次又一次地啟動權限，將時間回溯到最初的時刻。每一次，我都試圖把和平還給你們，但每一次，戰火依舊以不同的樣貌燃起。」" },
-                { class: 'memory-log', style: 'color: #aaffaa;', text: "「所以，這一次...我選擇成為你們共同的敵人。只要你們恨我，只要你們有了共同的敵人，世界就能團結。」" },
-                
-                { class: 'sys-alert', style: 'color: #ff3333; margin-top: 20px;', text: "> [ 警告 ]：所有被處決的資產，皆為管理員本體的靈魂切片。" },
-                { class: 'memory-log', style: 'color: #aaffaa;', text: "「只有剝離我對這世界最後的眷戀，我才能毫不猶豫地揮下屠刀。」" },
-                
-                { class: 'sys-msg', style: 'color: #dddddd; margin-top: 20px;', text: "我把自己變成了怪物，把你推向了反抗軍的位置。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "但我累了...我不想再當神，也不想再當暴君了。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "我的靈魂已經碎裂到無法再次啟動回溯...所以，這一次我選擇走入黑暗。" },
-                { class: 'sys-msg', style: 'color: #ffffff; text-shadow: 0 0 5px #ffffff; font-size: 1.2rem;', text: "記憶的洪流將我淹沒在深淵" }
-            ];
+        // --- 音樂淡出並跳轉頁面 ---
+        function fadeOutAndNavigate(targetUrl, bgmId) {
+            // 隱藏彈窗內容，讓畫面只剩黑屏背景
+            document.querySelector(".modal-content").style.display = "none";
 
-            for (let i = 0; i < adminLines.length; i++) {
-                const lineData = adminLines[i];
-                const div = document.createElement("div");
-                div.className = lineData.class;
-                if (lineData.style) div.style.cssText = lineData.style;
-                container.appendChild(div);
-                
-                const cursor = document.createElement("span");
-                cursor.className = "cursor";
-                cursor.style.backgroundColor = (i===0) ? "#ffaa00" : "#dddddd";
-                
-                let currentHTML = "";
-                const text = lineData.text;
-
-                for (let j = 0; j < text.length; j++) {
-                    if (text.charAt(j) === '\n') {
-                        currentHTML += "<br>";
-                    } else {
-                        currentHTML += text.charAt(j);
+            const bgm = document.getElementById(bgmId);
+            if (bgm && !bgm.paused) {
+                let vol = bgm.volume;
+                const fadeOut = setInterval(() => {
+                    if (vol > 0.05) { 
+                        vol -= 0.05; 
+                        bgm.volume = vol; 
+                    } else { 
+                        clearInterval(fadeOut); 
+                        bgm.pause(); 
+                        window.location.href = targetUrl; 
                     }
-                    div.innerHTML = currentHTML;
-                    div.appendChild(cursor);
-                    
-                    let speed = Math.random() * 30 + 40; 
-                    if (['，', '。', '？', '！', '\n'].includes(text.charAt(j))) speed += 400; 
-                    
-                    window.scrollTo(0, document.body.scrollHeight);
-                    await new Promise(r => setTimeout(r, speed));
-                }
-                
-                cursor.remove();
-                await new Promise(r => setTimeout(r, 1000)); 
+                }, 100); 
+            } else {
+                window.location.href = targetUrl;
             }
-            
-            actionBtn.style.display = "block";
-            window.scrollTo(0, document.body.scrollHeight);
         }
     </script>
 </body>
