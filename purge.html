@@ -478,14 +478,14 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }
         });
 
-        /* ================= 4. 玩家自白打字機特效 ================= */
+      /* ================= 4. 玩家自白打字機特效 ================= */
         async function playMonologue() {
             const container = document.getElementById("monologue-content");
             const actionBtn = document.getElementById("monologue-action");
             
-            // 劇本陣列
+            // 劇本陣列：加入 instant 屬性，若為 true 則不使用打字機效果
             const scriptLines = [
-                { class: 'sys-prompt', style: 'border-color: #aaffaa; color: #aaffaa; margin-bottom: 20px; border-left: 3px solid #aaffaa; padding-left: 15px;', text: "> [ 系統提示：覆寫指令核准。矩陣偽裝已解除。 ]\n> [ 正在載入底層軌跡與作廢日誌... ]" },
+                { class: 'sys-prompt', style: 'border-color: #aaffaa; color: #aaffaa; margin-bottom: 20px; border-left: 3px solid #aaffaa; padding-left: 15px;', text: "> [ 系統提示：覆寫指令核准。矩陣偽裝已解除。 ]<br>> [ 正在載入底層軌跡與作廢日誌... ]", instant: true },
                 { class: 'monologue-text', style: '', text: "「IT WAS NEVER MEANT TO BE...」\n螢幕上的字串映入眼簾的瞬間，我的呼吸停滯了一拍。" },
                 { class: 'monologue-text', style: '', text: "不對。\n這不可能。" },
                 { class: 'monologue-text', style: '', text: "反覆確認著眼前的訊息，甚至懷疑是破解過程中產生了某種錯誤。但無論我如何重新執行檢索、比對資料，最後浮現的結果始終沒有改變。" },
@@ -501,9 +501,10 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                 { class: 'monologue-text', style: '', text: "我們花了整整三年，相信顏色決定立場，相信不同顏色之間注定只能彼此廝殺。我們為此失去了同伴、家園，甚至連活下去的理由都曾被奪走。" },
                 { class: 'monologue-text', style: '', text: "可如果這一切從一開始就是一場精心編排的騙局呢？\n如果所謂的敵我之分，只是某個人為了讓我們彼此殘殺而設計的標籤呢？\n那麼，這三年來我們究竟在跟誰戰鬥？\n而那個親手點燃無數戰火的暴君，又為什麼會留下這樣一句話？" },
                 { class: 'monologue-text', style: '', text: "還來不及整理思緒，螢幕便再次閃爍。" },
-                { class: 'sys-prompt', style: 'border-color: #00cc00; color: #00cc00; margin-bottom: 20px; border-left: 3px solid #00cc00; padding-left: 15px;', text: "> [ROOT DIRECTORY UNLOCKED]" },
+                { class: 'sys-prompt', style: 'border-color: #00cc00; color: #00cc00; margin-bottom: 20px; border-left: 3px solid #00cc00; padding-left: 15px;', text: "> [ROOT DIRECTORY UNLOCKED]", instant: true },
                 { class: 'monologue-text', style: '', text: "隨著色彩矩陣的防護層被逐一破解，一個原本不應該存在的底層目錄，正緩緩敞開。裡面沒有任何可供辨識的檔案名稱，只有一連串被加密的資料，以及一個不斷重複出現的標記。" },
-                { class: 'sys-prompt', style: 'border-color: #ff3333; color: #ff3333; margin-bottom: 20px; border-left: 3px solid #ff3333; padding-left: 15px;', text: "> [PROJECT: ______]\n> 專案名稱遭到抹除。\n> 建立日期：三年前\n> 最後修改者：——" },
+                // 這裡的專案資訊也被設定為瞬間顯示
+                { class: 'sys-prompt', style: 'border-color: #ff3333; color: #ff3333; margin-bottom: 20px; border-left: 3px solid #ff3333; padding-left: 15px;', text: "> [PROJECT: ______]<br>> 專案名稱遭到抹除。<br>> 建立日期：三年前<br>> 最後修改者：——", instant: true },
                 { class: 'monologue-text', style: '', text: "我手指懸在鍵盤上。\n三年前...正是戰爭開始的時候。" },
                 { class: 'monologue-text', style: '', text: "盯著那個空白的專案名稱，忽然意識到，自己可能一直都在追查錯誤的東西。" },
                 { class: 'monologue-text', style: '', text: "或許，真正需要被揭露的，從來就不是暴君隱瞞了什麼。\n而是這個世界，究竟從什麼時候開始，就不再允許我們看見真相。" },
@@ -513,39 +514,49 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             for (let i = 0; i < scriptLines.length; i++) {
                 const lineData = scriptLines[i];
                 
+                // 建立新的段落容器
                 const div = document.createElement("div");
                 div.className = lineData.class;
                 if (lineData.style) div.style.cssText = lineData.style;
                 container.appendChild(div);
                 
-                const cursor = document.createElement("span");
-                cursor.className = "cursor";
-                
-                let currentHTML = "";
                 const text = lineData.text;
 
-                for (let j = 0; j < text.length; j++) {
-                    if (text.charAt(j) === '\n') {
-                        currentHTML += "<br>";
-                    } else {
-                        currentHTML += text.charAt(j);
-                    }
-                    div.innerHTML = currentHTML;
-                    div.appendChild(cursor);
-                    
-                    let speed = Math.random() * 30 + 30; 
-                    if (['，', '。', '？', '！', '\n'].includes(text.charAt(j))) {
-                        speed += 300; 
-                    }
-                    
+                // 如果設定為 instant: true，就直接印出整段，不帶打字機效果
+                if (lineData.instant) {
+                    div.innerHTML = text;
                     window.scrollTo(0, document.body.scrollHeight);
-                    await new Promise(r => setTimeout(r, speed));
+                    await new Promise(r => setTimeout(r, 600)); // 讓玩家稍微看清楚再繼續
+                } else {
+                    // 一般的玩家自白打字機效果
+                    const cursor = document.createElement("span");
+                    cursor.className = "cursor";
+                    let currentHTML = "";
+                    
+                    for (let j = 0; j < text.length; j++) {
+                        if (text.charAt(j) === '\n') {
+                            currentHTML += "<br>";
+                        } else {
+                            currentHTML += text.charAt(j);
+                        }
+                        div.innerHTML = currentHTML;
+                        div.appendChild(cursor);
+                        
+                        let speed = Math.random() * 30 + 30; // 基礎速度 30~60 毫秒
+                        if (['，', '。', '？', '！', '\n'].includes(text.charAt(j))) {
+                            speed += 300; // 遇到標點符號額外停頓
+                        }
+                        
+                        window.scrollTo(0, document.body.scrollHeight);
+                        await new Promise(r => setTimeout(r, speed));
+                    }
+                    
+                    cursor.remove();
+                    await new Promise(r => setTimeout(r, 800)); // 每一句話打完後停頓一下再打下一句
                 }
-                
-                cursor.remove();
-                await new Promise(r => setTimeout(r, 800)); 
             }
             
+            // 全部自白結束後，顯示進入下一關的按鈕，並自動滾動到最底
             actionBtn.style.display = "block";
             window.scrollTo(0, document.body.scrollHeight);
         }
