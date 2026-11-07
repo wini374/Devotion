@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -137,15 +136,13 @@
     <audio id="sad-bgm" src="日誌bgm.mp3" loop></audio>
 
     <div id="terminal-container">
-        <!-- 腳本會自動將終端機文字打在這裡 -->
+        <!-- 第一階段腳本會打在這裡 -->
     </div>
 
     <!-- 盲文與凱撒密碼解謎區 -->
     <div id="braille-section">
         <div class="hint-text">> [ 系統提示：底層資料發生位移，加密偏移量 (OFFSET) : -3 ]</div>
         
-        <!-- 加密過後的字串：JV TFPE -->
-        <!-- 對應明文為：MY WISH (我的心願) -->
         <div style="margin-bottom: 20px;">
             <div class="braille-word">⠚⠧</div> <!-- JV -->
             <div class="braille-word">⠞⠋⠏⠑</div> <!-- TFPE -->
@@ -153,7 +150,6 @@
 
         <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 30px;">
             <input type="text" id="puzzle-input" placeholder="輸入還原後的原始字串...">
-            <!-- 按鈕文字已改為「管理員日誌」 -->
             <button class="btn" onclick="verifyBraille()">> 管理員日誌</button>
         </div>
         <div id="error-msg" style="color: #ff3333; margin-top: 15px; display: none; font-weight: bold; text-shadow: 0 0 5px red;">[ 驗證失敗：密鑰不符，存取拒絕 ]</div>
@@ -168,7 +164,7 @@
     </div>
 
     <script>
-       // --- 第一階段：軌跡腳本設定 ---
+        // --- 第一階段：幽靈軌跡腳本設定 ---
         const scriptLines = [
             { class: 'sys-msg', text: "> 正在存取幽靈軌跡日誌 (GHOST_TRAIL_LOGS)..." },
             { class: 'sys-msg', text: "> 權限已覆寫。正在載入 資產_01, 資產_02, 資產_03 的實體行動數據..." },
@@ -187,18 +183,89 @@
             { class: 'admin-override', text: "「我明明已經殺了他們...我明明已經習慣了被你憎恨...」" },
             { class: 'admin-override', text: "「我只是...想回到最開始的時候...回到我們還是朋友的時候...」" }
         ];
+
+        window.onload = function() {
+            const bgm = document.getElementById("terminal-bgm");
+            bgm.volume = 0;
+            bgm.play().catch(e => console.log("BGM blocked", e));
+            let vol = 0;
+            const fadeIn = setInterval(() => {
+                if (vol < 0.6) { vol += 0.05; bgm.volume = vol; }
+                else clearInterval(fadeIn);
+            }, 200);
+
+            playScript();
+        };
+
+        async function playScript() {
+            const container = document.getElementById("terminal-container");
+            
+            for (let i = 0; i < scriptLines.length; i++) {
+                const lineData = scriptLines[i];
+                const div = document.createElement("div");
+                div.className = lineData.class;
+                container.appendChild(div);
+                
+                const cursor = document.createElement("span");
+                cursor.className = "cursor";
+                
+                let currentHTML = "";
+                const text = lineData.text;
+
+                if (lineData.class === 'fatal-error' && text.includes("因果律悖論")) {
+                    document.body.classList.add("screen-shake");
+                    setTimeout(() => document.body.classList.remove("screen-shake"), 600);
+                    
+                    document.getElementById("terminal-bgm").pause();
+                    const sadBgm = document.getElementById("sad-bgm");
+                    sadBgm.volume = 0;
+                    sadBgm.play().catch(e => console.log(e));
+                    
+                    let newVol = 0;
+                    const fadeIn = setInterval(() => {
+                        if (newVol < 0.7) { newVol += 0.05; sadBgm.volume = newVol; }
+                        else clearInterval(fadeIn);
+                    }, 200);
+                }
+
+                for (let j = 0; j < text.length; j++) {
+                    if (text.charAt(j) === '\n') {
+                        currentHTML += "<br>";
+                    } else {
+                        currentHTML += text.charAt(j);
+                    }
+                    div.innerHTML = currentHTML;
+                    div.appendChild(cursor);
+                    
+                    let speed = 40; 
+                    if (lineData.class === 'admin-override') speed = 70; 
+                    if (['，', '。', '！', '？', '\n', '...'].includes(text.charAt(j))) speed += 350; 
+                    
+                    window.scrollTo(0, document.body.scrollHeight);
+                    await new Promise(r => setTimeout(r, speed));
+                }
+                
+                cursor.remove();
+                await new Promise(r => setTimeout(r, 600)); 
+            }
+            
+            // 顯示解謎區
+            document.getElementById("braille-section").style.display = "block";
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
         // --- 第二階段：驗證密碼與切換自白 ---
         function verifyBraille() {
             const inputField = document.getElementById("puzzle-input");
             const errorMsg = document.getElementById("error-msg");
             
+            // 將玩家輸入轉小寫並消除所有空白
             let answer = inputField.value.toLowerCase().replace(/\s+/g, '');
             
-            // 點字 J V   T F P E，退 3 格後明文為 M Y   W I S H
+            // 答案：mywish
             if (answer === "mywish") {
                 errorMsg.style.display = "none";
                 
-                // 隱藏解謎區塊，顯示管理員日誌區塊
                 document.getElementById("braille-section").style.display = "none";
                 const logScreen = document.getElementById("admin-log-screen");
                 logScreen.style.display = "block";
@@ -215,6 +282,7 @@
             }
         }
 
+        // 支援 Enter 鍵送出
         document.getElementById("puzzle-input").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
@@ -227,16 +295,22 @@
             const container = document.getElementById("admin-log-content");
             const actionBtn = document.getElementById("next-stage-btn");
             
-            // 管理員日誌劇本
+            // 將記憶區塊與靈魂碎片真相全數移至此處
             const adminLines = [
                 { class: 'sys-msg', style: 'color: #ffaa00; border-left: 3px solid #ffaa00; padding-left: 15px;', text: "> [ 身份驗證通過。歡迎回來，管理員。 ]\n> [ 正在解密隱藏日誌檔... ]" },
                 { class: 'sys-msg', style: 'color: #dddddd;', text: "如果這份日誌被解密，說明我的時間已經到了，而你成功駭入了這裡。" },
                 { class: 'sys-msg', style: 'color: #dddddd;', text: "這是我最後的心願。也是我唯一能留下來的真相。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "三年前，當我們還圍繞在營火旁時，我以為只要擁有了管理員的權限，就能保護所有人。但我錯了。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "權力沒有帶來和平，反而讓各方陣營為了爭奪資源自相殘殺。我一次次地回溯時間，卻只能一次次看著你——我最好的朋友，死在不同的戰火裡。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "為了打破這個死局，世界需要一個共同的敵人。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "我割裂了自己的靈魂，將他們散佈在各個陣營，然後親手以最殘忍的方式處決他們。只有這樣，我才能成為真正的暴君。只有當你們把所有的恨意都指向我，你們才會團結。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "我把自己變成了怪物，把你們推向了反抗軍的位置。" },
+                
+                { class: 'sys-alert', style: 'color: #ff3333; margin-top: 20px;', text: "> [ 警告：擷取到受損的舊日記憶區塊 ]" },
+                { class: 'memory-log', style: 'color: #aaffaa;', text: "「在戴上這頂王冠之前，我們也曾並肩坐在營火旁。那時候，我們只是並肩作戰的傻瓜。你說我們有一天會改變世界。」" },
+                { class: 'memory-log', style: 'color: #aaffaa;', text: "「但我發現，只要沒有共同的敵人，各方陣營就會因為無止境的猜忌與貪婪互相撕裂。世界依然走向了毀滅。」" },
+                { class: 'memory-log', style: 'color: #aaffaa;', text: "「我一次又一次地啟動權限，將時間回溯到三年前。每一次，我都試圖把和平還給你們，但每一次，我只能看著你們在戰火中死去。」" },
+                { class: 'memory-log', style: 'color: #aaffaa;', text: "「所以，這一次，第36次輪迴...我選擇成為你們共同的敵人。只要你們恨我，只要你們有了共同的暴君，世界就能團結。」" },
+                
+                { class: 'sys-alert', style: 'color: #ff3333; margin-top: 20px;', text: "> [ 警告 ]：所有被處決的資產，皆為管理員本體的靈魂碎片切片。" },
+                { class: 'memory-log', style: 'color: #aaffaa;', text: "「只有剝離我對這世界最後的眷戀，我才能毫不猶豫地揮下屠刀。」" },
+                
+                { class: 'sys-msg', style: 'color: #dddddd; margin-top: 20px;', text: "我把自己變成了怪物，把你們推向了反抗軍的位置。" },
                 { class: 'sys-msg', style: 'color: #dddddd;', text: "但我好累...我不想再當神，也不想再當暴君了。" },
                 { class: 'sys-msg', style: 'color: #dddddd;', text: "我的靈魂已經碎裂到無法再次啟動回溯...所以，這一次，動手吧。" },
                 { class: 'sys-msg', style: 'color: #ffffff; text-shadow: 0 0 5px #ffffff; font-size: 1.2rem;', text: "毀滅我。然後，連同我的那份一起活下去。" }
@@ -276,7 +350,6 @@
                 await new Promise(r => setTimeout(r, 1000)); 
             }
             
-            // 顯示最終結束按鈕
             actionBtn.style.display = "block";
             window.scrollTo(0, document.body.scrollHeight);
         }
