@@ -317,7 +317,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
 
         <!-- 導向下一關的按鈕 (初始隱藏，打字機結束後浮現) -->
         <div id="monologue-action" style="display: none; text-align: right; margin-top: 40px;">
-            <a href="stage2.html" class="btn">> 打開管理員資產日誌...</a>
+           <a onclick="fadeOutAndNavigate('stage2.html', 'monologue-bgm')" class="btn">> 打開管理員資產紀錄...</a>
         </div>
     </div>
     
@@ -559,6 +559,28 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             // 全部自白結束後，顯示進入下一關的按鈕，並自動滾動到最底
             actionBtn.style.display = "block";
             window.scrollTo(0, document.body.scrollHeight);
+        }
+        /* ================= 音樂淡出並跳轉頁面 ================= */
+        function fadeOutAndNavigate(targetUrl, bgmId) {
+            const bgm = document.getElementById(bgmId);
+            
+            if (bgm && !bgm.paused) {
+                let vol = bgm.volume;
+                // 每 100 毫秒降低一次音量，大約 1~1.5 秒淡出完畢
+                const fadeOut = setInterval(() => {
+                    if (vol > 0.05) { 
+                        vol -= 0.05; 
+                        bgm.volume = vol; 
+                    } else { 
+                        clearInterval(fadeOut); 
+                        bgm.pause(); 
+                        window.location.href = targetUrl; // 音樂完全停止後跳轉
+                    }
+                }, 100); 
+            } else {
+                // 如果音樂本來就沒在播，直接跳轉
+                window.location.href = targetUrl;
+            }
         }
     </script>
 </body>
