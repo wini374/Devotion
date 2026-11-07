@@ -53,15 +53,15 @@
             40%, 60% { transform: translate3d(8px, 0, 0); filter: drop-shadow(-4px 0 cyan); }
         }
 
-        /* 閃爍文字特效 (一閃而過) */
+        /* 閃爍文字特效 (時間加長，停留更久) */
         .flash-text {
-            animation: flash-anim 1s forwards;
+            animation: flash-anim 3s forwards;
             opacity: 0;
         }
         @keyframes flash-anim {
             0% { opacity: 0; filter: blur(2px); }
             10% { opacity: 1; filter: blur(0); }
-            80% { opacity: 1; filter: blur(0); }
+            85% { opacity: 1; filter: blur(0); }
             100% { opacity: 0; filter: blur(5px); }
         }
 
@@ -126,8 +126,8 @@
         <!-- 腳本會自動將終端機文字打在這裡 -->
     </div>
 
-    <!-- 底部按鈕區 (初始隱藏) -->
-    <div id="action-section" style="display: none; text-align: right; max-width: 900px; margin: 0 auto; margin-top: 30px;">
+    <!-- 底部按鈕區 (對齊方式改為靠左 text-align: left) -->
+    <div id="action-section" style="display: none; text-align: left; max-width: 900px; margin: 0 auto; margin-top: 30px;">
         <button class="btn" onclick="openModal()">> 管理員日誌</button>
     </div>
 
@@ -147,16 +147,15 @@
     <script>
         // --- 劇情腳本設定 ---
         const scriptLines = [
-            { class: 'sys-msg', text: "> 正在存取管理員資產日誌 (GHOST_TRAIL_LOGS)..." },
+            { class: 'sys-msg', text: "> 正在存取幽靈軌跡日誌 (GHOST_TRAIL_LOGS)..." },
             { class: 'sys-msg', text: "> 權限已覆寫。正在載入 資產_01, 資產_02, 資產_03 的實體行動數據..." },
             { class: 'sys-msg', instant: true, text: "==================================================" },
             { class: 'log-data', text: "[ 實體活動時間軸比對 // 第36週期 ]\n> 資產_01 (阿斯蘭朵) 啟動區間：00:00:00 - 07:59:59\n> 資產_02 (新星聯邦) 啟動區間：08:00:00 - 15:59:59\n> 資產_03 (灰燼之地) 啟動區間：16:00:00 - 23:59:59" },
-
-              // 加密偏移量直接放在這裡瞬間顯示
-            { class: 'sys-alert', instant: true, text: "> [ 系統提示：底層資料發生位移，加密偏移量 (OFFSET) : -3 ]" },
+            
             // 異常報告瞬間顯示
             { class: 'sys-alert', instant: true, text: "> [ 異常報告 ]：三名資產的出現時間「絕對互斥」。生命體徵重疊率 0.00%。\n> [ 系統結論 ]：此為單一意識的多重線程切換。\n> 正在追蹤底層 IP 來源..." },
-          
+            // 加密偏移量直接放在這裡瞬間顯示
+            { class: 'sys-alert', instant: true, text: "> [ 系統提示：底層資料發生位移，加密偏移量 (OFFSET) : -3 ]" },
             
             { class: 'log-data', text: "資產_01 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n資產_02 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n資產_03 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]" },
             
@@ -171,12 +170,12 @@
             { class: 'sys-msg', text: "> 正在啟動時間軸回溯協定...\n> 逆轉因果律中... 10% ... 45% ... 89% ..." },
             
             // 致命錯誤瞬間顯示，並引發震動
-            { class: 'fatal-error', instant: true, text: "> [ 致命錯誤 ]：因果律悖論！本體靈魂質量嚴重耗損，無法達到回溯閾值。" },
-            { class: 'sys-alert', instant: true, text: "> [ 系統判定 ]：管理員權限已永久損毀，無法再次回溯至三年前。" },
+            { class: 'fatal-error', instant: true, text: "> [ 錯誤 ]：因果律悖論！本體靈魂質量嚴重耗損，無法達到回溯閾值。" },
+            { class: 'sys-alert', instant: true, text: "> [ 系統判定 ]：管理員靈魂質量不足，無法回溯至三年前。" },
             
             // 心聲一閃而過 (flash: true)
             { class: 'admin-override', flash: true, text: "「為什麼...為什麼這次不行？」" },
-            { class: 'admin-override', flash: true, text: "「我明明已經殺了他們...我明明已經習慣了被你憎恨...」" },
+            { class: 'admin-override', flash: true, text: "「我明明已經解決了所有可能...我明明已經習慣了被你憎恨...」" },
             { class: 'admin-override', flash: true, text: "「我只是...想回到最開始的時候...回到我們還是朋友的時候...」" }
         ];
 
@@ -195,6 +194,7 @@
 
         async function playScript() {
             const container = document.getElementById("terminal-container");
+            let isFirstFlash = true; // 用來標記是否為第一句心聲
             
             for (let i = 0; i < scriptLines.length; i++) {
                 const lineData = scriptLines[i];
@@ -230,11 +230,19 @@
                 } 
                 // 判斷是否為「一閃而過」
                 else if (lineData.flash) {
-                    div.classList.add("flash-text"); // 加入閃爍動畫
+                    // 如果是第一句心聲，強制等待 3 秒鐘 (3000ms) 讓氣氛沉澱
+                    if (isFirstFlash) {
+                        await new Promise(r => setTimeout(r, 3000));
+                        isFirstFlash = false;
+                    }
+                    
+                    div.classList.add("flash-text"); 
                     div.innerHTML = text;
                     window.scrollTo(0, document.body.scrollHeight);
-                    await new Promise(r => setTimeout(r, 1200)); // 讓閃爍動畫跑完
-                    div.style.display = "none"; // 播完後隱藏
+                    
+                    // 停留時間從 1.2 秒延長至 3.5 秒 (3500ms)
+                    await new Promise(r => setTimeout(r, 3500)); 
+                    div.style.display = "none"; 
                 } 
                 // 一般打字機效果
                 else {
@@ -260,7 +268,7 @@
                 }
             }
             
-            // 腳本全數結束後，顯示底部的管理員日誌按鈕
+            // 腳本全數結束後，顯示底部的管理員日誌按鈕 (已靠左對齊)
             document.getElementById("action-section").style.display = "block";
             window.scrollTo(0, document.body.scrollHeight);
         }
