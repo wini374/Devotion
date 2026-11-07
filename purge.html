@@ -178,6 +178,7 @@
     <!-- BGM 設定 -->
     <audio id="purge-bgm" src="駭入.mp3" loop></audio>
     <audio id="excel-bgm" src="遊戲中.mp3" loop></audio>
+    <audio id="monologue-bgm" src="彩色密碼.mp3" loop></audio>
 
     <!-- 1. 駭入動畫區 -->
     <div id="boot-sequence"></div>
@@ -415,6 +416,27 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             if (answer === "itwasnevermeanttobe") {
                 errorMsg.style.display = "none";
                 
+                // --- 新增：音樂淡出與切換邏輯 ---
+                const oldBgm = document.getElementById("excel-bgm");
+                const newBgm = document.getElementById("monologue-bgm");
+                
+                // 舊音樂淡出
+                let oldVol = oldBgm.volume;
+                const fadeOut = setInterval(() => {
+                    if (oldVol > 0.05) { oldVol -= 0.05; oldBgm.volume = oldVol; } 
+                    else { clearInterval(fadeOut); oldBgm.pause(); }
+                }, 100);
+
+                // 新音樂(獨白音樂)淡入
+                newBgm.volume = 0;
+                newBgm.play().catch(e => console.log(e));
+                let newVol = 0;
+                const fadeIn = setInterval(() => {
+                    if (newVol < 0.8) { newVol += 0.05; newBgm.volume = newVol; } 
+                    else { clearInterval(fadeIn); }
+                }, 200);
+                // ----------------------------------
+
                 // 密碼正確：隱藏試算表，顯示自白畫面
                 document.getElementById("excel-container").style.display = "none";
                 const monoScreen = document.getElementById("monologue-screen");
@@ -427,6 +449,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                 }, 100);
 
             } else {
+                // 密碼錯誤
                 errorMsg.style.display = "block";
                 inputField.value = "";
                 inputField.focus();
