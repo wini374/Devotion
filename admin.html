@@ -1,1 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN_ROOT_LOG</title>
+    <style>
+        /* ================= 基礎終端機樣式 ================= */
+        body {
+            background-color: #030303;
+            color: #dddddd;
+            font-family: "Courier New", Courier, monospace;
+            padding: 2rem;
+            line-height: 1.8;
+            overflow-x: hidden;
+            margin: 0;
+        }
 
+        ::selection { background-color: #ffaa00; color: #000000; }
+        
+        #terminal-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: rgba(10, 10, 10, 0.8);
+            border: 1px solid #ffaa00;
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.1);
+            padding-bottom: 60px;
+        }
+
+        /* 文字層級與顏色 */
+        .sys-auth { color: #ffaa00; margin-bottom: 25px; border-left: 3px solid #ffaa00; padding-left: 15px; font-weight: bold; }
+        .sys-msg { color: #cccccc; margin-bottom: 15px; }
+        .sys-alert { color: #ff3333; margin-top: 30px; margin-bottom: 15px; font-weight: bold; text-shadow: 0 0 3px red; }
+        .memory-log { color: #aaffaa; margin-bottom: 15px; font-style: italic; border-left: 2px solid #aaffaa; padding-left: 15px; }
+        .truth-log { color: #ffaa00; margin-bottom: 15px; border-left: 2px solid #ffaa00; padding-left: 15px; }
+        .final-words { color: #ffffff; margin-top: 40px; margin-bottom: 15px; text-shadow: 0 0 8px #ffffff; font-size: 1.2rem; font-weight: bold; text-align: center; }
+
+        /* 打字機游標 */
+        .cursor {
+            display: inline-block;
+            width: 10px; height: 1.2rem;
+            background-color: currentColor;
+            animation: blink 1s infinite;
+            vertical-align: bottom;
+            margin-left: 4px;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* 終止按鈕 */
+        .btn {
+            background-color: transparent;
+            border: 1px solid #ff3333;
+            color: #ff3333;
+            padding: 10px 25px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            letter-spacing: 2px;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.2);
+        }
+        .btn:hover { 
+            background-color: #ff3333; 
+            color: #000; 
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+        }
+
+        #action-section {
+            display: none;
+            text-align: right;
+            margin-top: 50px;
+            animation: fadeIn 2s ease-in;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <!-- 悲傷的真相 BGM -->
+    <audio id="sad-bgm" src="日誌bgm.mp3" loop></audio>
+
+    <div id="terminal-container">
+        <!-- 腳本會自動將終端機文字打在這裡 -->
+    </div>
+
+    <!-- 終止按鈕區 (初始隱藏) -->
+    <div id="action-section" style="max-width: 800px; margin: 0 auto; margin-top: 30px; margin-bottom: 50px; text-align: right;">
+        <!-- 點擊後可以導向結局頁面 (end.html) 或重新開始 -->
+        <a onclick="fadeOutAndEnd()" class="btn">> 終止程序。</a>
+    </div>
+
+    <script>
+        // --- 管理員日誌劇本 ---
+        const adminLines = [
+            { class: 'sys-auth', text: "> [ 身份驗證通過。歡迎回來，管理員。 ]\n> [ 正在解密隱藏日誌檔... ]" },
+            { class: 'sys-msg', text: "如果看到這份日記，代表兩件事。" },
+            { class: 'sys-msg', text: "第一，我的時間已經到了。\n第二，你成功駭入了這裡。" },
+            { class: 'sys-msg', text: "我不知道該為哪一件事感到欣慰。或許兩者都是吧。" },
+            { class: 'sys-msg', text: "這是我最後的心願，也是我唯一能留下來的真相。" },
+            { class: 'sys-msg', text: "在這個被謊言、鮮血與無數次輪迴所堆砌的世界裡，至少，我希望你能知道事情真正的樣子。" },
+            { class: 'sys-msg', text: "這是我的第36次輪迴。" },
+            
+            { class: 'sys-alert', text: "> [ 警告：擷取到受損的舊日記憶區塊 ]" },
+            { class: 'memory-log', text: "「在戴上這頂王冠之前，我們也曾並肩坐在營火旁。」" },
+            { class: 'memory-log', text: "「那時候，我們沒有什麼宏大的理想，也沒有必須背負的命運。我們只是兩個並肩作戰的傻瓜，偶爾為了一點微不足道的小事爭吵，偶爾分享戰利品，偶爾在漫長的夜裡談論那些遙不可及的未來。」" },
+            { class: 'memory-log', text: "「你曾經說過，我們有一天會改變世界。」" },
+            { class: 'memory-log', text: "「我也曾經相信。」" },
+            
+            { class: 'sys-msg', text: "但我很快就明白了一件事。" },
+            { class: 'sys-msg', text: "只要沒有共同的敵人，人們便會開始尋找彼此的敵意。即使昨日還是並肩作戰的盟友，今日也可能因為一點利益、一句謠言，甚至是一個眼神而拔刀相向。" },
+            { class: 'sys-msg', text: "各方陣營在猜忌與貪婪中互相撕裂，曾經建立的秩序逐漸崩解。和平成了最昂貴的奢侈品，而戰爭，則成了這個世界唯一熟悉的語言。" },
+            { class: 'sys-msg', text: "最終，一切走向毀滅。" },
+            { class: 'sys-msg', text: "於是，我啟動了管理員權限。" },
+            { class: 'sys-msg', text: "第一次，我試圖阻止戰爭的發生。\n第二次，我試圖改變各方陣營的命運。\n第三次，我試圖消除那些導致衝突的根源。" },
+            { class: 'sys-msg', text: "……第三十五次，我甚至開始懷疑，究竟是這個世界無可救藥，還是我根本沒有能力拯救任何人。" },
+            { class: 'sys-msg', text: "每一次，我都將時間回溯到最初的時刻。\n每一次，我都試圖把和平還給你們。" },
+            { class: 'sys-msg', text: "然而，每一次，戰火依舊以不同的樣貌重新燃起。" },
+            { class: 'sys-msg', text: "我曾經以為，只要再多嘗試一次，只要修正一個錯誤，只要犧牲一點什麼，就能找到那個所有人都能活下去的結局。" },
+            { class: 'sys-msg', text: "但我錯了。" },
+            
+            { class: 'sys-msg', text: "於是，這一次……\n我選擇成為你們共同的敵人。" },
+            { class: 'sys-msg', text: "如果這個世界需要一個怪物才能團結，那麼就由我來當那個怪物。" },
+            { class: 'sys-msg', text: "只要你們恨我，只要你們將所有憤怒與仇恨集中在我的身上，只要你們不再互相猜忌，而是為了推翻同一個暴君而並肩作戰……" },
+            { class: 'sys-msg', text: "或許，你們就能擁有一個不需要回溯的未來。" },
+            { class: 'sys-msg', text: "我摧毀農莊，焚燒反抗軍的營地，處決那些曾經與我並肩作戰的人。我讓每一個陣營都相信，只有推翻我，他們才能獲得自由。" },
+            { class: 'sys-msg', text: "我親手摧毀了自己曾經珍視的一切。\n而你，也被我一步步推向了反抗軍的位置。" },
+
+            { class: 'sys-alert', text: "> [ SYSTEM WARNING ]" },
+            { class: 'truth-log', text: "> 所有被處決的資產，皆為管理員本體的靈魂切片。" },
+            
+            { class: 'sys-msg', text: "你知道這代表什麼嗎？" },
+            { class: 'sys-msg', text: "那些死在我命令之下的人，那些被我從世界上抹除的名字...他們並不只是被犧牲的棋子。" },
+            { class: 'sys-msg', text: "他們是我。" },
+            { class: 'sys-msg', text: "每一個被處決的資產，都是我為了維持這場謊言而主動剝離的靈魂碎片。" },
+            { class: 'sys-msg', text: "我必須讓自己相信，那些生命毫無價值；必須讓自己相信，我所做的一切都是正確的；必須讓自己相信，我已經不再是那個曾經坐在營火旁、會因為同伴受傷而感到難過的人。" },
+            { class: 'sys-msg', text: "只有剝離我對這個世界最後的眷戀，我才能毫不猶豫地揮下屠刀。" },
+            { class: 'sys-msg', text: "只有把自己的靈魂一片片撕裂，我才能繼續扮演那個你們深惡痛絕的暴君。" },
+            
+            { class: 'sys-msg', text: "可是，我真的累了。" },
+            { class: 'sys-msg', text: "我早已沉入記憶的洪流之中。\n三十五次輪迴的失敗、那些再也回不來的人、那些被我親手抹去的笑容……所有時間線的記憶都堆積在我的記憶深處。" },
+            { class: 'sys-msg', text: "我記得每一次你倒下的模樣。\n記得每一次我們好不容易建立的和平，又是如何在我的眼前崩塌。\n記得你曾經相信我，也記得你後來充滿憎恨的眼光。" },
+            { class: 'sys-msg', text: "我甚至無法分辨哪些記憶屬於現在，哪些又來自早已被抹除的過去。" },
+            { class: 'sys-msg', text: "有時候我會恍惚間以為自己仍然坐在那堆營火旁。\n我幾乎能聽見你的聲音。\n幾乎能感受到那份早已不存在的溫暖。" },
+            { class: 'sys-msg', text: "但當我伸出手時，觸碰到的只有冰冷的代碼。" },
+            
+            { class: 'sys-msg', text: "我的靈魂已經碎裂到無法再次啟動回溯。" },
+            { class: 'sys-msg', text: "權限正在崩解，記憶正在吞噬我的意識，而那些被我親手埋葬的過去，正一點一點地將我拖入深淵。" },
+            { class: 'sys-msg', text: "所以，這一次，我不會再重來了。" },
+            { class: 'sys-msg', text: "我將獨自走入黑暗。\n不要追上來，留在光明之中。\n那是我應得的結局。" },
+            { class: 'sys-msg', text: "這一次，沒有第三十七次輪迴。\n沒有新的世界需要我拯救，也沒有新的暴君需要我扮演。" },
+            
+            { class: 'final-words', text: "請替我看看那個未來。\n替我活下去。" },
+            { class: 'final-words', text: "還有……\n對不起。\n我沒能和你一起回家。" }
+        ];
+
+        window.onload = function() {
+            // 音樂淡入
+            const bgm = document.getElementById("sad-bgm");
+            bgm.volume = 0;
+            bgm.play().catch(e => console.log("BGM blocked", e));
+            let vol = 0;
+            const fadeIn = setInterval(() => {
+                if (vol < 0.7) { vol += 0.05; bgm.volume = vol; }
+                else clearInterval(fadeIn);
+            }, 200);
+
+            // 啟動腳本
+            playAdminLog();
+        };
+
+        async function playAdminLog() {
+            const container = document.getElementById("terminal-container");
+            
+            for (let i = 0; i < adminLines.length; i++) {
+                const lineData = adminLines[i];
+                const div = document.createElement("div");
+                div.className = lineData.class;
+                container.appendChild(div);
+                
+                const cursor = document.createElement("span");
+                cursor.className = "cursor";
+                // 根據文字屬性改變游標顏色
+                if (lineData.class === 'sys-auth' || lineData.class === 'truth-log') {
+                    cursor.style.color = '#ffaa00';
+                } else if (lineData.class === 'memory-log') {
+                    cursor.style.color = '#aaffaa';
+                } else if (lineData.class === 'sys-alert' || lineData.class === 'final-words') {
+                    cursor.style.color = 'inherit';
+                } else {
+                    cursor.style.color = '#cccccc';
+                }
+                
+                let currentHTML = "";
+                const text = lineData.text;
+
+                for (let j = 0; j < text.length; j++) {
+                    if (text.charAt(j) === '\n') {
+                        currentHTML += "<br>";
+                    } else {
+                        currentHTML += text.charAt(j);
+                    }
+                    div.innerHTML = currentHTML;
+                    div.appendChild(cursor);
+                    
+                    // 日誌的打字速度：整體設定得比較緩慢、沉重
+                    let speed = Math.random() * 40 + 50; 
+                    if (['，', '。', '？', '！', '…', '\n'].includes(text.charAt(j))) {
+                        speed += 400; // 標點符號的停頓感更強
+                    }
+                    if (lineData.class === 'final-words') {
+                        speed += 120; // 最後的遺言打得非常慢
+                    }
+                    
+                    window.scrollTo(0, document.body.scrollHeight);
+                    await new Promise(r => setTimeout(r, speed));
+                }
+                
+                cursor.remove();
+                
+                // 每一段之間的留白停頓
+                let pauseTime = 1200;
+                if (lineData.class === 'sys-alert') pauseTime = 600;
+                if (lineData.class === 'final-words') pauseTime = 2000; // 遺言之間的長停頓
+                await new Promise(r => setTimeout(r, pauseTime)); 
+            }
+            
+            // 腳本全數結束後，顯示「終止程序」按鈕
+            document.getElementById("action-section").style.display = "block";
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        // --- 點擊終止程序後的淡出效果 ---
+        function fadeOutAndEnd() {
+            const container = document.getElementById("terminal-container");
+            const btn = document.getElementById("action-section");
+            const bgm = document.getElementById("sad-bgm");
+            
+            // 讓整個終端機框框緩緩淡出消失
+            container.style.transition = "opacity 3s ease";
+            container.style.opacity = 0;
+            btn.style.transition = "opacity 2s ease";
+            btn.style.opacity = 0;
+
+            // 音樂淡出
+            if (bgm && !bgm.paused) {
+                let vol = bgm.volume;
+                const fadeOut = setInterval(() => {
+                    if (vol > 0.02) { 
+                        vol -= 0.02; 
+                        bgm.volume = vol; 
+                    } else { 
+                        clearInterval(fadeOut); 
+                        bgm.pause(); 
+                        // 在這裡可以導向你的結局頁面，例如：
+                        // window.location.href = "end.html"; 
+                    }
+                }, 150); 
+            }
+        }
+    </script>
+</body>
+</html>
