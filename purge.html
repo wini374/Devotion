@@ -165,12 +165,21 @@
             opacity: 0;
             transition: opacity 1.5s ease;
         }
+        
+        /* 讓文字在剛產生時是隱藏的，配合打字機效果 */
         .monologue-text {
             color: #aaffaa;
             font-size: 1.1rem;
             margin-bottom: 20px;
             text-shadow: 0 0 2px rgba(170, 255, 170, 0.3);
         }
+        
+        /* 針對特定顏色的文字 */
+        .highlight-text {
+            color: #ffffff !important;
+            text-shadow: 0 0 5px #ffffff !important;
+        }
+        
     </style>
 </head>
 <body>
@@ -222,11 +231,6 @@
 > 他們只不過是工具。他們毫無意義。
 <div class="hidden-text bottom-center-hidden">I just wanted them to experience this world for me.</div>
 
-
-
-
-        
-        
 a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜
 銝之摮貉銝行撟渡蝝憿銝隢隤芷銝銝剖銝蝝
 0x0000000F 0x00000000 0xFFFFFFFF 0x80070057 0x00000109
@@ -277,8 +281,7 @@ a銝剖銝蝝隢隤芷銝璆剖憿嚗翩璆剖銝瘜a銝剖銝蝝隢
 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F 0x0000000F
 SYS_ERR_LUMINANCE_OVERLOAD
 PHYSICAL_MEMORY_DUMP_COMPLETE.
- </div>
-    </div>
+    </div> <!-- 這個 div 是關閉 #report 的，非常重要 -->
 
     <!-- 3. 打字機與文字粉碎轉場畫面 -->
     <div id="transition-screen">
@@ -307,7 +310,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
         </div>
     </div>
 
-  <!-- 5. 玩家自白過場畫面 (密碼正確後顯示) -->
+    <!-- 5. 玩家自白過場畫面 (密碼正確後顯示) -->
     <div id="monologue-screen">
         <!-- 打字機動畫會透過 JavaScript 逐行生成在這裡 -->
         <div id="monologue-content"></div>
@@ -317,6 +320,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             <a href="stage2.html" class="btn">> 進入作廢日誌與幽靈軌跡...</a>
         </div>
     </div>
+    
     <script>
         /* ================= 1. 駭入動畫載入 ================= */
         window.onload = function() {
@@ -411,7 +415,14 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }, 200);
         }
 
-    /* ================= 3. 謎底輸入與過場驗證邏輯 ================= */
+        /* ================= 3. 謎底輸入與過場驗證邏輯 ================= */
+        function showInput() {
+            document.getElementById("reveal-btn").style.display = "none";
+            const inputSection = document.getElementById("input-section");
+            inputSection.style.display = "flex";
+            document.getElementById("puzzle-input").focus();
+        }
+
         function verifyAnswer() {
             const inputField = document.getElementById("puzzle-input");
             const errorMsg = document.getElementById("error-msg");
@@ -421,7 +432,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             if (answer === "itwasnevermeanttobe") {
                 errorMsg.style.display = "none";
                 
-                // --- 新增：音樂淡出與切換邏輯 ---
+                // --- 音樂淡出與切換邏輯 ---
                 const oldBgm = document.getElementById("excel-bgm");
                 const newBgm = document.getElementById("monologue-bgm");
                 
@@ -440,8 +451,7 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                     if (newVol < 0.8) { newVol += 0.05; newBgm.volume = newVol; } 
                     else { clearInterval(fadeIn); }
                 }, 200);
-                // ----------------------------------
-
+                
                 // 密碼正確：隱藏試算表，顯示自白畫面
                 document.getElementById("excel-container").style.display = "none";
                 const monoScreen = document.getElementById("monologue-screen");
@@ -461,24 +471,31 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             }
         }
 
+        document.getElementById("puzzle-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                verifyAnswer();
+            }
+        });
+
         /* ================= 4. 玩家自白打字機特效 ================= */
         async function playMonologue() {
             const container = document.getElementById("monologue-content");
             const actionBtn = document.getElementById("monologue-action");
             
-            // 劇本陣列：包含樣式與文字內容 (\n 代表換行)
+            // 劇本陣列
             const scriptLines = [
                 { class: 'sys-prompt', style: 'border-color: #aaffaa; color: #aaffaa; margin-bottom: 20px; border-left: 3px solid #aaffaa; padding-left: 15px;', text: "> [ 系統提示：覆寫指令核准。矩陣偽裝已解除。 ]\n> [ 正在載入底層軌跡與作廢日誌... ]" },
                 { class: 'monologue-text', style: '', text: "「IT WAS NEVER MEANT TO BE...」\n螢幕上的字串映入眼簾的瞬間，我的呼吸停滯了一拍。" },
                 { class: 'monologue-text', style: '', text: "不對。\n這不可能。" },
                 { class: 'monologue-text', style: '', text: "我反覆確認著眼前的訊息，甚至懷疑是破解過程中產生了某種錯誤。但無論我如何重新執行檢索、比對資料，最後浮現的結果始終沒有改變。" },
-                { class: 'monologue-text', style: 'color: #ffffff; text-shadow: 0 0 5px #ffffff;', text: "「IT WAS NEVER MEANT TO BE...（這注定不會有結果）」" },
+                { class: 'monologue-text highlight-text', style: '', text: "「IT WAS NEVER MEANT TO BE...（這注定不會有結果）」" },
                 { class: 'monologue-text', style: '', text: "這句話的來源，竟然是他。" },
                 { class: 'monologue-text', style: '', text: "那個視生命如草芥，為了鞏固統治，不惜將整座農莊付之一炬，連反抗軍的營地也一併化為焦土的人。那個我們恨之入骨、認定必須推翻的冷血暴君。" },
                 { class: 'monologue-text', style: '', text: "我曾經以為，他的每一道命令、每一次屠殺，背後都只有權力與野心。可現在，這句話卻靜靜地躺在他的系統深處，像是一封被刻意埋葬的遺書。" },
                 { class: 'monologue-text', style: '', text: "更令人不安的是，它並非出現在任何公開紀錄或私人通訊之中。\n而是在這個用來監視、識別，甚至定義我們顏色的底層矩陣裡。" },
                 { class: 'monologue-text', style: '', text: "緊接著，另一行字浮現在螢幕上。" },
-                { class: 'monologue-text', style: 'color: #ffffff; text-shadow: 0 0 5px #ffffff;', text: "「COLORS ARE LIES.（顏色是謊言）」" },
+                { class: 'monologue-text highlight-text', style: '', text: "「COLORS ARE LIES.（顏色是謊言）」" },
                 { class: 'monologue-text', style: '', text: "我感覺背脊一陣發涼。\n顏色是謊言？" },
                 { class: 'monologue-text', style: '', text: "如果這是真的，那麼我們一直以來深信不疑的顏色區分究竟是什麼？那些被標記為敵人的人，那些被我們仇恨、追殺，甚至親手送上戰場的對象……他們真的如我們所認知的那樣嗎？" },
                 { class: 'monologue-text', style: '', text: "我們花了整整三年，相信顏色決定立場，相信不同顏色之間注定只能彼此廝殺。我們為此失去了同伴、家園，甚至連活下去的理由都曾被奪走。" },
@@ -496,20 +513,17 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
             for (let i = 0; i < scriptLines.length; i++) {
                 const lineData = scriptLines[i];
                 
-                // 建立新的段落容器
                 const div = document.createElement("div");
                 div.className = lineData.class;
                 if (lineData.style) div.style.cssText = lineData.style;
                 container.appendChild(div);
                 
-                // 加入游標
                 const cursor = document.createElement("span");
                 cursor.className = "cursor";
                 
                 let currentHTML = "";
                 const text = lineData.text;
 
-                // 模擬思考的停頓，逐字打出
                 for (let j = 0; j < text.length; j++) {
                     if (text.charAt(j) === '\n') {
                         currentHTML += "<br>";
@@ -519,24 +533,19 @@ PHYSICAL_MEMORY_DUMP_COMPLETE.
                     div.innerHTML = currentHTML;
                     div.appendChild(cursor);
                     
-                    // 根據字元類型設定不同的打字速度 (逗號句號會停頓更久，像是在思考)
-                    let speed = Math.random() * 30 + 30; // 基礎速度 30~60 毫秒
+                    let speed = Math.random() * 30 + 30; 
                     if (['，', '。', '？', '！', '\n'].includes(text.charAt(j))) {
-                        speed += 300; // 遇到標點符號額外停頓 0.3 秒
+                        speed += 300; 
                     }
                     
-                    // 讓視窗自動往下滾動，確保一直看到最新打出的字
                     window.scrollTo(0, document.body.scrollHeight);
-                    
                     await new Promise(r => setTimeout(r, speed));
                 }
                 
-                // 每一句話打完後移除游標，並停頓一下再打下一句
                 cursor.remove();
                 await new Promise(r => setTimeout(r, 800)); 
             }
             
-            // 全部自白結束後，顯示進入下一關的按鈕，並自動滾動到最底
             actionBtn.style.display = "block";
             window.scrollTo(0, document.body.scrollHeight);
         }
