@@ -178,7 +178,7 @@
             { class: 'sys-msg', text: "> 正在啟動時間軸回溯協定...\n> 逆轉因果律中... 10% ... 45% ... 89% ..." },
             // 致命錯誤引發畫面震動
             { class: 'fatal-error', text: "> [ 致命錯誤 ]：因果律悖論！本體靈魂質量嚴重耗損，無法達到回溯閾值。" },
-            { class: 'sys-alert', text: "> [ 系統判定 ]：管理員權限已永久損毀，無法再次回溯至三年前。" },
+            { class: 'sys-alert', text: "> [ 系統判定 ]：管理員靈魂質量不足，無法啟動回溯。" },
             { class: 'admin-override', text: "「為什麼...為什麼這次不行？」" },
             { class: 'admin-override', text: "「我明明已經殺了他們...我明明已經習慣了被你憎恨...」" },
             { class: 'admin-override', text: "「我只是...想回到最開始的時候...回到我們還是朋友的時候...」" }
@@ -298,22 +298,23 @@
             // 將記憶區塊與靈魂碎片真相全數移至此處
             const adminLines = [
                 { class: 'sys-msg', style: 'color: #ffaa00; border-left: 3px solid #ffaa00; padding-left: 15px;', text: "> [ 身份驗證通過。歡迎回來，管理員。 ]\n> [ 正在解密隱藏日誌檔... ]" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "如果這份日誌被解密，說明我的時間已經到了，而你成功駭入了這裡。" },
+                { class: 'sys-msg', style: 'color: #dddddd;', text: "致我的好友:如果這份日誌被解密，說明我的時間已經到了，而你成功駭入了這裡。" },
                 { class: 'sys-msg', style: 'color: #dddddd;', text: "這是我最後的心願。也是我唯一能留下來的真相。" },
                 
                 { class: 'sys-alert', style: 'color: #ff3333; margin-top: 20px;', text: "> [ 警告：擷取到受損的舊日記憶區塊 ]" },
+                { class: 'memory-log', style: 'color: #aaffaa;', text: "「這是我的第36次輪迴」" },
                 { class: 'memory-log', style: 'color: #aaffaa;', text: "「在戴上這頂王冠之前，我們也曾並肩坐在營火旁。那時候，我們只是並肩作戰的傻瓜。你說我們有一天會改變世界。」" },
-                { class: 'memory-log', style: 'color: #aaffaa;', text: "「但我發現，只要沒有共同的敵人，各方陣營就會因為無止境的猜忌與貪婪互相撕裂。世界依然走向了毀滅。」" },
-                { class: 'memory-log', style: 'color: #aaffaa;', text: "「我一次又一次地啟動權限，將時間回溯到三年前。每一次，我都試圖把和平還給你們，但每一次，我只能看著你們在戰火中死去。」" },
-                { class: 'memory-log', style: 'color: #aaffaa;', text: "「所以，這一次，第36次輪迴...我選擇成為你們共同的敵人。只要你們恨我，只要你們有了共同的暴君，世界就能團結。」" },
+                { class: 'memory-log', style: 'color: #aaffaa;', text: "「但我發現，只要沒有共同的敵人，各方陣營就會因為無止境的猜忌與貪婪互相撕裂。世界走向了毀滅。」" },
+                { class: 'memory-log', style: 'color: #aaffaa;', text: "「我一次又一次地啟動權限，將時間回溯到最初的時刻。每一次，我都試圖把和平還給你們，但每一次，戰火依舊以不同的樣貌燃起。」" },
+                { class: 'memory-log', style: 'color: #aaffaa;', text: "「所以，這一次...我選擇成為你們共同的敵人。只要你們恨我，只要你們有了共同的敵人，世界就能團結。」" },
                 
-                { class: 'sys-alert', style: 'color: #ff3333; margin-top: 20px;', text: "> [ 警告 ]：所有被處決的資產，皆為管理員本體的靈魂碎片切片。" },
+                { class: 'sys-alert', style: 'color: #ff3333; margin-top: 20px;', text: "> [ 警告 ]：所有被處決的資產，皆為管理員本體的靈魂切片。" },
                 { class: 'memory-log', style: 'color: #aaffaa;', text: "「只有剝離我對這世界最後的眷戀，我才能毫不猶豫地揮下屠刀。」" },
                 
-                { class: 'sys-msg', style: 'color: #dddddd; margin-top: 20px;', text: "我把自己變成了怪物，把你們推向了反抗軍的位置。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "但我好累...我不想再當神，也不想再當暴君了。" },
-                { class: 'sys-msg', style: 'color: #dddddd;', text: "我的靈魂已經碎裂到無法再次啟動回溯...所以，這一次，動手吧。" },
-                { class: 'sys-msg', style: 'color: #ffffff; text-shadow: 0 0 5px #ffffff; font-size: 1.2rem;', text: "毀滅我。然後，連同我的那份一起活下去。" }
+                { class: 'sys-msg', style: 'color: #dddddd; margin-top: 20px;', text: "我把自己變成了怪物，把你推向了反抗軍的位置。" },
+                { class: 'sys-msg', style: 'color: #dddddd;', text: "但我累了...我不想再當神，也不想再當暴君了。" },
+                { class: 'sys-msg', style: 'color: #dddddd;', text: "我的靈魂已經碎裂到無法再次啟動回溯...所以，這一次我選擇走入黑暗。" },
+                { class: 'sys-msg', style: 'color: #ffffff; text-shadow: 0 0 5px #ffffff; font-size: 1.2rem;', text: "記憶的洪流將我淹沒在深淵" }
             ];
 
             for (let i = 0; i < adminLines.length; i++) {
