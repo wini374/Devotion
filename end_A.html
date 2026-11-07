@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8"><title>ENDING A: SACRIFICE</title>
+    <style>
+        body { background-color: #000; color: #fff; font-family: "PingFang TC", sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        #text-container { text-align: center; max-width: 700px; padding: 0 20px; line-height: 2; font-size: 1.1rem; letter-spacing: 2px; }
+        .fade-text { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; transition: opacity 2.5s ease; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        #credits { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; transition: opacity 3s; width: 100%; }
+        .title { font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 20px; font-weight: bold; }
+        .sub { font-size: 1.2rem; letter-spacing: 5px; color: #aaa; margin-bottom: 50px; }
+        .btn { background: transparent; border: 1px solid #555; color: #888; padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; }
+        .btn:hover { border-color: #fff; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+    <div id="text-container"></div>
+    <div id="credits"><div class="title">DEVOTION</div><div class="sub">ENDING A - 成全 (SACRIFICE)</div><a href="index.html" class="btn">回到原點</a></div>
+    <script>
+        const lines = [
+            "[ 系統自毀程序已啟動。伺服器離線。 ]",
+            "你親手按下了終止鍵。<br>摧毀了核心，也摧毀了他最後的意識。",
+            "外面的天空亮了。<br>長達三年的戰火，終於在共同的暴君倒下後，迎來了終結。",
+            "他的計畫成功了。",
+            "這個世界將會迎來新生，而在史書的記載裡，<br>沒有人會知道這個暴君真正的名字。",
+            "也沒有人會知道，他曾經也只是個喜歡坐在營火旁，<br>笑著談論未來的笨蛋。",
+            "除了你。",
+            "世界得救了。<br>但你卻永遠失去了那個沒能和你一起回家的人。"
+        ];
+        window.onload = async () => {
+            const container = document.getElementById("text-container");
+            await new Promise(r => setTimeout(r, 2000));
+            for (let line of lines) {
+                const div = document.createElement("div"); div.className = "fade-text"; div.innerHTML = line; container.appendChild(div);
+                setTimeout(() => div.style.opacity = 1, 100);
+                await new Promise(r => setTimeout(r, 3500 + line.length * 100));
+                div.style.opacity = 0; await new Promise(r => setTimeout(r, 2500)); div.remove();
+            }
+            document.getElementById("credits").style.opacity = 1;
+        };
+    </script>
+</body>
+</html>
