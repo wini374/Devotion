@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENDING B: ECHO</title>
+    <style>
+        body {
+            background-color: #000000; color: #ffaa00;
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 100vh; margin: 0; overflow: hidden;
+        }
+        #text-container { text-align: center; max-width: 700px; padding: 0 20px; line-height: 2; font-size: 1.1rem; letter-spacing: 2px; }
+        .fade-text { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; transition: opacity 2.5s ease-in-out; text-shadow: 0 0 10px rgba(255, 170, 0, 0.2); }
+        
+        /* 結局B特有的故障殘影特效 */
+        .glitch-text { animation: glitch 3s infinite; }
+        @keyframes glitch {
+            0%, 100% { text-shadow: 2px 0 red, -2px 0 blue; }
+            50% { text-shadow: -2px 0 red, 2px 0 blue; }
+        }
+
+        #credits-section { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; transition: opacity 3s ease-in-out; width: 100%; }
+        .game-title { font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 20px; font-weight: bold; color: #ffffff;}
+        .ending-title { font-size: 1.2rem; letter-spacing: 5px; color: #ffaa00; margin-bottom: 50px; }
+        .restart-btn { background-color: transparent; border: 1px solid #ffaa00; color: #ffaa00; padding: 10px 30px; font-size: 0.9rem; cursor: pointer; transition: all 0.5s ease; letter-spacing: 3px; text-decoration: none; display: inline-block; }
+        .restart-btn:hover { background-color: #ffaa00; color: #000; box-shadow: 0 0 15px rgba(255,170,0,0.5); }
+    </style>
+</head>
+<body>
+    <div id="text-container"></div>
+    <div id="credits-section">
+        <div class="game-title">DEVOTION</div>
+        <div class="ending-title">ENDING B - 迴音</div>
+        <a href="index.html" class="restart-btn">重置輪迴 (RESET)</a>
+    </div>
+
+    <script>
+        const endLines = [
+            "[ 警告：管理員終止程序已取消。 ]",
+            "[ 警告：偵測到外部意識正在強行上傳至崩壞核心... ]",
+            "你鬆開了終止鍵。",
+            "看著螢幕上那句「毀滅我，替我活下去」，<br>你終究還是無法做到。",
+            "「如果這個世界需要你變成怪物才能團結...」<br>「那就讓他們自己去打吧。」",
+            "在警報聲中，你切斷了矩陣的外部連線，<br>將自己的意識數據化，逆向灌入了他即將消散的核心。",
+            "沒有了共同的敵人，外面的世界或許又會重燃戰火。<br>各方陣營或許會再次互相撕裂，走向毀滅。",
+            "但這一次，你不在乎了。",
+            "在無盡冰冷的代碼與黑暗中，你終於牽住了他的手。",
+            "<span class='glitch-text'>這一次，你們一起留在了這裡。</span>"
+        ];
+
+        window.onload = async function() {
+            const container = document.getElementById("text-container");
+            const credits = document.getElementById("credits-section");
+            await new Promise(r => setTimeout(r, 2000));
+
+            for (let i = 0; i < endLines.length; i++) {
+                const div = document.createElement("div");
+                div.className = "fade-text";
+                div.innerHTML = endLines[i];
+                container.appendChild(div);
+                
+                setTimeout(() => { div.style.opacity = 1; }, 100);
+                const stayTime = 3500 + (endLines[i].length * 100);
+                await new Promise(r => setTimeout(r, stayTime));
+                div.style.opacity = 0;
+                await new Promise(r => setTimeout(r, 3000));
+                div.remove();
+            }
+            await new Promise(r => setTimeout(r, 1000));
+            credits.style.opacity = 1;
+        };
+    </script>
+</body>
+</html>
