@@ -147,7 +147,7 @@
     <script>
         // --- 劇情腳本設定 ---
         const scriptLines = [
-            { class: 'sys-msg', text: "> 正在存取幽靈軌跡日誌 (GHOST_TRAIL_LOGS)..." },
+            { class: 'sys-msg', text: "> 正在存取管理員資產日誌 (GHOST_TRAIL_LOGS)..." },
             { class: 'sys-msg', text: "> 權限已覆寫。正在載入 資產_01, 資產_02, 資產_03 的實體行動數據..." },
             { class: 'sys-msg', instant: true, text: "==================================================" },
             { class: 'log-data', text: "[ 實體活動時間軸比對 // 第36週期 ]\n> 資產_01 (阿斯蘭朵) 啟動區間：00:00:00 - 07:59:59\n> 資產_02 (新星聯邦) 啟動區間：08:00:00 - 15:59:59\n> 資產_03 (灰燼之地) 啟動區間：16:00:00 - 23:59:59" },
@@ -205,21 +205,10 @@
                 
                 const text = lineData.text;
 
-                // 處理震動與切歌
+                // 處理震動 (移除切換音樂)
                 if (lineData.class === 'fatal-error' && text.includes("因果律悖論")) {
                     document.body.classList.add("screen-shake");
                     setTimeout(() => document.body.classList.remove("screen-shake"), 600);
-                    
-                    document.getElementById("terminal-bgm").pause();
-                    const sadBgm = document.getElementById("terminal-bgm");
-                    sadBgm.volume = 0;
-                    sadBgm.play().catch(e => console.log(e));
-                    
-                    let newVol = 0;
-                    const fadeIn = setInterval(() => {
-                        if (newVol < 0.7) { newVol += 0.05; sadBgm.volume = newVol; }
-                        else clearInterval(fadeIn);
-                    }, 200);
                 }
 
                 // 判斷是否為「瞬間顯示」
