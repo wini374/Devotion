@@ -12,23 +12,36 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
+            justify-content: center;
             height: 100vh; 
             margin: 0; 
             overflow: hidden; 
         }
 
+        /* 共通設定：讓三個區塊都絕對定位在中間，方便淡入淡出切換 */
+        .stage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            pointer-events: none; /* 隱藏時不可點擊 */
+        }
+        .stage.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         /* 第一階段：打字機容器 */
-        #terminal-container {
-            width: 80%;
-            max-width: 700px;
-            margin-top: 10vh;
+        #stage-1 {
             line-height: 2;
             font-size: 1.1rem;
             letter-spacing: 2px;
-            min-height: 200px;
         }
         .type-line { margin-bottom: 15px; }
-        
         .cursor {
             display: inline-block;
             width: 10px; height: 1.2rem;
@@ -40,50 +53,53 @@
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         /* 讀取進度條 */
-        #progress-container { width: 80%; max-width: 700px; margin-top: 20px; display: none; }
+        #progress-container { width: 100%; margin-top: 30px; display: none; }
         #progress-bar { height: 2px; background: #00ccaa; width: 0%; box-shadow: 0 0 10px #00ccaa; }
 
-        /* 第二階段：對話框容器 */
+        /* 第二階段：對話框容器 (變大) */
+        #stage-2 {
+            max-width: 600px; /* 變寬 */
+        }
         #chat-box {
-            display: none; /* 初始隱藏 */
-            width: 90%;
-            max-width: 450px;
-            margin-top: 40px;
             border: 1px solid #00ccaa;
             border-radius: 8px;
             background-color: rgba(0, 20, 15, 0.8);
             box-shadow: 0 0 20px rgba(0, 204, 170, 0.2);
             overflow: hidden;
-            opacity: 0;
-            transition: opacity 1.5s ease;
+            display: flex;
+            flex-direction: column;
+            height: 60vh; /* 固定高度，讓訊息在裡面長大 */
         }
         .chat-header {
             background-color: #00ccaa;
             color: #000;
-            padding: 8px 15px;
+            padding: 10px 15px;
             font-weight: bold;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-align: center;
         }
         .chat-content {
-            padding: 20px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            min-height: 150px;
+            gap: 20px;
+            overflow-y: auto; /* 如果對話很多，允許滾動 */
+            flex-grow: 1;
         }
 
         /* 訊息泡泡樣式 */
         .msg {
-            padding: 10px 15px;
-            border-radius: 6px;
-            max-width: 75%;
-            font-size: 1rem;
-            letter-spacing: 1px;
+            padding: 12px 18px;
+            border-radius: 8px;
+            max-width: 80%;
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
             opacity: 0;
-            transform: translateY(10px);
-            animation: msg-pop 0.5s forwards;
+            transform: translateY(15px);
+            animation: msg-pop 0.6s forwards;
             word-break: break-all;
+            line-height: 1.6;
         }
         @keyframes msg-pop {
             to { opacity: 1; transform: translateY(0); }
@@ -105,59 +121,58 @@
             box-shadow: 0 0 10px rgba(0, 204, 170, 0.5);
         }
 
-        /* 第三階段：最終結語與按鈕 */
-        #final-section {
-            opacity: 0;
+        /* 第三階段：最終結語與按鈕 (置中) */
+        #stage-3 {
             text-align: center;
-            margin-top: 50px;
-            transition: opacity 2s ease;
         }
         .final-text {
-            font-size: 1.1rem;
-            letter-spacing: 3px;
-            line-height: 2;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            line-height: 2.2;
             color: #ffffff;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-            margin-bottom: 40px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+            margin-bottom: 60px;
         }
-        .title { font-size: 2rem; letter-spacing: 10px; font-weight: bold; color: #fff; margin-bottom: 10px; }
-        .sub { font-size: 1rem; letter-spacing: 5px; color: #00ccaa; margin-bottom: 30px; }
+        .title { font-size: 2.5rem; letter-spacing: 15px; font-weight: bold; color: #fff; margin-bottom: 15px; }
+        .sub { font-size: 1.2rem; letter-spacing: 8px; color: #00ccaa; margin-bottom: 40px; }
         
         .btn { 
             background: transparent; border: 1px dashed #00ccaa; color: #00ccaa; 
-            padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; transition: all 0.5s; 
+            padding: 12px 35px; cursor: pointer; text-decoration: none; letter-spacing: 4px; transition: all 0.5s; 
+            display: inline-block;
         }
-        .btn:hover { background: #00ccaa; color: #000; box-shadow: 0 0 15px rgba(0,204,170,0.5); }
+        .btn:hover { background: #00ccaa; color: #000; box-shadow: 0 0 20px rgba(0,204,170,0.6); }
     </style>
 </head>
 <body>
 
-    <!-- 打字機敘事區 -->
-    <div id="terminal-container"></div>
-    
-    <!-- 備份進度條 -->
-    <div id="progress-container"><div id="progress-bar"></div></div>
+    <!-- 階段一：駭客敘事區 -->
+    <div id="stage-1" class="stage">
+        <div id="terminal-content"></div>
+        <div id="progress-container"><div id="progress-bar"></div></div>
+    </div>
 
-    <!-- 虛擬沙盒通訊對話框 -->
-    <div id="chat-box">
-        <div class="chat-header">SANDBOX_ENV // PORT: SECURE</div>
-        <div class="chat-content" id="chat-content">
-            <!-- 訊息會動態生成在這裡 -->
+    <!-- 階段二：虛擬沙盒通訊對話框 -->
+    <div id="stage-2" class="stage">
+        <div id="chat-box">
+            <div class="chat-header">SANDBOX_ENV // ROOT_ACCESS: GRANTED</div>
+            <div class="chat-content" id="chat-content">
+                <!-- 訊息會動態生成在這裡 -->
+            </div>
         </div>
     </div>
 
-    <!-- 最終結尾區 -->
-    <div id="final-section">
+    <!-- 階段三：最終結尾區 -->
+    <div id="stage-3" class="stage">
         <div class="final-text">
             雖然只是一串冰冷的代碼，<br>但這一次，你們終於不用再分開了。
         </div>
         <div class="title">DEVOTION</div>
-        <div class="sub">ENDING D - 永恆 ETERNITY</div>
+        <div class="sub">ENDING D - 永恆 (ETERNITY)</div>
         <a href="index.html" class="btn">> 斷開連線 (LOGOUT)</a>
     </div>
 
     <script>
-        // 第一階段：駭客敘事腳本
         const narrativeLines = [
             "> 執行指令：extract_core_memory.sh",
             "在核心徹底燒毀的前一秒，<br>你用最暴力的手段繞過了矩陣的防火牆。",
@@ -167,22 +182,36 @@
             "你啟動了虛擬沙盒環境。"
         ];
 
+        // 定義對話內容 (可自行新增或修改)
+        const chatSequence = [
+            { sender: 'admin', text: "?", delayBefore: 2000 },
+            { sender: 'admin', text: "這是哪裡...", delayBefore: 1500 },
+            { sender: 'admin', text: "我不是應該已經...", delayBefore: 2000 },
+            { sender: 'player', text: "你現在在我的私人伺服器裡。", delayBefore: 3000 },
+            { sender: 'player', text: "外面的世界已經安全了。", delayBefore: 1500 },
+            { sender: 'admin', text: "你為什麼要這麼做？", delayBefore: 2500 },
+            { sender: 'admin', text: "你本來可以自由的。", delayBefore: 1500 },
+            { sender: 'player', text: "因為你說過，你想和我一起回家。", delayBefore: 3500 },
+            { sender: 'player', text: "歡迎回來。", delayBefore: 2000 }
+        ];
+
         window.onload = async function() {
-            const container = document.getElementById("terminal-container");
+            const stage1 = document.getElementById("stage-1");
+            const stage2 = document.getElementById("stage-2");
+            const stage3 = document.getElementById("stage-3");
+            const termContent = document.getElementById("terminal-content");
             const progContainer = document.getElementById("progress-container");
             const progBar = document.getElementById("progress-bar");
-            const chatBox = document.getElementById("chat-box");
             const chatContent = document.getElementById("chat-content");
-            const finalSection = document.getElementById("final-section");
 
-            // 1. 延遲開場
-            await new Promise(r => setTimeout(r, 1500));
+            // --- 幕 1：打字機 ---
+            stage1.classList.add('active');
+            await new Promise(r => setTimeout(r, 1000));
 
-            // 2. 執行打字機效果
             for (let i = 0; i < narrativeLines.length; i++) {
                 const div = document.createElement("div");
                 div.className = "type-line";
-                container.appendChild(div);
+                termContent.appendChild(div);
                 
                 const cursor = document.createElement("span");
                 cursor.className = "cursor";
@@ -192,9 +221,7 @@
 
                 for (let j = 0; j < text.length; j++) {
                     if (text.charAt(j) === '<') {
-                        // 快速跳過 <br> 標籤
-                        currentHTML += "<br>";
-                        j += 3;
+                        currentHTML += "<br>"; j += 3;
                     } else {
                         currentHTML += text.charAt(j);
                     }
@@ -203,58 +230,42 @@
                     
                     let speed = Math.random() * 30 + 30; 
                     if (['，', '。'].includes(text.charAt(j))) speed += 200;
-                    
                     await new Promise(r => setTimeout(r, speed));
                 }
-                
                 cursor.remove();
                 
-                // 在第一句印完後，啟動進度條
                 if (i === 0) {
                     progContainer.style.display = "block";
                     progBar.style.transition = "width 6s cubic-bezier(0.1, 0.8, 0.2, 1)";
                     setTimeout(() => { progBar.style.width = "100%"; }, 100);
                 }
-
                 await new Promise(r => setTimeout(r, 800)); 
             }
 
-            // 隱藏進度條，為對話框騰出空間
-            await new Promise(r => setTimeout(r, 1000));
-            progContainer.style.display = "none";
+            await new Promise(r => setTimeout(r, 2000));
+            
+            // --- 幕 1 淡出，幕 2 淡入 ---
+            stage1.classList.remove('active');
+            await new Promise(r => setTimeout(r, 2000)); // 等待淡出
+            stage2.classList.add('active');
 
-            // 3. 顯示對話框
-            chatBox.style.display = "block";
-            setTimeout(() => { chatBox.style.opacity = 1; }, 100);
+            // --- 幕 2：對話進行 ---
+            for (let msgData of chatSequence) {
+                await new Promise(r => setTimeout(r, msgData.delayBefore));
+                const msgDiv = document.createElement("div");
+                msgDiv.className = `msg msg-${msgData.sender}`;
+                msgDiv.innerHTML = msgData.text;
+                chatContent.appendChild(msgDiv);
+                // 讓對話框自動滾動到最底
+                chatContent.scrollTop = chatContent.scrollHeight;
+            }
 
-            // 4. 對話演出 (模擬收發訊息的延遲)
-            await new Promise(r => setTimeout(r, 2000)); // 等待 2 秒，營造他在適應新環境的空白
+            await new Promise(r => setTimeout(r, 5000)); // 對話結束後停留久一點
 
-            // Admin 的第一則訊息
-            const msg1 = document.createElement("div");
-            msg1.className = "msg msg-admin";
-            msg1.innerHTML = "?";
-            chatContent.appendChild(msg1);
-
-            await new Promise(r => setTimeout(r, 1500));
-
-            // Admin 的第二則訊息
-            const msg2 = document.createElement("div");
-            msg2.className = "msg msg-admin";
-            msg2.innerHTML = "我們在哪";
-            chatContent.appendChild(msg2);
-
-            await new Promise(r => setTimeout(r, 2500)); // 玩家遲疑/打字的停頓
-
-            // Player 的回覆
-            const msg3 = document.createElement("div");
-            msg3.className = "msg msg-player";
-            msg3.innerHTML = "歡迎回來";
-            chatContent.appendChild(msg3);
-
-            // 5. 顯示最終結尾與按鈕
-            await new Promise(r => setTimeout(r, 3000)); // 看完訊息的餘韻
-            finalSection.style.opacity = 1;
+            // --- 幕 2 淡出，幕 3 淡入 ---
+            stage2.classList.remove('active');
+            await new Promise(r => setTimeout(r, 2000));
+            stage3.classList.add('active');
         };
     </script>
 </body>
