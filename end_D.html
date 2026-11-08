@@ -34,6 +34,8 @@
             opacity: 1;
             pointer-events: auto;
         }
+        /*-- 結局音樂 (替換 src 為各結局對應的音樂檔) --*/
+    <audio id="end-bgm" src="D.mp3" loop></audio>
 
         /* 第一階段：打字機容器 */
         #stage-1 {
@@ -52,9 +54,6 @@
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* 讀取進度條 */
-        #progress-container { width: 100%; margin-top: 30px; display: none; }
-        #progress-bar { height: 2px; background: #00ccaa; width: 0%; box-shadow: 0 0 10px #00ccaa; }
 
         /* 第二階段：對話框容器 (變大) */
         #stage-2 {
@@ -179,7 +178,7 @@
             "你將他殘存的意識碎片與那三十五次輪迴的記憶，全數封裝打包。",
             "真實世界的暴君已經死亡，世界迎來了和平。",
             "但在你隨身攜帶的離線終端機裡，<br>靜靜地躺著一個容量龐大、被重重加密的封存檔。",
-            "你啟動了虛擬沙盒環境。"
+            "你啟動了虛擬沙盒。"
         ];
 
         // 定義對話內容 (可自行新增或修改)
@@ -188,7 +187,6 @@
             { sender: 'admin', text: "這是哪裡...", delayBefore: 1500 },
             { sender: 'admin', text: "我不是應該已經...", delayBefore: 2000 },
             { sender: 'player', text: "你現在在我的私人伺服器裡。", delayBefore: 3000 },
-            { sender: 'player', text: "外面的世界已經安全了。", delayBefore: 1500 },
             { sender: 'admin', text: "你為什麼要這麼做？", delayBefore: 2500 },
             { sender: 'admin', text: "你本來可以自由的。", delayBefore: 1500 },
             { sender: 'player', text: "因為你說過，你想和我一起回家。", delayBefore: 3500 },
