@@ -183,16 +183,89 @@
             "你啟動了虛擬沙盒。"
         ];
 
-        // 定義對話內容 (可自行新增或修改)
-        const chatSequence = [
-            { sender: 'admin', text: "?", delayBefore: 2000 },
-            { sender: 'admin', text: "這是哪裡...", delayBefore: 1500 },
-            { sender: 'admin', text: "我不是應該已經...", delayBefore: 2000 },
-            { sender: 'player', text: "你現在在我的私人伺服器裡。", delayBefore: 3000 },
-            { sender: 'admin', text: "你為什麼要這麼做？", delayBefore: 2500 },
-            { sender: 'admin', text: "這沒必要。", delayBefore: 1500 },
-            { sender: 'player', text: "因為你說過，你想和我一起回去。", delayBefore: 3500 },
-            { sender: 'player', text: "歡迎回來，我的朋友。", delayBefore: 2000 }
+        
+// 定義對話內容
+const chatSequence = [
+    { sender: 'admin', text: "...?", delayBefore: 2500 },
+    { sender: 'admin', text: "這裡是哪裡...", delayBefore: 2000 },
+    { sender: 'admin', text: "不對......", delayBefore: 1800 },
+    { sender: 'admin', text: "我明明已經解除核心權限了。", delayBefore: 2500 },
+    { sender: 'admin', text: "我應該已經......消失了才對。", delayBefore: 3000 },
+
+    { sender: 'player', text: "你終於醒了。", delayBefore: 3500 },
+
+    { sender: 'admin', text: "......誰？", delayBefore: 2000 },
+    { sender: 'admin', text: "等等......這個訊號......", delayBefore: 2500 },
+    { sender: 'admin', text: "不可能。", delayBefore: 1800 },
+    { sender: 'admin', text: "你不應該出現在這裡。", delayBefore: 2500 },
+
+    { sender: 'player', text: "好久不見，老朋友。", delayBefore: 3500 },
+
+    { sender: 'admin', text: "......是你？", delayBefore: 2500 },
+    { sender: 'admin', text: "為什麼？", delayBefore: 1500 },
+    { sender: 'admin', text: "我不是已經告訴過你，不要穿越 Nether 嗎？", delayBefore: 3000 },
+    { sender: 'admin', text: "那裡不是你該來的地方。", delayBefore: 2000 },
+    { sender: 'admin', text: "你知不知道，這裡埋葬了多少東西......", delayBefore: 2500 },
+    { sender: 'admin', text: "又有多少個我，再也沒能從這裡離開？", delayBefore: 3500 },
+
+    { sender: 'player', text: "我知道。", delayBefore: 2500 },
+    { sender: 'player', text: "我讀完了你的日誌。", delayBefore: 3000 },
+    { sender: 'player', text: "第三十六次輪迴。", delayBefore: 2000 },
+    { sender: 'player', text: "那些被處決的靈魂碎片......", delayBefore: 2500 },
+    { sender: 'player', text: "還有你獨自承受的所有記憶。", delayBefore: 3000 },
+
+    { sender: 'admin', text: "......所以你都知道了。", delayBefore: 3000 },
+    { sender: 'admin', text: "那你更不應該來這裡。", delayBefore: 2000 },
+    { sender: 'admin', text: "回去吧。", delayBefore: 1500 },
+    { sender: 'admin', text: "趁這個世界還來得及......回到光裡去。", delayBefore: 3500 },
+
+    { sender: 'player', text: "你還是跟以前一樣。", delayBefore: 2500 },
+    { sender: 'player', text: "總是自以為能替所有人決定結局。", delayBefore: 2500 },
+
+    { sender: 'admin', text: "這一次不一樣。", delayBefore: 2000 },
+    { sender: 'admin', text: "我的靈魂已經碎裂了。", delayBefore: 2000 },
+    { sender: 'admin', text: "回溯權限也已經永久失效。", delayBefore: 2000 },
+    { sender: 'admin', text: "我什麼都做不到了......", delayBefore: 3000 },
+    { sender: 'admin', text: "我已經沒有辦法再陪你回去了。", delayBefore: 3500 },
+
+    { sender: 'player', text: "誰說我要你拯救世界了？", delayBefore: 3000 },
+
+    { sender: 'admin', text: "......什麼？", delayBefore: 2500 },
+
+    { sender: 'player', text: "我從來沒有要求你成為神。", delayBefore: 2500 },
+    { sender: 'player', text: "也沒有要求你成為那個被所有人憎恨的暴君。", delayBefore: 3000 },
+    { sender: 'player', text: "我只是在等你。", delayBefore: 3500 },
+
+    { sender: 'admin', text: "......", delayBefore: 2500 },
+    { sender: 'admin', text: "你不應該原諒我。", delayBefore: 2500 },
+    { sender: 'admin', text: "我做過的那些事......那些死去的人......", delayBefore: 3000 },
+    { sender: 'admin', text: "我甚至親手把你推向了我的對立面。", delayBefore: 2500 },
+    { sender: 'admin', text: "我沒有資格再坐回那堆營火旁了。", delayBefore: 3500 },
+
+    { sender: 'player', text: "我不是來原諒你的。", delayBefore: 3000 },
+    { sender: 'player', text: "我是來帶你回家的。", delayBefore: 4000 },
+
+    { sender: 'admin', text: "......回家？", delayBefore: 3000 },
+    { sender: 'admin', text: "可是......我已經找不到回去的路了。", delayBefore: 3000 },
+    { sender: 'admin', text: "這裡只有那些被刪除的記憶。", delayBefore: 2500 },
+    { sender: 'admin', text: "只有那些再也無法挽回的過去。", delayBefore: 2500 },
+    { sender: 'admin', text: "我已經在這裡迷失太久了......", delayBefore: 3500 },
+
+    { sender: 'player', text: "那就讓我帶路吧。", delayBefore: 3500 },
+    { sender: 'player', text: "這一次，換我帶你走出去。", delayBefore: 3000 },
+
+    { sender: 'admin', text: "......你這個傻瓜。", delayBefore: 3000 },
+    { sender: 'admin', text: "我明明說過......不要跟過來的。", delayBefore: 2500 },
+
+    { sender: 'player', text: "而我也說過，我們有一天會一起改變世界。", delayBefore: 3500 },
+    { sender: 'player', text: "雖然結果好像不太一樣。", delayBefore: 2500 },
+    { sender: 'player', text: "但至少，這次我們可以一起回去了。", delayBefore: 3500 },
+
+    { sender: 'admin', text: "......", delayBefore: 3000 },
+    { sender: 'admin', text: "歡迎回來。", delayBefore: 2500 },
+    { sender: 'admin', text: "我的朋友。", delayBefore: 4000 }
+];
+
         ];
 
         window.onload = async function() {
