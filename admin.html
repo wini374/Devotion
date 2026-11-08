@@ -150,13 +150,15 @@
             { class: 'sys-msg', text: "我的靈魂已經碎裂到無法再次啟動回溯。" },
             { class: 'sys-msg', text: "權限正在崩解，記憶正在吞噬我的意識，而那些被我親手埋葬的過去，正一點一點地將我拖入深淵。" },
             { class: 'sys-msg', text: "所以，這一次，我不會再重來了。" },
-            { class: 'sys-msg', text: "系統核心的最終控制權，我已經轉移給你了。" },
+            { class: 'sys-msg', text: "系統核心的最終控制權，我已經解除鎖定。" },
             { class: 'sys-msg', text: "這一次，沒有新的世界需要我拯救，也沒有新的暴君需要我扮演。" },
+
             
-            { class: 'final-words', text: "你可以選擇摧毀我，把這個世界還給他們。" },
-            { class: 'final-words', text: "你也可以選擇留下來...或者，接下這頂王冠。" },
-            { class: 'final-words', text: "無論你做什麼決定，我都接受。" },
-            { class: 'final-words', text: "只是……對不起。\n我終究沒能和你一起回家。" }
+            { class: 'final-words', text: "按下終止鍵。把這個世界還給他們。" },
+            { class: 'final-words', text: "不要猶豫，也不要回頭。" },
+            { class: 'final-words', text: "這是我最後的請求。" },
+            { class: 'final-words', text: "對不起……\n我終究沒能和你一起回家。" }
+        ];
         ];
 
         window.onload = function() {
@@ -230,23 +232,24 @@
                 await new Promise(r => setTimeout(r, pauseTime)); 
             }
             
-            // 腳本全數結束後，顯示「終止程序」按鈕
-            document.getElementById("action-section").style.display = "block";
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-
-        // --- 點擊終止程序後的淡出效果 ---
-        function fadeOutAndEnd() {
-            const container = document.getElementById("terminal-container");
-            const btn = document.getElementById("action-section");
-            const bgm = document.getElementById("sad-bgm");
-            
-            // 讓整個終端機框框緩緩淡出消失
-            container.style.transition = "opacity 3s ease";
-            container.style.opacity = 0;
-            btn.style.transition = "opacity 2s ease";
-            btn.style.opacity = 0;
-
+           <!-- 四結局按鈕區 -->
+    <div id="action-section" style="max-width: 800px; margin: 0 auto; margin-top: 30px; margin-bottom: 50px; display: none; flex-direction: column; align-items: flex-end; gap: 15px;">
+        
+        <!-- 這是玩家駭客越權叫出的隱藏指令區 (結局 C & D) -->
+        <div style="display: flex; gap: 15px; width: 100%; justify-content: flex-end;">
+            <!-- 結局 D 按鈕 (備份虛擬化) -->
+            <a onclick="fadeOutAndNavigate('end_D.html', 'sad-bgm')" class="btn" style="border: none; border-bottom: 1px dashed #00ccaa; color: #00ccaa; font-size: 0.9rem; padding: 5px 10px;">> [sudo] execute virtual_backup.sh</a>
+            <!-- 結局 C 按鈕 (繼承王冠) -->
+            <a onclick="fadeOutAndNavigate('end_C.html', 'sad-bgm')" class="btn" style="border: none; border-bottom: 1px dashed #cc00cc; color: #cc00cc; font-size: 0.9rem; padding: 5px 10px;">> [sudo] override_admin_privilege</a>
+        </div>
+        
+        <div style="display: flex; gap: 20px; margin-top: 15px;">
+            <!-- 結局 B 按鈕 (殉情/叛逆) -->
+            <a onclick="fadeOutAndNavigate('end_B.html', 'sad-bgm')" class="btn" style="border-color: #555; color: #888;">> [OVERRIDE] 拒絕。強制上傳自我意識。</a>
+            <!-- 結局 A 按鈕 (成全/主線) - 唯一順應系統的指令 -->
+            <a onclick="fadeOutAndNavigate('end_A.html', 'sad-bgm')" class="btn" style="border-color: #ff3333; color: #ff3333;">> [EXECUTE] 遵從遺願，啟動自毀程序。</a>
+        </div>
+    </div>
             // 音樂淡出
             if (bgm && !bgm.paused) {
                 let vol = bgm.volume;
