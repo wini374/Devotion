@@ -18,6 +18,12 @@
             overflow: hidden; 
         }
 
+        /* 系統終端機專用字體 (細明體) */
+        .sys-font {
+            font-family: "MingLiU", "細明體", "Courier New", Courier, monospace !important;
+            font-weight: bold;
+        }
+
         /* 共通舞台設定 */
         .stage {
             position: absolute;
@@ -25,16 +31,35 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 550px; /* 【修改】縮小黑框的寬度 */
+            max-width: 550px; 
             opacity: 0;
-            transition: opacity 1.5s ease-in-out;
             pointer-events: none;
             text-align: center;
             z-index: 10;
         }
+        
+        /* 針對敘事文字與最終結局保留淡入淡出 */
+        #stage-1, #stage-4 {
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        /* 第三階段(系統中止) 強制移除漸變動畫，讓它瞬間出現 */
+        #stage-3 {
+            transition: none !important; 
+        }
+        
         .stage.active {
             opacity: 1;
             pointer-events: auto;
+        }
+
+        /* 第一句系統提示 (瞬間出現) */
+        #sys-start-msg {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            display: none; /* 預設隱藏，靠 JS 瞬間開啟 */
         }
 
         /* 背景亂碼層 (滿屏設計) */
@@ -46,17 +71,18 @@
             z-index: 1;
             overflow: hidden;
             opacity: 0;
-            transition: opacity 1s ease;
+            transition: opacity 0.5s ease;
         }
         #code-spam {
-            width: 100%; height: 100%;
+            width: 100vw; height: 100vh;
             color: #444444; 
             font-family: "Courier New", Courier, monospace;
-            font-size: 14px; /* 稍微縮小字體以容納更多代碼 */
-            letter-spacing: 1px;
-            line-height: 1.1;
+            font-size: 15px; 
+            letter-spacing: 0px; 
+            line-height: 1;
             word-break: break-all;
-            opacity: 0.8; /* 提高代碼透明度，讓其更清晰 */
+            text-align: justify; 
+            opacity: 0.8; 
         }
         #glitch-bg::after {
             content: "";
@@ -65,24 +91,23 @@
             pointer-events: none;
         }
 
-        /* 第一階段：敘事文字與半透明緊湊底框 */
+        /* 敘事文字與半透明緊湊底框 */
         #stage-1 {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 150px;
-            transition: all 1s ease;
         }
         .glass-box {
             background-color: rgba(10, 10, 10, 0.85); 
             border: 1px solid #333;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
             border-radius: 6px;
-            padding: 30px 40px; /* 【修改】縮小內邊距，讓框更緊湊 */
+            padding: 30px 40px; 
         }
 
         #text-container {
-            line-height: 2; /* 稍微調整行高 */
+            line-height: 2; 
             font-size: 1.1rem;
             letter-spacing: 3px;
             width: 100%;
@@ -104,7 +129,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #fff; /* 以白色為底的刺眼閃爍 */
+            background-color: #fff; 
             z-index: 9999;
             overflow: hidden;
         }
@@ -122,16 +147,14 @@
 
         /* 第三階段：系統中止宣告 */
         #system-terminated {
-            font-family: "Courier New", Courier, monospace;
             color: #aaaaaa;
             font-size: 1.5rem;
             letter-spacing: 5px;
-            font-weight: bold;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
         }
 
         /* 第四階段：結局標題與墓誌銘 */
-        #stage-4 { max-width: 800px; } /* 放寬最後結局畫面的寬度 */
+        #stage-4 { max-width: 800px; } 
         .epitaph {
             font-size: 1.1rem;
             letter-spacing: 4px;
@@ -166,12 +189,15 @@
 
     <!-- 階段一：敘事區 -->
     <div id="stage-1" class="stage active">
+        <!-- 瞬間彈出的系統啟動字樣 (細明體) -->
+        <div id="sys-start-msg" class="sys-font">[ 系統自毀程序已啟動。伺服器離線中... ]</div>
+        <!-- 敘事文字容器 -->
         <div id="text-container"></div>
     </div>
 
     <!-- 階段三：系統中止宣告 -->
     <div id="stage-3" class="stage" style="max-width: 800px;">
-        <div id="system-terminated">> [ 系統已徹底終止。伺服器永久離線。 ]</div>
+        <div id="system-terminated" class="sys-font">> [ 系統已徹底終止。伺服器永久離線。 ]</div>
     </div>
 
     <!-- 階段四：結局標題與墓誌銘 -->
@@ -201,24 +227,23 @@
                 }, 200);
             }
 
+            const stage1 = document.getElementById("stage-1");
             const container = document.getElementById("text-container");
+            const sysStart = document.getElementById("sys-start-msg");
+
             await new Promise(r => setTimeout(r, 1000));
 
-            // 1. 顯示啟動提示
-            const sysDiv = document.createElement("div");
-            sysDiv.className = "fade-text";
-            sysDiv.innerHTML = "[ 系統自毀程序已啟動。伺服器離線中... ]";
-            container.appendChild(sysDiv);
-            
-            setTimeout(() => { sysDiv.style.opacity = 1; }, 50);
+            // 1. 系統提示瞬間彈出 (無動畫，細明體)
+            sysStart.style.display = "block";
             await new Promise(r => setTimeout(r, 2500)); 
-            sysDiv.style.opacity = 0;
-            await new Promise(r => setTimeout(r, 1500));
-            sysDiv.remove();
+            
+            // 瞬間消失，並留下一點點黑屏空白
+            sysStart.style.display = "none";
+            await new Promise(r => setTimeout(r, 500));
 
             // 2. 啟動背景滿屏亂碼與小黑框
             startBackgroundGlitch();
-            document.getElementById("stage-1").classList.add("glass-box");
+            stage1.classList.add("glass-box");
 
             // 3. 在崩潰的背景下，依序播放敘事文字
             const epilogueLines = [
@@ -259,12 +284,12 @@
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\";
             glitchInterval = setInterval(() => {
                 let randomCode = "";
-                // 生成極大量的字元以確保填滿 100vw/100vh 的螢幕
-                for (let i = 0; i < 6000; i++) {
+                // 大幅增加字元數量到 15000，確保填滿任何解析度的螢幕
+                for (let i = 0; i < 15000; i++) {
                     randomCode += chars.charAt(Math.floor(Math.random() * chars.length));
                 }
                 codeSpam.innerText = randomCode;
-            }, 80); // 稍微調快一點點
+            }, 80); 
         }
 
         // --- 瞬間黑白故障與系統關閉函數 ---
@@ -299,7 +324,6 @@
                 }
             }, 60);
 
-            // 讓玩家承受 0.8 秒的視覺震撼
             await new Promise(r => setTimeout(r, 800));
 
             // 瞬間斷電，所有亂碼與閃爍停止，陷入純黑
@@ -311,12 +335,13 @@
             // 死寂黑畫面等待 1.5 秒
             await new Promise(r => setTimeout(r, 1500));
 
-            // 浮現「系統已徹底終止」
+            // 浮現「系統已徹底終止」 (無漸變，瞬間出現)
             stage3.classList.add("active");
             await new Promise(r => setTimeout(r, 3500));
+            // 瞬間消失
             stage3.classList.remove("active");
 
-            // 再次黑屏過渡後，帶出結局標題與歡樂的背景音樂反差
+            // 再次黑屏過渡後，帶出結局標題
             await new Promise(r => setTimeout(r, 2000));
             stage4.classList.add("active");
         }
