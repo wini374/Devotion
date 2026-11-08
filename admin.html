@@ -47,7 +47,7 @@
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* 按鈕樣式 */
+        /* A、B 按鈕樣式 (橘框外) */
         .btn {
             background-color: transparent;
             padding: 10px 20px;
@@ -63,32 +63,40 @@
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
             background-color: rgba(255, 255, 255, 0.1);
         }
-        /* 結局 D 按鈕 (放在橘框內部，出現時帶有淡入效果) */
+
+        /* 結局 D 按鈕 (橘框內) */
         .backup-btn {
-            display: inline-block;
+            display: block; /* 確保它自己佔一行 */
             margin-top: 40px;
+            text-align: right;
             color: #00ccaa;
             text-decoration: none;
-            border-bottom: 1px dashed #00ccaa;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
-            opacity: 0;
-            animation: fadeIn 2s forwards;
+            opacity: 0; /* 預設隱藏，靠 JS 加上 animation class */
         }
-        .backup-btn:hover {
+        .backup-btn span {
+            border-bottom: 1px dashed #00ccaa;
+            padding-bottom: 2px;
+        }
+        .backup-btn:hover span {
             color: #000;
             background-color: #00ccaa;
             box-shadow: 0 0 15px rgba(0,204,170,0.6);
         }
+        
+        .fade-in-anim {
+            animation: fadeIn 2s forwards;
+        }
         @keyframes fadeIn { to { opacity: 1; } }
 
-        /* 結局 C 按鈕 (隱藏在右下角，只有反白才能看到) */
+        /* 結局 C 按鈕 (隱藏在畫面右下角) */
         #hidden-c {
             position: fixed;
             bottom: 5px;
             right: 10px;
-            color: #050505; /* 與背景極度相近的深灰色，肉眼幾乎看不見 */
+            color: #050505; /* 與背景相近，要反白才看得到 */
             font-size: 0.8rem;
             cursor: pointer;
             text-decoration: none;
@@ -98,14 +106,14 @@
 </head>
 <body>
 
-    <!-- 悲傷的真相 BGM -->
+    <!-- BGM -->
     <audio id="sad-bgm" src="日誌bgm.mp3" loop></audio>
 
     <div id="terminal-container">
         <!-- 腳本會自動將終端機文字打在這裡 -->
     </div>
 
-   <!-- 雙結局按鈕區 (主線與叛逆) -->
+    <!-- 結局 A、B 按鈕區 (橘框外) -->
     <div id="action-section" style="max-width: 800px; margin: 0 auto; margin-top: 30px; margin-bottom: 50px; display: none; justify-content: flex-end; gap: 20px;">
         <!-- 結局 B 按鈕 (殉情/叛逆) -->
         <a onclick="fadeOutAndNavigate('end_B.html', 'sad-bgm')" class="btn" style="border: 1px solid #555; color: #888;">> [OVERRIDE] 拒絕。強制上傳自我意識。</a>
@@ -113,11 +121,10 @@
         <a onclick="fadeOutAndNavigate('end_A.html', 'sad-bgm')" class="btn" style="border: 1px solid #ff3333; color: #ff3333; box-shadow: 0 0 10px rgba(255, 51, 51, 0.2);">> [EXECUTE] 遵從遺願，啟動自毀程序。</a>
     </div>
 
-    <!-- 結局 C 按鈕 (極度隱蔽的王冠繼承，藏在畫面右下角) -->
+    <!-- 結局 C 按鈕 (極度隱蔽) -->
     <a id="hidden-c" onclick="fadeOutAndNavigate('end_C.html', 'sad-bgm')">_ override_admin_privilege</a>
 
     <script>
-        // --- 管理員日誌劇本 (完整版) ---
         const adminLines = [
             { class: 'sys-auth', text: "> [ 身份驗證通過。歡迎回來，Null。 ]\n> [ 正在解密隱藏日誌檔... ]" },
             { class: 'sys-msg', text: "老朋友，如果看到這份日記，代表兩件事。" },
@@ -182,17 +189,17 @@
         ];
 
         window.onload = function() {
-            // 音樂淡入
             const bgm = document.getElementById("sad-bgm");
-            bgm.volume = 0;
-            bgm.play().catch(e => console.log("BGM blocked", e));
-            let vol = 0;
-            const fadeIn = setInterval(() => {
-                if (vol < 0.7) { vol += 0.05; bgm.volume = vol; }
-                else clearInterval(fadeIn);
-            }, 200);
+            if(bgm) {
+                bgm.volume = 0;
+                bgm.play().catch(e => console.log("BGM blocked", e));
+                let vol = 0;
+                const fadeIn = setInterval(() => {
+                    if (vol < 0.7) { vol += 0.05; bgm.volume = vol; }
+                    else clearInterval(fadeIn);
+                }, 200);
+            }
 
-            // 啟動腳本
             playAdminLog();
         };
 
@@ -248,44 +255,36 @@
                 if (lineData.class === 'final-words') pauseTime = 2000; 
                 await new Promise(r => setTimeout(r, pauseTime)); 
             }
-            // ... (前面的打字機迴圈)
             
-            // 【新增】腳本結束後，在橘框(日誌)的最下方，浮現結局 D 的駭客指令
+            // 腳本全數結束後，在橘框最下方生成結局 D 按鈕，並加上淡入 class
             const backupBtn = document.createElement("a");
-            backupBtn.className = "backup-btn";
-            backupBtn.innerHTML = "> [ 偵測到未加密的記憶區塊，是否執行 virtual_backup.sh ？ ]";
+            backupBtn.className = "backup-btn fade-in-anim";
+            backupBtn.innerHTML = "<span>> [ 偵測到未加密的記憶區塊，是否執行 virtual_backup.sh ？ ]</span>";
             backupBtn.onclick = function() { fadeOutAndNavigate('end_D.html', 'sad-bgm'); };
             container.appendChild(backupBtn);
             
-            // 腳本全數結束後，顯示底部的主線按鈕區
-            document.getElementById("action-section").style.display = "flex";
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-            
-            // 腳本全數結束後，顯示按鈕區
+            // 顯示橘框下方的 A, B 結局按鈕
             document.getElementById("action-section").style.display = "flex";
             window.scrollTo(0, document.body.scrollHeight);
         }
 
-        // --- 點擊按鈕後的淡出與跳轉效果 ---
         function fadeOutAndNavigate(targetUrl, bgmId) {
             const container = document.getElementById("terminal-container");
             const btn = document.getElementById("action-section");
+            const hiddenBtn = document.getElementById("hidden-c");
             const bgm = document.getElementById(bgmId);
             
-            // 讓整個終端機框框與按鈕緩緩淡出消失
-            container.style.transition = "opacity 3s ease";
-            container.style.opacity = 0;
-            btn.style.transition = "opacity 2s ease";
-            btn.style.opacity = 0;
+            // 淡出所有畫面元素
+            if(container) { container.style.transition = "opacity 2s ease"; container.style.opacity = 0; }
+            if(btn) { btn.style.transition = "opacity 2s ease"; btn.style.opacity = 0; }
+            if(hiddenBtn) { hiddenBtn.style.opacity = 0; }
 
-            // 音樂淡出
             if (bgm && !bgm.paused) {
                 let vol = bgm.volume;
                 const fadeOut = setInterval(() => {
-                    if (vol > 0.02) { 
-                        vol -= 0.02; 
-                        bgm.volume = vol; 
+                    if (vol > 0.05) { 
+                        vol -= 0.05; 
+                        bgm.volume = Math.max(0, vol); 
                     } else { 
                         clearInterval(fadeOut); 
                         bgm.pause(); 
@@ -293,8 +292,7 @@
                     }
                 }, 150); 
             } else {
-                // 如果音樂被封鎖沒有播放，等待 3 秒後直接跳轉
-                setTimeout(() => { window.location.href = targetUrl; }, 3000);
+                setTimeout(() => { window.location.href = targetUrl; }, 2000);
             }
         }
     </script>
