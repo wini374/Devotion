@@ -168,7 +168,8 @@
         </div>
         <div class="title">DEVOTION</div>
         <div class="sub">ENDING D - 永恆 (ETERNITY)</div>
-        <a href="index.html" class="btn">> 斷開連線 (LOGOUT)</a>
+        <!-- 呼叫淡出腳本，並指定目標網址與音樂 ID -->
+    <a onclick="fadeOutAndNavigate('index.html', 'end-bgm')" class="btn">> 斷開連線 (LOGOUT)</a>
     </div>
 
     <script>
@@ -194,6 +195,23 @@
         ];
 
         window.onload = async function() {
+            // --- 音樂淡入模組 ---
+            const bgm = document.getElementById("end-bgm");
+            if (bgm) {
+                bgm.volume = 0;
+                bgm.play().catch(e => console.log("BGM blocked by browser autoplays policy", e));
+                let vol = 0;
+                const fadeIn = setInterval(() => {
+                    if (vol < 0.5) { // 這裡的 0.5 是最大音量 (可介於 0~1)
+                        vol += 0.02; 
+                        bgm.volume = vol; 
+                    } else { 
+                        clearInterval(fadeIn); 
+                    }
+                }, 200);
+            }
+            
+            // ... (下方接著原本的結局動畫腳本) ...
             const stage1 = document.getElementById("stage-1");
             const stage2 = document.getElementById("stage-2");
             const stage3 = document.getElementById("stage-3");
@@ -265,6 +283,35 @@
             await new Promise(r => setTimeout(r, 2000));
             stage3.classList.add('active');
         };
+        // --- 音樂淡出與頁面跳轉模組 ---
+        function fadeOutAndNavigate(targetUrl, bgmId) {
+            const bgm = document.getElementById(bgmId);
+            
+            // 如果畫面上有 stage-3 或其他容器，也可以順便讓畫面淡出黑屏
+            const finalStage = document.getElementById("stage-3") || document.getElementById("credits");
+            if (finalStage) {
+                finalStage.style.transition = "opacity 2s ease";
+                finalStage.style.opacity = 0;
+            }
+
+            // 執行音樂漸弱
+            if (bgm && !bgm.paused) {
+                let vol = bgm.volume;
+                const fadeOut = setInterval(() => {
+                    if (vol > 0.05) { 
+                        vol -= 0.05; 
+                        bgm.volume = Math.max(0, vol); // 避免音量變成負數報錯
+                    } else { 
+                        clearInterval(fadeOut); 
+                        bgm.pause(); 
+                        window.location.href = targetUrl; // 音樂完全無聲後跳轉
+                    }
+                }, 150); // 150 毫秒降一次音量，數字越大淡出越慢
+            } else {
+                // 若沒有音樂或音樂被瀏覽器阻擋，等待 2 秒黑屏後直接跳轉
+                setTimeout(() => { window.location.href = targetUrl; }, 2000);
+            }
+        }
     </script>
 </body>
 </html>
