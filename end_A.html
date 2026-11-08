@@ -27,20 +27,67 @@
             width: 90%;
             max-width: 800px;
             opacity: 0;
-            transition: opacity 1.5s ease-in-out; /* 加快舞台切換速度 */
+            transition: opacity 1.5s ease-in-out;
             pointer-events: none;
             text-align: center;
+            z-index: 10;
         }
         .stage.active {
             opacity: 1;
             pointer-events: auto;
         }
 
-        /* 第一階段：敘事文字 */
+        /* 背景亂碼層 (預設隱藏) */
+        #glitch-bg {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000;
+            z-index: 1;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        #code-spam {
+            width: 100%; height: 100%;
+            color: #555555; /* 暗灰色，不會太刺眼 */
+            font-family: "Courier New", Courier, monospace;
+            font-size: 16px;
+            line-height: 1;
+            word-break: break-all;
+            opacity: 0.6; /* 亂碼透明度 */
+        }
+        /* 增加一點掃描線與電視雜訊 */
+        #glitch-bg::after {
+            content: "";
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.5) 3px, rgba(0,0,0,0.5) 4px);
+            pointer-events: none;
+        }
+
+        /* 第一階段：敘事文字與半透明框 */
+        #stage-1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px; /* 確保框框有足夠高度 */
+            transition: all 1s ease;
+        }
+        /* 這個 class 會在崩潰開始時加上去，形成半透明底框 */
+        .glass-box {
+            background-color: rgba(10, 10, 10, 0.85); /* 85% 透明度的深色底 */
+            border: 1px solid #444;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+            border-radius: 8px;
+            padding: 40px;
+        }
+
         #text-container {
             line-height: 2.2;
             font-size: 1.1rem;
             letter-spacing: 3px;
+            width: 100%;
+            position: relative;
         }
         .fade-text {
             opacity: 0;
@@ -49,53 +96,8 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 100%;
-            transition: opacity 1.5s ease-in-out; /* 字幕淡入淡出變快 */
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        }
-
-        /* 第二階段：崩潰特效 (包含亂碼刷屏與撕裂) */
-        #glitch-screen {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #111;
-            z-index: 999;
-            overflow: hidden;
-        }
-        
-        /* 亂碼刷屏 (透明度 30%) */
-        #code-spam {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            color: #cccccc;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 14px;
-            line-height: 1;
-            opacity: 0.3; /* 透屏度 30 */
-            word-break: break-all;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        /* 純 CSS 生成的底層電視雜訊 */
-        #glitch-screen::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)"/%3E%3C/svg%3E');
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        /* 動態生成的水平撕裂色塊 */
-        .glitch-band {
-            position: absolute;
-            box-shadow: 0 0 10px rgba(255,255,255,0.1);
-            z-index: 2;
-        }
-        #band-container {
-            position: absolute; width: 100%; height: 100%; top:0; left:0; z-index: 2;
+            transition: opacity 1.5s ease-in-out;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
         }
 
         /* 第三階段：系統中止宣告 */
@@ -105,10 +107,10 @@
             font-size: 1.5rem;
             letter-spacing: 5px;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
         }
 
-        /* 第四階段：最終結語與墓誌銘 */
+        /* 第四階段：結局標題與墓誌銘 */
         .epitaph {
             font-size: 1.1rem;
             letter-spacing: 4px;
@@ -130,18 +132,17 @@
 </head>
 <body>
 
-    <!-- 結局音樂 (維持播放，不中斷) -->
+    <!-- 結局音樂 -->
     <audio id="end-bgm" src="A.mp3" loop></audio>
 
-    <!-- 階段一：敘事區 -->
-    <div id="stage-1" class="stage active">
-        <div id="text-container"></div>
+    <!-- 背景崩潰代碼層 -->
+    <div id="glitch-bg">
+        <div id="code-spam"></div>
     </div>
 
-    <!-- 階段二：崩潰撕裂與亂碼刷屏區 -->
-    <div id="glitch-screen">
-        <div id="code-spam"></div>
-        <div id="band-container"></div>
+    <!-- 階段一：敘事區 (會在腳本中加上 glass-box 變成半透明框) -->
+    <div id="stage-1" class="stage active">
+        <div id="text-container"></div>
     </div>
 
     <!-- 階段三：系統中止宣告 -->
@@ -161,6 +162,9 @@
     </div>
 
     <script>
+        // 控制背景代碼刷屏的變數
+        let glitchInterval;
+
         window.onload = async function() {
             // 音樂淡入
             const bgm = document.getElementById("end-bgm");
@@ -177,22 +181,23 @@
             const container = document.getElementById("text-container");
             await new Promise(r => setTimeout(r, 1000));
 
-            // 1. 顯示第一句 (快速)
+            // 1. 顯示啟動提示
             const sysDiv = document.createElement("div");
             sysDiv.className = "fade-text";
             sysDiv.innerHTML = "[ 系統自毀程序已啟動。伺服器離線中... ]";
             container.appendChild(sysDiv);
             
             setTimeout(() => { sysDiv.style.opacity = 1; }, 50);
-            await new Promise(r => setTimeout(r, 2500)); // 只停留短短 2.5 秒
+            await new Promise(r => setTimeout(r, 3000)); 
             sysDiv.style.opacity = 0;
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 1500));
             sysDiv.remove();
 
-            // 2. 緊接著觸發系統崩潰
-            await triggerSystemCrash();
+            // 2. 啟動背景亂碼與半透明底框
+            startBackgroundGlitch();
+            document.getElementById("stage-1").classList.add("glass-box");
 
-            // 3. 在崩潰後的黑屏中，快速播放剩餘字幕
+            // 3. 在崩潰的背景下，依序播放敘事文字
             const epilogueLines = [
                 "你親手按下了終止鍵。<br>摧毀了核心，也摧毀了他最後的意識。",
                 "外面的天空亮了。<br>長達三年的戰火，終於在暴君倒下後，迎來了終結。",
@@ -208,75 +213,63 @@
                 container.appendChild(div);
                 
                 setTimeout(() => { div.style.opacity = 1; }, 50);
-                // 大幅縮短停留時間 (從原本的 3500 降到 2000)
-                const stayTime = 2000 + (epilogueLines[i].length * 80); 
+                const stayTime = 2500 + (epilogueLines[i].length * 80); 
                 await new Promise(r => setTimeout(r, stayTime));
                 
                 div.style.opacity = 0;
-                await new Promise(r => setTimeout(r, 1500)); // 縮短淡出間隔
+                await new Promise(r => setTimeout(r, 1500)); 
                 div.remove();
             }
 
-            // 4. 最後帶出結局標題與墓誌銘
-            await new Promise(r => setTimeout(r, 1000));
-            document.getElementById("stage-4").classList.add("active");
+            // 4. 文字播放完畢，執行最終死亡(黑屏)
+            await endSystemCrash();
         };
 
-        // --- 系統崩潰特效模組 (加入 30% 透明度亂碼) ---
-        async function triggerSystemCrash() {
-            const glitchScreen = document.getElementById("glitch-screen");
+        // --- 背景亂碼生成函數 ---
+        function startBackgroundGlitch() {
+            const glitchBg = document.getElementById("glitch-bg");
             const codeSpam = document.getElementById("code-spam");
-            const bandContainer = document.getElementById("band-container");
-            const stage1 = document.getElementById("stage-1");
-            const stage3 = document.getElementById("stage-3");
             
-            stage1.style.display = "none";
-            glitchScreen.style.display = "block";
+            glitchBg.style.display = "block";
+            // 延遲一點點讓 display 先生效，再執行 opacity 漸變
+            setTimeout(() => { glitchBg.style.opacity = 1; }, 50);
 
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\";
-            const colors = ['#000000', '#1a1a1a', '#333333', '#888888', '#dddddd', '#ffffff'];
-
-            let glitchInterval = setInterval(() => {
-                // 1. 產生透屏度 30 的滿畫面亂碼
+            glitchInterval = setInterval(() => {
                 let randomCode = "";
-                for (let i = 0; i < 2000; i++) {
+                for (let i = 0; i < 2500; i++) {
                     randomCode += chars.charAt(Math.floor(Math.random() * chars.length));
                 }
                 codeSpam.innerText = randomCode;
+            }, 100); // 速度適中，有運行感但不傷眼
+        }
 
-                // 2. 產生水平撕裂色塊
-                bandContainer.innerHTML = ''; 
-                const bandCount = Math.floor(Math.random() * 8) + 8;
-                for(let i = 0; i < bandCount; i++) {
-                    let band = document.createElement("div");
-                    band.className = "glitch-band";
-                    band.style.left = (Math.random() * 100 - 20) + "%"; 
-                    band.style.top = Math.random() * 100 + "%";
-                    band.style.width = (Math.random() * 100 + 50) + "%"; 
-                    band.style.height = (Math.random() * 8 + 1) + "vh"; 
-                    band.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    bandContainer.appendChild(band);
-                }
-            }, 200); // 稍微調快一點點，讓亂碼更有瘋狂刷屏感
-
-            // 崩潰持續 2.5 秒後，瞬間全黑
-            await new Promise(r => setTimeout(r, 2500));
+        // --- 系統徹底關閉函數 ---
+        async function endSystemCrash() {
+            const stage1 = document.getElementById("stage-1");
+            const glitchBg = document.getElementById("glitch-bg");
+            const stage3 = document.getElementById("stage-3");
+            const stage4 = document.getElementById("stage-4");
+            
+            // 讓亂碼層與半透明框瞬間消失 (象徵斷電)
+            stage1.style.display = "none";
             clearInterval(glitchInterval);
-            glitchScreen.style.display = "none";
+            glitchBg.style.display = "none";
 
             // 死寂黑畫面等待 1.5 秒
             await new Promise(r => setTimeout(r, 1500));
 
-            // 浮現「系統已徹底終止」 (加快節奏)
+            // 浮現「系統已徹底終止」
             stage3.classList.add("active");
-            await new Promise(r => setTimeout(r, 3000));
+            await new Promise(r => setTimeout(r, 3500));
             stage3.classList.remove("active");
 
-            // 等待淡出後，回到上層的字幕迴圈
-            await new Promise(r => setTimeout(r, 1500));
-            stage1.style.display = "block"; // 重新打開文字容器
+            // 再次黑屏過渡後，帶出結局標題
+            await new Promise(r => setTimeout(r, 2000));
+            stage4.classList.add("active");
         }
 
+        // --- 跳轉與音樂淡出 ---
         function fadeOutAndNavigate(targetUrl, bgmId) {
             const finalStage = document.getElementById("stage-4");
             const bgm = document.getElementById(bgmId);
