@@ -53,7 +53,7 @@
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
-        /* 第二階段：幾何撕裂與雜訊崩潰特效 (參考圖片風格) */
+        /* 第二階段：幾何撕裂與雜訊崩潰特效 */
         #glitch-screen {
             display: none;
             position: fixed;
@@ -63,7 +63,7 @@
             overflow: hidden;
         }
         
-        /* 純 CSS 生成的底層電視雜訊 (保護眼睛，透明度調低) */
+        /* 純 CSS 生成的底層電視雜訊 */
         #glitch-screen::before {
             content: "";
             position: absolute;
@@ -83,10 +83,19 @@
         /* 第三階段：系統中止宣告 */
         #system-terminated {
             font-family: "Courier New", Courier, monospace;
-            color: #aaaaaa; /* 配合灰階故障，改為冷酷的灰色 */
+            color: #aaaaaa;
             font-size: 1.5rem;
             letter-spacing: 5px;
             font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        /* 第四階段：最終結語新增的墓誌銘 */
+        .epitaph {
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            line-height: 2.2;
+            color: #dddddd;
+            margin-bottom: 60px;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
@@ -120,8 +129,12 @@
         <div id="system-terminated">> [ 系統已徹底終止。伺服器永久離線。 ]</div>
     </div>
 
-    <!-- 階段四：結局標題區 -->
+   <!-- 階段四：結局標題區 -->
     <div id="stage-4" class="stage">
+        <div class="epitaph">
+            世界正為暴君的殞落而歡呼慶祝，<br>
+            卻獨留你在這片無聲的廢墟中，緬懷故友。
+        </div>
         <div class="title">DEVOTION</div>
         <div class="sub">ENDING A - يأبرني 願你埋葬我</div>
         <a onclick="fadeOutAndNavigate('index.html', 'end-bgm')" class="btn">斷開連線 LOGOUT</a>
@@ -134,9 +147,7 @@
             "外面的天空亮了。<br>長達三年的戰火，終於在共同的暴君倒下後，迎來了終結。",
             "他的計畫成功了。",
             "這個世界將會迎來新生，而在史書的記載裡，<br>沒有人會知道這個暴君真正的名字。",
-            "沒有人會知道，他曾經也只是個喜歡坐在營火旁，<br>笑著談論未來的笨蛋。",
-            "除了你。",
-            "世界得救了。<br>但你卻失去了那個沒能和你一起回家的人。"
+            "也沒有人會知道，他曾經也只是個喜歡坐在營火旁，<br>笑著談論未來的笨蛋。",
         ];
 
         window.onload = async function() {
@@ -184,17 +195,11 @@
             stage1.style.display = "none";
             glitchScreen.style.display = "block";
 
-            // 模擬斷電，音樂瞬間切斷
-            const bgm = document.getElementById("end-bgm");
-            if(bgm) bgm.pause();
+            // 注意：這裡不暫停音樂，讓音樂隨著畫面變黑過渡到「歡樂」的段落
 
-            // 生成水平撕裂色塊的邏輯
-            // 將更新頻率設定為 250ms (一秒跳4次)，避免閃爍過快造成眼睛不適
             let glitchInterval = setInterval(() => {
-                // 清空上一幀的色塊 (保留偽元素雜訊)
                 glitchScreen.innerHTML = ''; 
                 
-                // 隨機生成 8~15 條水平色塊
                 const bandCount = Math.floor(Math.random() * 8) + 8;
                 const colors = ['#000000', '#1a1a1a', '#333333', '#888888', '#dddddd', '#ffffff'];
 
@@ -202,25 +207,22 @@
                     let band = document.createElement("div");
                     band.className = "glitch-band";
                     
-                    // 隨機位置與寬高 (模仿畫面水平錯位撕裂)
                     band.style.left = (Math.random() * 100 - 20) + "%"; 
                     band.style.top = Math.random() * 100 + "%";
                     band.style.width = (Math.random() * 100 + 50) + "%"; 
                     band.style.height = (Math.random() * 8 + 1) + "vh"; 
                     
-                    // 從灰階調色盤隨機取色
                     band.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    
                     glitchScreen.appendChild(band);
                 }
             }, 250); 
 
-            // 崩潰持續 2 秒後，瞬間斷電全黑
+            // 崩潰持續 2 秒後，全黑
             await new Promise(r => setTimeout(r, 2000));
             clearInterval(glitchInterval);
             glitchScreen.style.display = "none";
 
-            // 在死寂中等待 2 秒
+            // 死寂黑畫面等待 2 秒
             await new Promise(r => setTimeout(r, 2000));
 
             // 浮現「系統已徹底終止」
@@ -230,17 +232,36 @@
             await new Promise(r => setTimeout(r, 4000));
             stage3.classList.remove("active");
 
+            // 最後帶出結局標題
             await new Promise(r => setTimeout(r, 2500));
             stage4.classList.add("active");
         }
 
         function fadeOutAndNavigate(targetUrl, bgmId) {
             const finalStage = document.getElementById("stage-4");
+            const bgm = document.getElementById(bgmId);
+
             if (finalStage) {
                 finalStage.style.transition = "opacity 2s ease";
                 finalStage.style.opacity = 0;
             }
-            setTimeout(() => { window.location.href = targetUrl; }, 2500);
+
+            // 按下按鈕後，讓音樂淡出並跳轉
+            if (bgm && !bgm.paused) {
+                let vol = bgm.volume;
+                const fadeOut = setInterval(() => {
+                    if (vol > 0.05) { 
+                        vol -= 0.05; 
+                        bgm.volume = Math.max(0, vol); 
+                    } else { 
+                        clearInterval(fadeOut); 
+                        bgm.pause(); 
+                        window.location.href = targetUrl; 
+                    }
+                }, 150); 
+            } else {
+                setTimeout(() => { window.location.href = targetUrl; }, 2500);
+            }
         }
     </script>
 </body>
