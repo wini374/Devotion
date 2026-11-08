@@ -1,25 +1,139 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8"><title>ENDING A: SACRIFICE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENDING A: SACRIFICE</title>
     <style>
-        body { background-color: #000; color: #fff; font-family: "PingFang TC", sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        #text-container { text-align: center; max-width: 700px; padding: 0 20px; line-height: 2; font-size: 1.1rem; letter-spacing: 2px; }
-        .fade-text { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; transition: opacity 2.5s ease; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
-        #credits { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; transition: opacity 3s; width: 100%; }
-        .title { font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 20px; font-weight: bold; }
-        .sub { font-size: 1.2rem; letter-spacing: 5px; color: #aaa; margin-bottom: 50px; }
-        .btn { background: transparent; border: 1px solid #555; color: #888; padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; }
+        body { 
+            background-color: #000000; 
+            color: #ffffff; 
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden; 
+        }
+
+        /* 共通舞台設定 */
+        .stage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            pointer-events: none;
+            text-align: center;
+        }
+        .stage.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 第一階段：敘事文字 */
+        #text-container {
+            line-height: 2.2;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+        }
+        .fade-text {
+            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            transition: opacity 2.5s ease-in-out;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* 第二階段：系統崩潰/亂碼特效 */
+        #glitch-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000;
+            color: #ff3333;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+            line-height: 1;
+            word-wrap: break-word;
+            overflow: hidden;
+            z-index: 999;
+            opacity: 0.8;
+        }
+        .critical-error {
+            animation: severe-shake 0.1s infinite, invert-colors 0.2s infinite;
+        }
+        @keyframes severe-shake {
+            0% { transform: translate(5px, 5px) rotate(0deg); }
+            20% { transform: translate(-5px, 0px) rotate(1deg); }
+            40% { transform: translate(5px, -5px) rotate(-1deg); }
+            60% { transform: translate(-5px, 5px) rotate(0deg); }
+            80% { transform: translate(5px, -5px) rotate(1deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        @keyframes invert-colors {
+            0%, 100% { filter: invert(0); }
+            50% { filter: invert(1) hue-rotate(180deg); }
+        }
+
+        /* 第三階段：系統中止宣告 */
+        #system-terminated {
+            font-family: "Courier New", Courier, monospace;
+            color: #ff3333;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(255, 51, 51, 0.8);
+        }
+
+        /* 第四階段：最終結語 */
+        .title { font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 20px; font-weight: bold; color: #fff; }
+        .sub { font-size: 1.2rem; letter-spacing: 5px; color: #aaaaaa; margin-bottom: 50px; }
+        
+        .btn { 
+            background: transparent; border: 1px solid #555; color: #888; 
+            padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; transition: all 0.5s; 
+            display: inline-block;
+        }
         .btn:hover { border-color: #fff; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
     </style>
 </head>
 <body>
-    <div id="text-container"></div>
-    <div id="credits"><div class="title">DEVOTION</div><div class="sub">ENDING A - يأبرني 願你埋葬我</div><a href="index.html" class="btn"> 斷開連線 LOGOUT</a></div>
+
+    <!-- 結局音樂 (成全結局建議用悲壯或寂寥的純音樂) -->
+    <audio id="end-bgm" src="A.mp3" loop></audio>
+
+    <!-- 階段一：敘事區 -->
+    <div id="stage-1" class="stage active">
+        <div id="text-container"></div>
+    </div>
+
+    <!-- 階段二：崩潰亂碼區 -->
+    <div id="glitch-screen"></div>
+
+    <!-- 階段三：系統中止宣告 -->
+    <div id="stage-3" class="stage">
+        <div id="system-terminated">> [ 系統已徹底終止。伺服器永久離線。 ]</div>
+    </div>
+
+    <!-- 階段四：結局標題區 -->
+    <div id="stage-4" class="stage">
+        <div class="title">DEVOTION</div>
+        <div class="sub">ENDING A - يأبرني 願你埋葬我</div>
+        <a onclick="fadeOutAndNavigate('index.html', 'end-bgm')" class="btn">> 斷開連線 (LOGOUT)</a>
+    </div>
+
     <script>
-        const lines = [
-            "[ 系統自毀程序已啟動。伺服器離線。 ]",
+        const narrativeLines = [
+            "[ 系統自毀程序已啟動。核心覆寫中... ]",
             "你親手按下了終止鍵。<br>摧毀了核心，也摧毀了他最後的意識。",
             "外面的天空亮了。<br>長達三年的戰火，終於在共同的暴君倒下後，迎來了終結。",
             "他的計畫成功了。",
@@ -28,17 +142,105 @@
             "除了你。",
             "世界得救了。<br>但你卻失去了那個沒能和你一起回家的人。"
         ];
-        window.onload = async () => {
+
+        window.onload = async function() {
+            // --- 音樂淡入模組 ---
+            const bgm = document.getElementById("end-bgm");
+            if (bgm) {
+                bgm.volume = 0;
+                bgm.play().catch(e => console.log("BGM blocked by browser autoplays policy", e));
+                let vol = 0;
+                const fadeIn = setInterval(() => {
+                    if (vol < 0.6) { vol += 0.02; bgm.volume = vol; } 
+                    else { clearInterval(fadeIn); }
+                }, 200);
+            }
+
+            // --- 敘事文字演出 ---
             const container = document.getElementById("text-container");
             await new Promise(r => setTimeout(r, 2000));
-            for (let line of lines) {
-                const div = document.createElement("div"); div.className = "fade-text"; div.innerHTML = line; container.appendChild(div);
-                setTimeout(() => div.style.opacity = 1, 100);
-                await new Promise(r => setTimeout(r, 3500 + line.length * 100));
-                div.style.opacity = 0; await new Promise(r => setTimeout(r, 2500)); div.remove();
+
+            for (let i = 0; i < narrativeLines.length; i++) {
+                const div = document.createElement("div");
+                div.className = "fade-text";
+                div.innerHTML = narrativeLines[i];
+                container.appendChild(div);
+                
+                setTimeout(() => { div.style.opacity = 1; }, 100);
+                const stayTime = 3500 + (narrativeLines[i].length * 100);
+                await new Promise(r => setTimeout(r, stayTime));
+                
+                div.style.opacity = 0;
+                await new Promise(r => setTimeout(r, 2500));
+                div.remove();
             }
-            document.getElementById("credits").style.opacity = 1;
+
+            // 敘事結束，準備觸發系統崩潰
+            await new Promise(r => setTimeout(r, 1000));
+            triggerSystemCrash();
         };
+
+        // --- 系統崩潰特效模組 ---
+        async function triggerSystemCrash() {
+            const glitchScreen = document.getElementById("glitch-screen");
+            const stage1 = document.getElementById("stage-1");
+            const stage3 = document.getElementById("stage-3");
+            const stage4 = document.getElementById("stage-4");
+            
+            // 隱藏第一階段
+            stage1.style.display = "none";
+            
+            // 顯示亂碼並讓整個畫面震動反轉
+            glitchScreen.style.display = "block";
+            document.body.classList.add("critical-error");
+
+            // 音樂瞬間停止 (模擬斷電)
+            const bgm = document.getElementById("end-bgm");
+            if(bgm) bgm.pause();
+
+            // 產生隨機亂碼
+            let glitchInterval = setInterval(() => {
+                let randomCode = "";
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\";
+                for (let i = 0; i < 2000; i++) {
+                    randomCode += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                glitchScreen.innerText = randomCode;
+            }, 50);
+
+            // 崩潰持續 1.5 秒後，瞬間斷電全黑
+            await new Promise(r => setTimeout(r, 1500));
+            clearInterval(glitchInterval);
+            glitchScreen.style.display = "none";
+            document.body.classList.remove("critical-error");
+
+            // 在死寂中等待 2 秒
+            await new Promise(r => setTimeout(r, 2000));
+
+            // 浮現「系統已徹底終止」
+            stage3.classList.add("active");
+            
+            // 停留 4 秒後淡出
+            await new Promise(r => setTimeout(r, 4000));
+            stage3.classList.remove("active");
+
+            // 等待淡出完成
+            await new Promise(r => setTimeout(r, 2500));
+
+            // 最終結局標題淡入
+            stage4.classList.add("active");
+        }
+
+        // --- 頁面跳轉淡出模組 ---
+        function fadeOutAndNavigate(targetUrl, bgmId) {
+            const finalStage = document.getElementById("stage-4");
+            if (finalStage) {
+                finalStage.style.transition = "opacity 2s ease";
+                finalStage.style.opacity = 0;
+            }
+            // 這裡音樂在崩潰時已經停了，所以直接等畫面變黑跳轉即可
+            setTimeout(() => { window.location.href = targetUrl; }, 2500);
+        }
     </script>
 </body>
 </html>
