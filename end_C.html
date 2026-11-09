@@ -241,6 +241,23 @@ body.phase-3 #throne-glow {
 
     transition: opacity 1s ease;
 }
+    <div id="transfer-complete-message">
+    &gt; [ 權限轉移完成。歡迎回來，管理員。 ]
+</div>
+    #transfer-complete-message {
+    opacity: 0;
+    margin-top: 25px;
+    text-align: center;
+    color: #e0b9f2;
+    letter-spacing: 2px;
+    line-height: 2;
+
+    transition: opacity 1.4s ease-in-out;
+}
+
+#transfer-complete-message.visible {
+    opacity: 1;
+}
 
 .protocol-title {
     font-weight: bold;
@@ -842,18 +859,15 @@ async function showPurgeProtocol() {
     el.style.display = 'none';
 }
 
-/* ========================================
-   完成權限轉移
 
-   只有玩家說完最後承諾，
-   才會執行這個函數。
+/* ========================================
+   權限轉移完成
+   進度條達到 100% 時，同步顯示歡迎訊息
 ======================================== */
 
 async function finalizeProtocol() {
 
-    const el = document.getElementById(
-        'protocol'
-    );
+    const el = document.getElementById('protocol');
 
     const bar = document.getElementById(
         'protocol-progress'
@@ -863,27 +877,54 @@ async function finalizeProtocol() {
         'protocol-status'
     );
 
-    bar.style.width = '100%';
+   const completeMessage = document.getElementById(
+    'transfer-complete-message'
+    );
 
-    status.textContent =
-        '> AUTHORITY TRANSFER: 100%';
+// 進度條達到 100% 後
+completeMessage.classList.add('visible');
 
+// 淡出時
+completeMessage.classList.remove('visible');
+
+    // 顯示權限轉移介面
     el.style.display = 'block';
-
-    requestAnimationFrame(() => {
-
-        requestAnimationFrame(() => {
-
-            el.style.opacity = '1';
-
-        });
-    });
-
-    await sleep(3300);
-
     el.style.opacity = '0';
 
+    // 確保進度條從 36% 開始
+    bar.style.transition = 'none';
+    bar.style.width = '36%';
+    status.textContent = '> AUTHORITY TRANSFER: 36%';
+
+    await sleep(100);
+
+    el.style.opacity = '1';
+
     await sleep(1200);
+
+    // 進度條開始移動至 100%
+    bar.style.transition = 'width 2.7s ease';
+    bar.style.width = '100%';
+
+    // 等待進度條跑完
+    await sleep(2700);
+
+    // 進度條完成的同時更新文字
+    status.textContent = '> AUTHORITY TRANSFER: 100%';
+
+    systemMessage.textContent =
+        '> [ 權限轉移完成。歡迎回來，管理員。 ]';
+
+    systemMessage.style.opacity = '1';
+
+    // 保持畫面 4.3 秒
+    await sleep(4300);
+
+    // 同時淡出進度條與系統訊息
+    systemMessage.style.opacity = '0';
+    el.style.opacity = '0';
+
+    await sleep(1500);
 
     el.style.display = 'none';
 }
@@ -942,15 +983,14 @@ async function play() {
 
    /* 最後的系統宣告 */
 
-/* 額外延遲 0.5 秒 */
-await sleep(500);
+/* 最後的承諾結束後，等待 2.5 秒 */
+await sleep(2500);
 
-await showSystemMessage(
-    '> [ 權限轉移完成。歡迎回來，管理員。 ]',
-    4300
-);
+/* 進度條與歡迎訊息同步演出 */
+await finalizeProtocol();
 
-    await sleep(1000);
+/* 進入結局畫面 */
+await sleep(1000);
 
     /* =================================
        顯示結局畫面
