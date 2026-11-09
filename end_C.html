@@ -472,10 +472,13 @@ body.phase-3 #throne-glow {
 
     <div id="ending-stage">
 
-        <div class="epitaph">
-            你終於明白了他為何戴上王冠。<br>
-            只是這一次，王座上坐著的是你。
-        </div>
+       
+    <div class="epitaph">
+        他的故事終於迎來了終章。<br>
+        而那場以和平為名的獨角戲，<br>
+        如今，輪到你繼續演下去了。
+    </div>
+
 
         <div class="title">
             DEVOTION
@@ -492,7 +495,7 @@ body.phase-3 #throne-glow {
         <a
             id="logout-btn"
             href="index.html">
-            初始化新紀元
+            斷開連結LOGOUT
         </a>
 
     </div>
@@ -931,9 +934,15 @@ async function play() {
        最後的系統宣告
     ================================= */
 
-    await showSystemMessage(
-        '> [ 權限轉移完成。歡迎回來，管理員。 ]',
-        4300
+   /* 最後的系統宣告 */
+
+/* 額外延遲 0.5 秒 */
+await sleep(500);
+
+await showSystemMessage(
+    '> [ 權限轉移完成。歡迎回來，管理員。 ]',
+    4300
+);
     );
 
     await sleep(1000);
