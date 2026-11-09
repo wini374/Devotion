@@ -1008,17 +1008,63 @@ completeMessage.classList.remove('visible');
    主劇情播放流程
 ======================================== */
 
+/* ========================================
+   主劇情播放流程（修正版）
+======================================== */
+
 async function play() {
 
-    const audio = document.getElementById(
-        'end-bgm'
-    );
+    const audio = document.getElementById('end-bgm');
 
-    /* 音樂淡入 */
-
+    // C.mp3 音樂淡入
     void fadeInAudio(audio);
 
     await sleep(1200);
+
+    // Phase 1：權限轉移中
+    await showSystemMessage(
+        '> [ 權限轉移中... ]',
+        2900
+    );
+
+    // 播放故事字幕
+    for (const line of narrativeLines) {
+        await showNarrativeLine(line);
+    }
+
+    // 「……我的摯友。」淡出後停頓
+    await sleep(2500);
+
+    // 唯一一次權限轉移完成動畫
+    // 36% → 100%，同步顯示歡迎訊息
+    await finalizeProtocol();
+
+    // 轉入 Ending C
+    await sleep(1000);
+
+    const ending = document.getElementById(
+        'ending-stage'
+    );
+
+    ending.style.display = 'block';
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            ending.style.opacity = '1';
+        });
+    });
+
+    // 結局畫面出現後等待 5 秒
+    await sleep(5000);
+
+    // LOGOUT 按鈕以 CSS 設定的 4 秒淡入
+    document.getElementById(
+        'logout-btn'
+    ).classList.add('visible');
+}
+
+
+  
 
     /* =================================
        開場：權限轉移中
