@@ -31,7 +31,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 700px; 
+            max-width: 700px; /* 保持足夠寬度容納不換行的終端機字 */
             opacity: 0;
             pointer-events: none;
             text-align: center;
@@ -51,16 +51,6 @@
         .stage.active {
             opacity: 1;
             pointer-events: auto;
-        }
-
-        /* 第一句系統提示 (瞬間出現) */
-        #sys-start-msg {
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            display: none; /* 預設隱藏，靠 JS 瞬間開啟 */
-            white-space: nowrap;
         }
 
         /* 背景亂碼層 (滿屏設計) */
@@ -125,12 +115,12 @@
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
         }
 
-       /* 瞬間暗色故障閃爍層 */
+        /* 瞬間暗色故障閃爍層 */
         #bw-glitch {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #050505; /* 改為極暗的底色 */
+            background-color: #050505; 
             z-index: 9999;
             overflow: hidden;
         }
@@ -140,7 +130,6 @@
         .flash-anim {
             animation: darkFlash 0.1s infinite;
         }
-        /* 拔除 invert，改用透明度與微幅的暗色交替來製造閃爍 */
         @keyframes darkFlash {
             0% { transform: translate(5px, -5px); opacity: 1; }
             50% { transform: translate(-5px, 5px); opacity: 0.6; }
@@ -152,6 +141,7 @@
             color: #aaaaaa;
             font-size: 1.5rem;
             letter-spacing: 5px;
+            white-space: nowrap;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
         }
 
@@ -168,12 +158,22 @@
         .title { font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 20px; font-weight: bold; color: #fff; }
         .sub { font-size: 1.2rem; letter-spacing: 5px; color: #aaaaaa; margin-bottom: 50px; }
         
-        .btn { 
+        /* LOGOUT 按鈕預設隱藏，靠 JS 延遲顯示 */
+        #logout-btn { 
             background: transparent; border: 1px solid #555; color: #888; 
-            padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; transition: all 0.5s; 
+            padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; 
+            transition: opacity 2s ease-in-out, background 0.5s, color 0.5s, box-shadow 0.5s; 
             display: inline-block;
+            opacity: 0; 
+            pointer-events: none;
         }
-        .btn:hover { border-color: #fff; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        #logout-btn:hover { border-color: #fff; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        
+        /* 加入這個 class 後，按鈕才會浮現 */
+        #stage-4.show-btn #logout-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body>
@@ -186,14 +186,12 @@
         <div id="code-spam"></div>
     </div>
 
-    <!-- 瞬間黑白故障層 -->
+    <!-- 瞬間暗色故障層 -->
     <div id="bw-glitch"></div>
 
     <!-- 階段一：敘事區 -->
     <div id="stage-1" class="stage active">
-        <!-- 瞬間彈出的系統啟動字樣 (細明體) -->
-        <div id="sys-start-msg" class="sys-font">[ 系統自毀程序已啟動。伺服器離線中... ]</div>
-        <!-- 敘事文字容器 -->
+        <!-- 敘事與系統文字容器 -->
         <div id="text-container"></div>
     </div>
 
@@ -205,12 +203,11 @@
     <!-- 階段四：結局標題與墓誌銘 -->
     <div id="stage-4" class="stage">
         <div class="epitaph">
-            世界正為暴君的殞落而歡呼慶祝，<br>
-            卻獨留你在這片無聲的廢墟中，緬懷故友。
+            世界終於迎來了和平。<br>人們為暴君的殞落歡呼，將他的名字遺忘在歷史的塵埃之中。<br>而你只是靜靜地站在廢墟裡。<br>再也沒有人記得，那個曾經與你並肩而行的人。
         </div>
         <div class="title">DEVOTION</div>
         <div class="sub">ENDING A - يأبرني 願你埋葬我</div>
-        <a onclick="fadeOutAndNavigate('index.html', 'end-bgm')" class="btn">斷開連線 LOGOUT</a>
+        <a id="logout-btn" onclick="fadeOutAndNavigate('index.html', 'end-bgm')" class="btn">斷開連線 LOGOUT</a>
     </div>
 
     <script>
@@ -231,16 +228,42 @@
 
             const stage1 = document.getElementById("stage-1");
             const container = document.getElementById("text-container");
-            const sysStart = document.getElementById("sys-start-msg");
 
             await new Promise(r => setTimeout(r, 1000));
 
-            // 1. 系統提示瞬間彈出 (無動畫，細明體)
-            sysStart.style.display = "block";
-            await new Promise(r => setTimeout(r, 2500)); 
+            // 1. 動態生成開頭的五句警告 (細明體、逐行瞬間出現)
+            const sysLines = [
+                "> [ WARNING: CORE INSTABILITY DETECTED. ]",
+                "> [ ADMINISTRATOR CONNECTION LOST... ]",
+                "> [ MEMORY FRAGMENTS CORRUPTED... ]",
+                "> [ SYSTEM SELF-DESTRUCT INITIATED. ]",
+                "> [ SERVER PERMANENTLY OFFLINE. ]"
+            ];
             
-            // 瞬間消失，並留下一點點黑屏空白
-            sysStart.style.display = "none";
+            const sysContainer = document.createElement("div");
+            sysContainer.className = "sys-font";
+            sysContainer.style.fontSize = "1.2rem";
+            sysContainer.style.letterSpacing = "2px";
+            sysContainer.style.color = "#ffffff";
+            sysContainer.style.textShadow = "0 0 10px rgba(255, 255, 255, 0.5)";
+            sysContainer.style.lineHeight = "2.5";
+            sysContainer.style.display = "inline-block";
+            sysContainer.style.textAlign = "left"; 
+            sysContainer.style.whiteSpace = "nowrap"; // 確保絕對不換行
+            container.appendChild(sysContainer);
+
+            for (let i = 0; i < sysLines.length; i++) {
+                const lineDiv = document.createElement("div");
+                lineDiv.innerHTML = sysLines[i];
+                sysContainer.appendChild(lineDiv);
+                await new Promise(r => setTimeout(r, 1200)); // 每行間隔 1.2 秒
+            }
+            
+            // 停留一下後瞬間消失
+            await new Promise(r => setTimeout(r, 1500)); 
+            sysContainer.style.display = "none";
+            sysContainer.remove();
+            
             await new Promise(r => setTimeout(r, 500));
 
             // 2. 啟動背景滿屏亂碼與小黑框
@@ -271,7 +294,7 @@
                 div.remove();
             }
 
-            // 4. 文字播放完畢，執行黑白故障與最終死亡
+            // 4. 文字播放完畢，執行暗色故障與最終死亡
             await endSystemCrash();
         };
 
@@ -286,7 +309,6 @@
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/\\";
             glitchInterval = setInterval(() => {
                 let randomCode = "";
-                // 大幅增加字元數量到 15000，確保填滿任何解析度的螢幕
                 for (let i = 0; i < 15000; i++) {
                     randomCode += chars.charAt(Math.floor(Math.random() * chars.length));
                 }
@@ -294,7 +316,7 @@
             }, 80); 
         }
 
-        // --- 瞬間黑白故障與系統關閉函數 ---
+        // --- 瞬間暗色故障與系統關閉函數 ---
         async function endSystemCrash() {
             const stage1 = document.getElementById("stage-1");
             const glitchBg = document.getElementById("glitch-bg");
@@ -305,7 +327,7 @@
             // 瞬間關閉敘事小框框
             stage1.style.display = "none";
 
-            // 觸發強烈的黑白畫面撕裂 (持續 0.8 秒)
+            // 觸發強烈的暗色畫面撕裂 (持續 0.8 秒)
             bwGlitch.style.display = "block";
             bwGlitch.classList.add("flash-anim");
             
@@ -328,7 +350,7 @@
 
             await new Promise(r => setTimeout(r, 800));
 
-            // 瞬間斷電，所有亂碼與閃爍停止，陷入純黑
+            // 瞬間斷電，陷入純黑
             clearInterval(bwInterval);
             clearInterval(glitchInterval);
             bwGlitch.style.display = "none";
@@ -337,15 +359,19 @@
             // 死寂黑畫面等待 1.5 秒
             await new Promise(r => setTimeout(r, 1500));
 
-            // 浮現「系統已徹底終止」 (無漸變，瞬間出現)
+            // 浮現「系統已徹底終止」
             stage3.classList.add("active");
             await new Promise(r => setTimeout(r, 3500));
             // 瞬間消失
             stage3.classList.remove("active");
 
-            // 再次黑屏過渡後，帶出結局標題
+            // 等待 2 秒，帶出結局標題與墓誌銘
             await new Promise(r => setTimeout(r, 2000));
             stage4.classList.add("active");
+
+            // 結局標題穩定停留 4 秒後，才慢慢淡入 LOGOUT 按鈕
+            await new Promise(r => setTimeout(r, 4000));
+            stage4.classList.add("show-btn");
         }
 
         // --- 跳轉與音樂淡出 ---
