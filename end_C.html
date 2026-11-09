@@ -1,44 +1,175 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8"><title>ENDING C: INHERITANCE</title>
-    <style>
-        body { background-color: #000; color: #cc00cc; font-family: "PingFang TC", sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        #text-container { text-align: center; max-width: 700px; padding: 0 20px; line-height: 2; font-size: 1.1rem; letter-spacing: 2px; }
-        .fade-text { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; transition: opacity 2.5s ease; text-shadow: 0 0 10px rgba(204,0,204,0.3); }
-        #credits { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; transition: opacity 3s; width: 100%; }
-        .title { font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 20px; font-weight: bold; color: #fff; }
-        .sub { font-size: 1.2rem; letter-spacing: 5px; color: #cc00cc; margin-bottom: 50px; }
-        .btn { background: transparent; border: 1px dashed #cc00cc; color: #cc00cc; padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; }
-        .btn:hover { background: #cc00cc; color: #000; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050208">
+  <title>DEVOTION — ENDING C: INHERITANCE</title>
+  <style>
+    :root { color-scheme: dark; --violet: #b96bd8; --pale: #e9e1ef; }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body { margin: 0; width: 100%; min-height: 100vh; min-height: 100svh; overflow: hidden; background: #020104; color: var(--pale); font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
+    #atmosphere, #grid-layer, #halo, #blackout { position: fixed; inset: 0; pointer-events: none; }
+    #atmosphere { z-index: 0; background: radial-gradient(ellipse at 50% 56%, #300d40 0%, #13061b 38%, #020104 80%); opacity: 0; transition: opacity 6s ease; }
+    body.phase-2 #atmosphere { opacity: .55; }
+    body.phase-3 #atmosphere { opacity: .82; transition: opacity 5s ease; }
+    #grid-layer { z-index: 1; opacity: 0; background: repeating-linear-gradient(0deg, transparent 0 30px, rgba(175,104,209,.06) 31px, transparent 32px), repeating-linear-gradient(90deg, transparent 0 52px, rgba(175,104,209,.035) 53px, transparent 54px); transform: perspective(650px) rotateX(28deg) scale(1.3); transition: opacity 5s ease; }
+    body.phase-2 #grid-layer { opacity: .28; }
+    body.phase-3 #grid-layer { opacity: .13; }
+    #halo { z-index: 2; background: radial-gradient(ellipse 40% 27% at 50% 56%, rgba(190,87,235,.19), transparent 75%); opacity: 0; transform: scale(.65); transition: opacity 4s ease, transform 8s ease; }
+    body.phase-3 #halo { opacity: 1; transform: scale(1.2); }
+    #blackout { z-index: 30; background: #000; opacity: 0; visibility: hidden; transition: opacity 1.2s ease, visibility 0s linear 1.2s; }
+    #blackout.active { opacity: 1; visibility: visible; transition: opacity 1.2s ease, visibility 0s; }
+    #cinematic-stage { position: fixed; z-index: 10; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(90%, 850px); text-align: center; }
+    .fade-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 100%; margin: 0; font-size: clamp(1rem, 2vw, 1.22rem); line-height: 2.2; letter-spacing: .14em; color: #eee9f1; text-shadow: 0 0 12px rgba(177,112,205,.14); opacity: 0; transition: opacity 2.2s ease; overflow-wrap: break-word; }
+    .fade-text.system-line { color: #ba81d3; font: 600 clamp(.78rem,1.55vw,1.03rem)/2 "Courier New", monospace; letter-spacing: .10em; }
+    .fade-text.resolve-line { color: #dbc5e7; font-weight: 600; }
+    .fade-text.coronation-line { color: #e8d7f1; font-weight: 600; }
+    #protocol { position: fixed; z-index: 12; left: 50%; top: 50%; transform: translate(-50%,-50%); width: min(88%, 600px); padding: 25px 26px; opacity: 0; visibility: hidden; transition: opacity 1.3s ease, visibility 0s linear 1.3s; font: clamp(.75rem,1.6vw,.98rem)/2 "Courier New", monospace; letter-spacing: .055em; color: #bba6ca; background: rgba(7,3,12,.92); border: 1px solid rgba(175,107,207,.24); box-shadow: 0 0 40px rgba(112,42,151,.08); }
+    #protocol.visible { opacity: 1; visibility: visible; transition: opacity 1.3s ease, visibility 0s; }
+    .protocol-head { font-size: .75rem; letter-spacing: .12em; color: #b57bcf; border-bottom: 1px solid #392441; padding-bottom: 10px; margin-bottom: 12px; }
+    .protocol-line { opacity: 0; transition: opacity .65s ease; overflow-wrap: anywhere; }
+    .protocol-line.visible { opacity: 1; }
+    .progress-track { width: 100%; height: 5px; margin: 20px 0; background: #26162d; overflow: hidden; }
+    #progress-fill { height: 100%; width: 0%; background: #b46cce; box-shadow: 0 0 12px rgba(196,116,220,.5); transition: width 2.3s ease; }
+    #protocol-complete { color: #e3c4f4; text-align: center; letter-spacing: .11em; opacity: 0; transition: opacity 1s ease; }
+    #protocol-complete.visible { opacity: 1; }
+    #ending-stage { display: none; position: fixed; z-index: 20; inset: 0; padding: 25px; align-items: center; justify-content: center; flex-direction: column; text-align: center; opacity: 0; transition: opacity 3s ease; }
+    #ending-stage.visible { opacity: 1; }
+    .epitaph { color: #d4c5dd; font-size: clamp(1rem,2vw,1.2rem); letter-spacing: .17em; line-height: 2.3; margin-bottom: 64px; }
+    .title { font-weight: 700; color: #f7f3f9; font-size: clamp(2rem,5vw,2.7rem); letter-spacing: .4em; padding-left: .4em; margin-bottom: 18px; }
+    .sub { color: #c18cdb; font-size: clamp(.88rem,2vw,1.08rem); letter-spacing: .18em; margin-bottom: 16px; }
+    .status { color: #796484; font: .76rem "Courier New", monospace; letter-spacing: .13em; margin-bottom: 43px; }
+    #new-era-btn { display: inline-block; padding: 11px 29px; border: 1px dashed #7d568e; color: #b997ca; background: transparent; font: inherit; font-size: .9rem; letter-spacing: .18em; text-decoration: none; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 4s ease, background .5s ease, color .5s ease, box-shadow .5s ease; }
+    #new-era-btn.visible { opacity: 1; pointer-events: auto; }
+    #new-era-btn:hover, #new-era-btn:focus-visible { background: rgba(185,107,216,.12); color: #f1d8ff; box-shadow: 0 0 18px rgba(160,90,200,.22); }
+    #new-era-btn:focus-visible { outline: 2px solid #c89cda; outline-offset: 4px; }
+    @media (max-width: 600px) { .fade-text { letter-spacing: .08em; line-height: 2; } .epitaph { letter-spacing: .08em; margin-bottom: 48px; } .title { letter-spacing: .23em; padding-left: .23em; } .protocol-head { letter-spacing: .05em; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; } }
+  </style>
 </head>
-<body>
-    <div id="text-container"></div>
-    <div id="credits"><div class="title">DEVOTION</div><div class="sub">ENDING C - 繼承 (INHERITANCE)</div><a href="index.html" class="btn">初始化新紀元</a></div>
-    <script>
-        const lines = [
-            "> [ 權限轉移完成。歡迎回來，新任管理員。 ]",
-            "你沒有按下自毀程序。",
-            "你清楚，一旦沒了這個「共同的敵人」，<br>人類的猜忌與貪婪很快又會將世界推向火海。",
-            "他的犧牲不能白費。",
-            "在核心崩潰的前一刻，你接管了所有的系統權限。<br>你把他的靈魂碎片徹底抹除，讓他得到了真正的安息。",
-            "然後，你戴上了那頂沾滿鮮血的王冠。",
-            "外面的天空依舊灰暗。<br>反抗軍驚恐地發現，舊的暴君倒下了，新的神明卻已登基。",
-            "「我會替你把這場戲演完的。」",
-            "在孤獨的基岩王座上，你輕聲說道。"
-        ];
-        window.onload = async () => {
-            const container = document.getElementById("text-container");
-            await new Promise(r => setTimeout(r, 2000));
-            for (let line of lines) {
-                const div = document.createElement("div"); div.className = "fade-text"; div.innerHTML = line; container.appendChild(div);
-                setTimeout(() => div.style.opacity = 1, 100);
-                await new Promise(r => setTimeout(r, 3500 + line.length * 100));
-                div.style.opacity = 0; await new Promise(r => setTimeout(r, 2500)); div.remove();
-            }
-            document.getElementById("credits").style.opacity = 1;
-        };
-    </script>
+<body class="phase-1">
+  <div id="atmosphere" aria-hidden="true"></div>
+  <div id="grid-layer" aria-hidden="true"></div>
+  <div id="halo" aria-hidden="true"></div>
+  <div id="blackout" aria-hidden="true"></div>
+  <main id="cinematic-stage" aria-live="polite"></main>
+  <div id="protocol" aria-live="polite">
+    <div class="protocol-head">ADMINISTRATOR TRANSFER PROTOCOL</div>
+    <div class="protocol-line">&gt; ORIGINAL ADMINISTRATOR: TERMINATED</div>
+    <div class="protocol-line">&gt; SOUL FRAGMENTS: PURGED</div>
+    <div class="protocol-line">&gt; SUCCESSOR ID: NULL</div>
+    <div class="protocol-line">&gt; AUTHORITY TRANSFER: 100%</div>
+    <div class="progress-track"><div id="progress-fill"></div></div>
+    <div id="protocol-complete">WELCOME, NEW ADMINISTRATOR.</div>
+  </div>
+  <section id="ending-stage" aria-label="Ending C: Inheritance">
+    <div class="epitaph">你終於明白了他為何戴上王冠。<br>只是這一次，王座上坐著的是你。</div>
+    <div class="title">DEVOTION</div>
+    <div class="sub">ENDING C — INHERITANCE 繼承</div>
+    <div class="status">THE CYCLE CONTINUES.</div>
+    <a id="new-era-btn" href="index.html">初始化新紀元</a>
+  </section>
+  <script>
+    // 保留原始九段劇情，配合各階段觸發不同演出。
+    const lines = [
+      { text: '> [ 權限轉移完成。歡迎回來，新任管理員。 ]', phase: 1, kind: 'system' },
+      { text: '你沒有按下自毀程序。', phase: 1 },
+      { text: '你清楚，一旦沒了這個「共同的敵人」，<br>人類的猜忌與貪婪很快又會將世界推向火海。', phase: 2 },
+      { text: '他的犧牲不能白費。', phase: 2, kind: 'resolve' },
+      { text: '在核心崩潰的前一刻，你接管了所有的系統權限。<br>你把他的靈魂碎片徹底抹除，讓他得到了真正的安息。', phase: 2, event: 'purge' },
+      { text: '然後，你戴上了那頂沾滿鮮血的王冠。', phase: 3, kind: 'coronation', event: 'crown' },
+      { text: '外面的天空依舊灰暗。<br>反抗軍驚恐地發現，舊的暴君倒下了，新的神明卻已登基。', phase: 3 },
+      { text: '「我會替你把這場戲演完的。」', phase: 3, kind: 'resolve' },
+      { text: '在孤獨的基岩王座上，你輕聲說道。', phase: 3 }
+    ];
+
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fadeTime = reducedMotion ? 20 : 2200;
+    function setPhase(phase) {
+      document.body.classList.remove('phase-1', 'phase-2', 'phase-3');
+      document.body.classList.add('phase-' + phase);
+    }
+    async function blackout(duration = 1400) {
+      const layer = document.getElementById('blackout');
+      layer.classList.add('active');
+      await sleep(reducedMotion ? 40 : 1250);
+      await sleep(reducedMotion ? 40 : duration);
+      layer.classList.remove('active');
+      await sleep(reducedMotion ? 40 : 1250);
+    }
+    async function showProtocol() {
+      const panel = document.getElementById('protocol');
+      const rows = [...panel.querySelectorAll('.protocol-line')];
+      const progress = document.getElementById('progress-fill');
+      const complete = document.getElementById('protocol-complete');
+      panel.classList.add('visible');
+      await sleep(reducedMotion ? 70 : 1450);
+      for (const row of rows) {
+        row.classList.add('visible');
+        await sleep(reducedMotion ? 60 : 820);
+      }
+      progress.style.width = '100%';
+      await sleep(reducedMotion ? 70 : 2600);
+      complete.classList.add('visible');
+      await sleep(reducedMotion ? 80 : 2100);
+      panel.classList.remove('visible');
+      await sleep(reducedMotion ? 50 : 1350);
+    }
+    async function showLine(line) {
+      const stage = document.getElementById('cinematic-stage');
+      const el = document.createElement('div');
+      el.className = 'fade-text';
+      if (line.kind === 'system') el.classList.add('system-line');
+      if (line.kind === 'resolve') el.classList.add('resolve-line');
+      if (line.kind === 'coronation') el.classList.add('coronation-line');
+      // 劇情是本頁固定文字，僅在這裡使用 innerHTML 解析預定的 <br>。
+      el.innerHTML = line.text;
+      stage.appendChild(el);
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+      const plainLength = line.text.replace(/<br\s*\/?\s*>/gi, '').length;
+      const stay = reducedMotion ? 800 : Math.min(6500, 2600 + plainLength * 80 + (line.kind === 'resolve' ? 1200 : 0));
+      await sleep(stay);
+      el.style.opacity = '0';
+      await sleep(fadeTime);
+      el.remove();
+    }
+    async function playEnding() {
+      await sleep(reducedMotion ? 100 : 1500);
+      for (const line of lines) {
+        setPhase(line.phase);
+        if (line.event === 'crown') await blackout(300);
+        await showLine(line);
+        if (line.event === 'purge') {
+          await showProtocol();
+          // 靈魂碎片徹底刪除後，留一段空白與沉默。
+          await blackout(500);
+        }
+      }
+      // 一切穩定；最後狀態訊息先出現，才進入 ending card。
+      const stage = document.getElementById('cinematic-stage');
+      const end = document.getElementById('ending-stage');
+      const btn = document.getElementById('new-era-btn');
+      await sleep(reducedMotion ? 100 : 1000);
+      stage.style.display = 'none';
+      end.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => end.classList.add('visible')));
+      await sleep(reducedMotion ? 50 : 5000);
+      btn.classList.add('visible');
+    }
+    window.addEventListener('load', () => {
+      playEnding().catch(error => console.error('Ending C playback error:', error));
+    });
+    document.getElementById('new-era-btn').addEventListener('click', async event => {
+      event.preventDefault();
+      const button = event.currentTarget;
+      button.style.pointerEvents = 'none';
+      document.getElementById('ending-stage').classList.remove('visible');
+      await sleep(reducedMotion ? 50 : 1800);
+      window.location.href = button.href;
+    });
+  </script>
 </body>
 </html>
