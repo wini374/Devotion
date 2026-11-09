@@ -1,43 +1,274 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8"><title>ENDING B: ECHO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENDING B: ETERNITY</title>
     <style>
-        body { background-color: #000; color: #ffaa00; font-family: "PingFang TC", sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        #text-container { text-align: center; max-width: 700px; padding: 0 20px; line-height: 2; font-size: 1.1rem; letter-spacing: 2px; }
-        .fade-text { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; transition: opacity 2.5s ease; text-shadow: 0 0 10px rgba(255,170,0,0.2); }
-        .glitch { animation: gl 3s infinite; } @keyframes gl { 0%,100%{text-shadow:2px 0 red,-2px 0 blue;} 50%{text-shadow:-2px 0 red,2px 0 blue;} }
-        #credits { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; transition: opacity 3s; width: 100%; }
+        body { 
+            background-color: #000000; 
+            color: #ffffff; 
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden; 
+            transition: background-color 0.1s ease;
+        }
+
+        /* --- 階段一：系統崩壞警告 (瞬間出現) --- */
+        #sys-warning-container {
+            position: absolute;
+            top: 45%;
+            width: 100%;
+            text-align: center;
+            font-family: "MingLiU", "Courier New", monospace;
+            display: none; 
+            z-index: 5;
+        }
+        .sys-alert-red {
+            color: #cc0000; /* 暗紅色警告 */
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 0 8px rgba(204, 0, 0, 0.5);
+        }
+        .sys-alert-green {
+            color: #00aa00; /* 綠色終端文字 */
+            font-size: 1rem;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        /* 核心崩潰時的背景隨機微閃爍 */
+        .core-crashing {
+            animation: coreBlink 2s infinite;
+        }
+        @keyframes coreBlink {
+            0%, 40%, 60%, 100% { background-color: #000; }
+            50% { background-color: #080000; } /* 偶爾閃過一絲極暗的紅黑 */
+        }
+
+        /* --- 階段二：意識融合 (色彩分離、扭曲與雜訊) --- */
+        /* 背景雜訊層 */
+        #noise-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)"/%3E%3C/svg%3E');
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .bg-glitch-active {
+            animation: heavyGlitchBg 0.15s infinite;
+        }
+        @keyframes heavyGlitchBg {
+            0%, 100% { background-color: #000; }
+            50% { background-color: #0a0303; }
+        }
+
+        /* 色彩分離與文字扭曲特效 */
+        .text-glitch-active {
+            animation: textDistortion 0.2s infinite;
+            text-shadow: 3px 0 1px rgba(255,0,0,0.8), -3px 0 1px rgba(0,255,255,0.8);
+        }
+        @keyframes textDistortion {
+            0% { transform: translate(-50%, -50%) skewX(0deg); }
+            25% { transform: translate(-51%, -49%) skewX(4deg); }
+            50% { transform: translate(-49%, -51%) skewX(-4deg); }
+            75% { transform: translate(-50%, -49%) skewX(2deg); }
+            100% { transform: translate(-50%, -50%) skewX(0deg); }
+        }
+
+        /* --- 電影式敘事字幕容器 --- */
+        #cinematic-stage {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            z-index: 10;
+        }
+        .cine-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            line-height: 2.2;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+        }
+
+        /* --- 階段三：結局與按鈕 --- */
+        #ending-stage {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 800px; text-align: center; z-index: 20;
+            display: none; opacity: 0; transition: opacity 3s ease-in-out;
+        }
+        .epitaph { font-size: 1.2rem; letter-spacing: 4px; line-height: 2.2; color: #ddd; margin-bottom: 60px; text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
         .title { font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 20px; font-weight: bold; color: #fff; }
-        .sub { font-size: 1.2rem; letter-spacing: 5px; color: #ffaa00; margin-bottom: 50px; }
-        .btn { background: transparent; border: 1px solid #ffaa00; color: #ffaa00; padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; }
-        .btn:hover { background: #ffaa00; color: #000; }
+        .sub { font-size: 1.1rem; letter-spacing: 3px; color: #aaa; margin-bottom: 50px; line-height: 1.8;}
+        
+        .btn { background: transparent; border: 1px solid #555; color: #888; padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; transition: all 0.5s; display: inline-block; }
+        .btn:hover { border-color: #fff; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
     </style>
 </head>
 <body>
-    <div id="text-container"></div>
-    <div id="credits"><div class="title">DEVOTION</div><div class="sub">ENDING B - 迴音 (ECHO)</div><a href="index.html" class="btn">重置輪迴</a></div>
+
+    <!-- 結局音樂 -->
+    <audio id="end-bgm" src="B.mp3" loop></audio>
+
+    <!-- 雜訊特效層 (階段二啟用) -->
+    <div id="noise-overlay"></div>
+
+    <!-- 階段一：系統警告 -->
+    <div id="sys-warning-container">
+        <div class="sys-alert-red">[ 警告：偵測到外部意識強行上傳至崩壞核心... ]</div>
+        <div class="sys-alert-green">> UPLOAD_OVERRIDE_INITIATED // NEURAL_LINK_ESTABLISHED</div>
+    </div>
+
+    <!-- 電影敘事舞台 -->
+    <div id="cinematic-stage"></div>
+
+    <!-- 階段三：結局畫面 -->
+    <div id="ending-stage">
+        <div class="epitaph">
+            <br>世界終將消失，<br>但我們永遠留在彼此身邊。
+        
+        </div>
+        <div class="title">DEVOTION</div>
+        <div class="sub">ENDING B - ETERNITY 永恆</div>
+        <a onclick="fadeOutAndNavigate('index.html', 'end-bgm')" class="btn">斷開連線 LOGOUT</a>
+    </div>
+
     <script>
-        const lines = [
-            "[ 警告：偵測到外部意識強行上傳至崩壞核心... ]",
-            "看著螢幕上那句「毀滅我」，你終究還是無法做到。",
-            "「如果這個世界需要你變成怪物才能團結...」<br>「那就讓他們自己去打吧。」",
-            "在警報聲中，你切斷了矩陣的外部連線，<br>將自己的意識逆向灌入了他即將消散的核心。",
-            "沒有了共同的敵人，外面的世界或許又會重燃戰火。<br>但這一次，你不在乎了。",
-            "在無盡冰冷的代碼與黑暗中，你終於牽住了他的手。",
-            "<span class='glitch'>這一次，你們一起留在了這裡。</span>"
+        // 劇本與階段定義
+        // phase 1: 正常電影字幕 (背景偶爾微閃爍)
+        // phase 2: 意識融合 (畫面雜訊、字體色彩分離與扭曲)
+        // phase 3: 永恆迴音 (一切歸零純黑，靜止)
+        const narrativeLines = [
+            { text: "矩陣的邊界開始溶解，現實的輪廓逐漸崩塌。", phase: 1 },
+            { text: "強行連結崩毀的終端，意味著你的自我將被永久抹除。", phase: 1 },
+            { text:  "看著螢幕上那句「毀滅我」，你終究還是無法做到。", phase: 2}
+            { text: "「如果這個世界需要你變成怪物才能團結...」",phase: 2}
+            { text: "「那就讓他們自己去打吧。」",}
+
+            { text: "但你沒有停下。", phase: 3 },
+            { text: "記憶與痛楚被撕裂成混亂的數據碎片。", phase: 3 },
+            { text: "意識正被龐大的虛空吞噬......", phase: 3 },
+            { text: "在無盡冰冷的代碼與黑暗中，你終於牽住了他的手。", phase: 4 }
         ];
-        window.onload = async () => {
-            const container = document.getElementById("text-container");
-            await new Promise(r => setTimeout(r, 2000));
-            for (let line of lines) {
-                const div = document.createElement("div"); div.className = "fade-text"; div.innerHTML = line; container.appendChild(div);
-                setTimeout(() => div.style.opacity = 1, 100);
-                await new Promise(r => setTimeout(r, 3500 + line.length * 100));
-                div.style.opacity = 0; await new Promise(r => setTimeout(r, 2500)); div.remove();
+
+        window.onload = async function() {
+            // 音樂淡入
+            const bgm = document.getElementById("end-bgm");
+            if (bgm) {
+                bgm.volume = 0;
+                bgm.play().catch(e => console.log("BGM blocked", e));
+                let vol = 0;
+                const fadeIn = setInterval(() => {
+                    if (vol < 0.6) { vol += 0.02; bgm.volume = vol; } 
+                    else { clearInterval(fadeIn); }
+                }, 200);
             }
-            document.getElementById("credits").style.opacity = 1;
+
+            const sysWarning = document.getElementById("sys-warning-container");
+            const cineStage = document.getElementById("cinematic-stage");
+            const noiseOverlay = document.getElementById("noise-overlay");
+            const endingStage = document.getElementById("ending-stage");
+
+            await new Promise(r => setTimeout(r, 1000));
+
+            // --- 階段 1. 開場：系統崩壞警告 ---
+            document.body.classList.add("core-crashing"); // 背景微微紅閃
+            sysWarning.style.display = "block"; // 瞬間出現，無淡入
+            await new Promise(r => setTimeout(r, 3000));
+            sysWarning.style.display = "none"; // 瞬間消失
+            await new Promise(r => setTimeout(r, 1000));
+
+            // --- 階段 2. 電影字幕與意識融合演出 ---
+            for (let i = 0; i < narrativeLines.length; i++) {
+                const line = narrativeLines[i];
+                const div = document.createElement("div");
+                
+                // 根據階段切換特效
+                if (line.phase === 2) {
+                    noiseOverlay.style.display = "block";
+                    document.body.classList.add("bg-glitch-active");
+                    div.className = "cine-text text-glitch-active";
+                } else if (line.phase === 3) {
+                    // 進入最後一句時，瞬間停止所有故障與雜訊
+                    noiseOverlay.style.display = "none";
+                    document.body.className = ""; 
+                    div.className = "cine-text";
+                } else {
+                    div.className = "cine-text";
+                }
+
+                div.innerHTML = line.text;
+                cineStage.appendChild(div);
+                
+                // 字幕淡入
+                setTimeout(() => { div.style.opacity = 1; }, 50);
+                
+                // 若為最後一句，停留 5 秒後才開始淡出
+                if (line.phase === 3) {
+                    await new Promise(r => setTimeout(r, 5000)); 
+                } else {
+                    // 一般字幕停留時間
+                    const stayTime = 2500 + (line.text.length * 80); 
+                    await new Promise(r => setTimeout(r, stayTime));
+                }
+                
+                // 字幕淡出
+                div.style.opacity = 0;
+                await new Promise(r => setTimeout(r, 2000)); 
+                div.remove();
+            }
+
+            // --- 階段 3. 結尾：永恆迴音 ---
+            // 等待最後一句話完全淡出後的死寂時間
+            await new Promise(r => setTimeout(r, 1000));
+            
+            // 帶出最終結局文案
+            endingStage.style.display = "block";
+            setTimeout(() => { endingStage.style.opacity = 1; }, 50);
         };
+
+        function fadeOutAndNavigate(targetUrl, bgmId) {
+            const finalStage = document.getElementById("ending-stage");
+            const bgm = document.getElementById(bgmId);
+
+            if (finalStage) {
+                finalStage.style.transition = "opacity 2s ease";
+                finalStage.style.opacity = 0;
+            }
+
+            if (bgm && !bgm.paused) {
+                let vol = bgm.volume;
+                const fadeOut = setInterval(() => {
+                    if (vol > 0.05) { 
+                        vol -= 0.05; 
+                        bgm.volume = Math.max(0, vol); 
+                    } else { 
+                        clearInterval(fadeOut); 
+                        bgm.pause(); 
+                        window.location.href = targetUrl; 
+                    }
+                }, 150); 
+            } else {
+                setTimeout(() => { window.location.href = targetUrl; }, 2500);
+            }
+        }
     </script>
 </body>
 </html>
