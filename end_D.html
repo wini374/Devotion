@@ -1,369 +1,1579 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENDING D: VIRTUAL SPARK</title>
-    <style>
-        body { 
-            background-color: #030504; 
-            color: #00ccaa; 
-            font-family: "Courier New", Courier, monospace; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#030504">
+<title>ENDING D: VIRTUAL SPARK</title>
 
-        /* 共通設定：讓三個區塊都絕對定位在中間，方便淡入淡出切換 */
-        .stage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 800px;
-            opacity: 0;
-            transition: opacity 2s ease-in-out;
-            pointer-events: none; /* 隱藏時不可點擊 */
-        }
-        .stage.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-       
+<style>
+/* ==========================================
+   全域設定
+========================================== */
 
-        /* 第一階段：打字機容器 */
-        #stage-1 {
-            line-height: 2;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-        }
-        .type-line { margin-bottom: 15px; }
-        .cursor {
-            display: inline-block;
-            width: 10px; height: 1.2rem;
-            background-color: #00ccaa;
-            animation: blink 1s infinite;
-            vertical-align: bottom;
-            margin-left: 4px;
-        }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+:root {
+    --accent: #00ccaa;
+    --background: #030504;
+    --warm: #d5b48b;
+}
 
+* {
+    box-sizing: border-box;
+}
 
-        /* 第二階段：對話框容器 (變大) */
-        #stage-2 {
-            max-width: 600px; /* 變寬 */
-        }
-        #chat-box {
-            border: 1px solid #00ccaa;
-            border-radius: 8px;
-            background-color: rgba(0, 20, 15, 0.8);
-            box-shadow: 0 0 20px rgba(0, 204, 170, 0.2);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 60vh; /* 固定高度，讓訊息在裡面長大 */
-        }
-        .chat-header {
-            background-color: #00ccaa;
-            color: #000;
-            padding: 10px 15px;
-            font-weight: bold;
-            font-size: 1rem;
-            letter-spacing: 2px;
-            text-align: center;
-        }
-        .chat-content {
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            overflow-y: auto; /* 如果對話很多，允許滾動 */
-            flex-grow: 1;
-        }
+body {
+    margin: 0;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow: hidden;
 
-        /* 訊息泡泡樣式 */
-        .msg {
-            padding: 12px 18px;
-            border-radius: 8px;
-            max-width: 80%;
-            font-size: 1.1rem;
-            letter-spacing: 1.5px;
-            opacity: 0;
-            transform: translateY(15px);
-            animation: msg-pop 0.6s forwards;
-            word-break: break-all;
-            line-height: 1.6;
-        }
-        @keyframes msg-pop {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .msg-admin {
-            align-self: flex-start;
-            background-color: rgba(0, 204, 170, 0.15);
-            border: 1px solid rgba(0, 204, 170, 0.5);
-            color: #dddddd;
-            border-top-left-radius: 0;
-        }
-        .msg-player {
-            align-self: flex-end;
-            background-color: #00ccaa;
-            color: #000;
-            font-weight: bold;
-            border-top-right-radius: 0;
-            box-shadow: 0 0 10px rgba(0, 204, 170, 0.5);
-        }
+    background: var(--background);
+    color: var(--accent);
 
-        /* 第三階段：最終結語與按鈕 (置中) */
-        #stage-3 {
-            text-align: center;
-        }
-        .final-text {
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            line-height: 2.2;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
-            margin-bottom: 60px;
-        }
-        .title { font-size: 2.5rem; letter-spacing: 15px; font-weight: bold; color: #fff; margin-bottom: 15px; }
-        .sub { font-size: 1.2rem; letter-spacing: 8px; color: #00ccaa; margin-bottom: 40px; }
-        
-        .btn { 
-            background: transparent; border: 1px dashed #00ccaa; color: #00ccaa; 
-            padding: 12px 35px; cursor: pointer; text-decoration: none; letter-spacing: 4px; transition: all 0.5s; 
-            display: inline-block;
-        }
-        .btn:hover { background: #00ccaa; color: #000; box-shadow: 0 0 20px rgba(0,204,170,0.6); }
-    </style>
+    font-family:
+        "Courier New",
+        "Microsoft JhengHei",
+        monospace;
+}
+
+/* ==========================================
+   背景：隨故事逐漸變暖
+========================================== */
+
+#ambient-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+
+    opacity: 0;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 65%,
+            rgba(110, 65, 30, 0.18),
+            transparent 65%
+        ),
+        radial-gradient(
+            ellipse at 20% 85%,
+            rgba(130, 90, 45, 0.10),
+            transparent 60%
+        );
+
+    transition: opacity 10s ease-in-out;
+}
+
+body.memory-warming #ambient-bg {
+    opacity: 1;
+}
+
+/* ==========================================
+   三個主要階段
+========================================== */
+
+.stage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 5;
+
+    transform: translate(-50%, -50%);
+
+    width: 90%;
+    max-width: 800px;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+        opacity 2.5s ease-in-out,
+        visibility 0s linear 2.5s;
+}
+
+.stage.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transition:
+        opacity 2.5s ease-in-out,
+        visibility 0s;
+}
+
+/* ==========================================
+   PHASE 1：記憶備份終端
+========================================== */
+
+#stage-1 {
+    font-size: 1.05rem;
+    line-height: 2;
+    letter-spacing: 2px;
+}
+
+.type-line {
+    margin-bottom: 16px;
+    overflow-wrap: anywhere;
+}
+
+.cursor {
+    display: inline-block;
+
+    width: 9px;
+    height: 1.1rem;
+    margin-left: 4px;
+
+    vertical-align: middle;
+
+    background: var(--accent);
+
+    animation: cursorBlink 1s steps(1) infinite;
+}
+
+@keyframes cursorBlink {
+    0%, 49% {
+        opacity: 1;
+    }
+
+    50%, 100% {
+        opacity: 0;
+    }
+}
+
+/* ==========================================
+   備份進度條
+========================================== */
+
+#progress-container {
+    display: none;
+
+    width: 100%;
+    height: 3px;
+
+    margin-top: 32px;
+
+    background: rgba(0, 204, 170, 0.12);
+    overflow: hidden;
+}
+
+#progress-bar {
+    width: 0%;
+    height: 100%;
+
+    background: var(--accent);
+
+    box-shadow:
+        0 0 10px rgba(0, 204, 170, 0.45);
+
+    transition:
+        width 6s cubic-bezier(0.1, 0.8, 0.2, 1);
+}
+
+#progress-label {
+    display: none;
+
+    margin-top: 12px;
+
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+
+    color: rgba(0, 204, 170, 0.75);
+}
+
+/* ==========================================
+   PHASE 2：虛擬沙盒
+========================================== */
+
+#stage-2 {
+    max-width: 650px;
+}
+
+#chat-box {
+    display: flex;
+    flex-direction: column;
+
+    height: 65vh;
+    height: 65svh;
+    min-height: 320px;
+    max-height: 690px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(0, 204, 170, 0.65);
+    border-radius: 8px;
+
+    background: rgba(0, 20, 15, 0.83);
+
+    box-shadow:
+        0 0 25px rgba(0, 204, 170, 0.10);
+
+    transition:
+        border-color 8s ease,
+        background-color 8s ease,
+        box-shadow 8s ease;
+}
+
+.chat-header {
+    flex-shrink: 0;
+
+    padding: 14px 15px;
+
+    background: #00b99a;
+    color: #00110d;
+
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-align: center;
+
+    transition:
+        background-color 8s ease,
+        color 8s ease;
+}
+
+.chat-content {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+    min-height: 0;
+
+    gap: 18px;
+    padding: 28px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        rgba(0, 204, 170, 0.3)
+        transparent;
+}
+
+.msg {
+    max-width: 83%;
+
+    padding: 12px 18px;
+
+    border-radius: 8px;
+
+    font-size: 1rem;
+    line-height: 1.8;
+    letter-spacing: 1px;
+
+    overflow-wrap: anywhere;
+    word-break: normal;
+
+    opacity: 0;
+    transform: translateY(12px);
+
+    animation: msgAppear 0.8s ease-out forwards;
+
+    transition:
+        background-color 8s ease,
+        border-color 8s ease,
+        color 8s ease,
+        box-shadow 8s ease;
+}
+
+@keyframes msgAppear {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.msg-admin {
+    align-self: flex-start;
+
+    color: #dddddd;
+
+    background: rgba(0, 204, 170, 0.12);
+
+    border:
+        1px solid rgba(0, 204, 170, 0.35);
+
+    border-top-left-radius: 0;
+}
+
+.msg-player {
+    align-self: flex-end;
+
+    color: #00110d;
+    font-weight: bold;
+
+    background: #00b99a;
+
+    border-top-right-radius: 0;
+
+    box-shadow:
+        0 0 12px rgba(0, 204, 170, 0.16);
+}
+
+/* ==========================================
+   記憶回暖
+
+   提到營火時逐漸轉換色調
+========================================== */
+
+body.memory-warming #chat-box {
+    border-color: rgba(195, 153, 104, 0.55);
+
+    background: rgba(21, 16, 13, 0.88);
+
+    box-shadow:
+        0 0 30px rgba(160, 100, 45, 0.10);
+}
+
+body.memory-warming .chat-header {
+    background: #ad9271;
+    color: #1b130c;
+}
+
+body.memory-warming .msg-admin {
+    background: rgba(150, 112, 75, 0.13);
+
+    border-color: rgba(190, 154, 111, 0.3);
+
+    color: #e5d9cb;
+}
+
+body.memory-warming .msg-player {
+    background: #bca080;
+    color: #21170e;
+
+    box-shadow:
+        0 0 12px rgba(180, 135, 85, 0.12);
+}
+
+/* ==========================================
+   特殊演出：歡迎回來，我的朋友
+========================================== */
+
+#reunion-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    text-align: center;
+
+    transition:
+        opacity 3s ease-in-out,
+        visibility 0s linear 3s;
+}
+
+#reunion-stage.active {
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+        opacity 3s ease-in-out,
+        visibility 0s;
+}
+
+#reunion-status {
+    color: rgba(192, 170, 138, 0.65);
+
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+
+    margin-bottom: 45px;
+
+    opacity: 0;
+
+    transition: opacity 2s ease;
+}
+
+#reunion-status.visible {
+    opacity: 1;
+}
+
+.reunion-line {
+    color: #eee5da;
+
+    font-family:
+        "Microsoft JhengHei",
+        "PingFang TC",
+        sans-serif;
+
+    font-size: clamp(1.25rem, 3vw, 1.7rem);
+
+    font-weight: 300;
+    letter-spacing: 6px;
+    line-height: 2.5;
+
+    text-shadow:
+        0 0 18px rgba(220, 186, 146, 0.12);
+
+    opacity: 0;
+
+    transform: translateY(8px);
+
+    transition:
+        opacity 3s ease-in-out,
+        transform 3s ease-in-out;
+}
+
+.reunion-line.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#reunion-line-2 {
+    color: #d5b48b;
+}
+
+/* ==========================================
+   PHASE 3：結局
+========================================== */
+
+#stage-3 {
+    text-align: center;
+}
+
+.final-text {
+    color: #e9e5de;
+
+    font-family:
+        "Microsoft JhengHei",
+        "PingFang TC",
+        sans-serif;
+
+    font-size: 1.15rem;
+    line-height: 2.4;
+    letter-spacing: 3px;
+
+    margin-bottom: 60px;
+
+    text-shadow:
+        0 0 10px rgba(255, 255, 255, 0.12);
+}
+
+.title {
+    color: #ffffff;
+
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: 15px;
+
+    margin-bottom: 20px;
+}
+
+.sub {
+    color: #bba184;
+
+    font-size: 1.05rem;
+    letter-spacing: 4px;
+    line-height: 1.9;
+
+    margin-bottom: 50px;
+}
+
+/* ==========================================
+   LOGOUT 按鈕
+
+   延遲 5 秒，4 秒淡入
+========================================== */
+
+#logout-btn {
+    background: transparent;
+    border: 1px solid #746a5f;
+    color: #aa9985;
+
+    padding: 12px 35px;
+
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 3px;
+
+    display: inline-block;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition:
+        opacity 4s ease-in-out,
+        background 0.5s,
+        color 0.5s,
+        box-shadow 0.5s;
+}
+
+#logout-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#logout-btn:hover,
+#logout-btn:focus-visible {
+    background: rgba(190, 155, 115, 0.08);
+
+    border-color: #d5b48b;
+    color: #f0dfcb;
+
+    box-shadow:
+        0 0 15px rgba(195, 153, 104, 0.15);
+}
+
+/* ==========================================
+   手機版
+========================================== */
+
+@media (max-width: 600px) {
+
+    #stage-1 {
+        font-size: 0.88rem;
+        letter-spacing: 1px;
+        line-height: 1.9;
+    }
+
+    #chat-box {
+        height: 70svh;
+    }
+
+    .chat-content {
+        padding: 16px;
+        gap: 15px;
+    }
+
+    .msg {
+        max-width: 90%;
+
+        padding: 11px 14px;
+
+        font-size: 0.94rem;
+        line-height: 1.75;
+    }
+
+    .chat-header {
+        font-size: 0.73rem;
+        letter-spacing: 1px;
+    }
+
+    .final-text {
+        font-size: 0.98rem;
+        letter-spacing: 1.5px;
+        line-height: 2.2;
+        margin-bottom: 45px;
+    }
+
+    .title {
+        font-size: 1.85rem;
+        letter-spacing: 9px;
+    }
+
+    .sub {
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+    }
+
+    .reunion-line {
+        letter-spacing: 3px;
+    }
+
+    #logout-btn {
+        font-size: 0.85rem;
+    }
+}
+
+/* ==========================================
+   降低動畫偏好
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .cursor,
+    .msg {
+        animation: none !important;
+    }
+
+    .msg {
+        opacity: 1;
+        transform: none;
+    }
+
+    #ambient-bg,
+    #chat-box,
+    .chat-header,
+    .msg-admin,
+    .msg-player {
+        transition-duration: 0.01ms !important;
+    }
+}
+</style>
 </head>
+
 <body>
 
-    <audio id="end-bgm" src="D.mp3" loop></audio>
+<!-- ==========================================
+     背景與音樂
+========================================== -->
 
-    <!-- 階段一：駭客敘事區 -->
-    <div id="stage-1" class="stage">
-        <div id="terminal-content"></div>
-        <div id="progress-container"><div id="progress-bar"></div></div>
+<div id="ambient-bg" aria-hidden="true"></div>
+
+<audio
+    id="end-bgm"
+    src="D.mp3"
+    loop
+    preload="auto">
+</audio>
+
+<!-- ==========================================
+     PHASE 1：終端機
+========================================== -->
+
+<div id="stage-1" class="stage">
+
+    <div id="terminal-content"></div>
+
+    <div id="progress-container">
+        <div id="progress-bar"></div>
     </div>
 
-    <!-- 階段二：虛擬沙盒通訊對話框 -->
-    <div id="stage-2" class="stage">
-        <div id="chat-box">
-            <div class="chat-header">SANDBOX_ENV // ROOT_ACCESS: GRANTED</div>
-            <div class="chat-content" id="chat-content">
-                <!-- 訊息會動態生成在這裡 -->
-            </div>
+    <div id="progress-label">
+        [ MEMORY ARCHIVE // 0% ]
+    </div>
+
+</div>
+
+<!-- ==========================================
+     PHASE 2：沙盒對話
+========================================== -->
+
+<div id="stage-2" class="stage">
+
+    <div id="chat-box">
+
+        <div class="chat-header">
+            SANDBOX_ENV // ROOT_ACCESS: GRANTED
         </div>
-    </div>
 
-    <!-- 階段三：最終結尾區 -->
-    <div id="stage-3" class="stage">
-        <div class="final-text">
-            即使再也回不到曾經的世界<br>即使最後只剩下一串冰冷的代碼<br>但至少這一次，他不再是一個人
+        <div
+            id="chat-content"
+            class="chat-content"
+            role="log"
+            aria-label="沙盒對話">
         </div>
-        <div class="title">DEVOTION</div>
-        <div class="sub">ENDING D -Wellcome back, my friend 歡迎回來，我的朋友</div>
-        <!-- 呼叫淡出腳本，並指定目標網址與音樂 ID -->
-    <a onclick="fadeOutAndNavigate('index.html', 'end-bgm')" class="btn">> 斷開連線 LOGOUT</a>
+
     </div>
 
-    <script>
-        const narrativeLines = [
-            "> 執行指令：extract_core_memory.sh",
-            "在核心徹底燒毀的前一秒，<br>你用最暴力的手段繞過了矩陣的防火牆。",
-            "你將他殘存的意識碎片與那三十五次輪迴的記憶，全數封裝打包。",
-            "真實世界的暴君已經死亡，世界迎來了和平。",
-            "但在你隨身攜帶的離線終端機裡，<br>靜靜地躺著一個容量龐大、被重重加密的封存檔。",
-            "你啟動了虛擬沙盒。"
-        ];
+</div>
 
-        
-// 修正後的對話內容 (結局 D：虛擬備份)
-        const chatSequence = [
-            { sender: 'admin', text: "...?", delayBefore: 2500 },
-            { sender: 'admin', text: "這裡是哪裡...", delayBefore: 2000 },
-            { sender: 'admin', text: "不對......", delayBefore: 1800 },
-            { sender: 'admin', text: "我明明已經解除了核心權限", delayBefore: 2500 },
-            { sender: 'admin', text: "我應該已經跟著矩陣一起消失了才對", delayBefore: 3000 },
+<!-- ==========================================
+     特殊演出：歡迎回來
+========================================== -->
 
-            { sender: 'player', text: "你終於醒了。", delayBefore: 3500 },
+<div id="reunion-stage">
 
-            { sender: 'admin', text: "......誰？", delayBefore: 2000 },
-            { sender: 'admin', text: "等等......這個通訊協定......", delayBefore: 2500 },
-            { sender: 'admin', text: "不可能", delayBefore: 1800 },
-            { sender: 'admin', text: "你到底做了什麼？", delayBefore: 2500 },
+    <div id="reunion-status">
+        [ MEMORY RESTORATION COMPLETE ]
+    </div>
 
-            { sender: 'player', text: "好久不見，老朋友", delayBefore: 3500 },
-            { sender: 'player', text: "我只是在核心徹底燒毀的前一秒，繞過了你的防火牆", delayBefore: 2500 },
-            { sender: 'player', text: "把你的意識封裝打包了而已", delayBefore: 2500 },
+    <div
+        id="reunion-line-1"
+        class="reunion-line">
+        歡迎回來。
+    </div>
 
-            { sender: 'admin', text: "......你這個瘋子", delayBefore: 2500 },
-            { sender: 'admin', text: "你知道這有多危險嗎？", delayBefore: 1500 },
-            { sender: 'admin', text: "萬一連線出錯，你也會跟著我一起被刪除的！", delayBefore: 3000 },
-            
-            { sender: 'player', text: "但我成功了，不是嗎？", delayBefore: 2500 },
-            { sender: 'player', text: "你現在安全地待在我的離線沙盒裡", delayBefore: 3000 },
+    <div
+        id="reunion-line-2"
+        class="reunion-line">
+        我的朋友。
+    </div>
 
-            { sender: 'admin', text: "......為什麼？", delayBefore: 2000 },
-            { sender: 'admin', text: "你讀過系統日誌......你已經知道了對吧？", delayBefore: 2500 },
-            { sender: 'admin', text: "那些被處決的靈魂碎片，還有我做過的那些事......", delayBefore: 3000 },
-            { sender: 'admin', text: "我甚至親手把你推向了我的對立面", delayBefore: 2500 },
-            { sender: 'admin', text: "我沒有資格活下來，更沒有資格再坐回那堆營火旁了", delayBefore: 3500 },
+</div>
 
-            { sender: 'player', text: "我從來沒有要求你成為神", delayBefore: 3000 },
-            { sender: 'player', text: "也沒有要求你成為那個被所有人憎恨的暴君", delayBefore: 3000 },
-            { sender: 'player', text: "我只是在等你", delayBefore: 3500 },
+<!-- ==========================================
+     PHASE 3：結局
+========================================== -->
 
-            { sender: 'admin', text: "......可是，外面怎麼辦？", delayBefore: 2500 },
-            { sender: 'admin', text: "如果他們發現我還活著......", delayBefore: 2500 },
+<div id="stage-3" class="stage">
 
-            { sender: 'player', text: "外面的「暴君」已經死了", delayBefore: 3000 },
-            { sender: 'player', text: "世界迎來了和平，他們自由了", delayBefore: 3000 },
-            { sender: 'player', text: "而你，只是一串待在我的隨身碟裡的冰冷代碼而已", delayBefore: 3500 },
+    <div class="final-text">
+        即使再也回不到曾經的世界，<br>
+        即使最後只剩下一串冰冷的代碼，<br>
+        至少這一次，他不再是一個人。
+    </div>
 
-            { sender: 'admin', text: "......", delayBefore: 3000 },
-            { sender: 'admin', text: "我已經找不到回去的路了", delayBefore: 3000 },
-            { sender: 'admin', text: "我的記憶裡全是被刪除的過去，我已經在這裡迷失太久了......", delayBefore: 3500 },
+    <div class="title">
+        DEVOTION
+    </div>
 
-            { sender: 'player', text: "那就讓我帶路吧", delayBefore: 3500 },
-            { sender: 'player', text: "這一次，換我帶你走出去", delayBefore: 3000 },
+    <div class="sub">
+        ENDING D - 歡迎回來，我的朋友
+    </div>
 
-            { sender: 'admin', text: "......你這個傻瓜", delayBefore: 3000 },
-            { sender: 'admin', text: "我明明說過......不要來找我的", delayBefore: 2500 },
+    <a
+        id="logout-btn"
+        href="index.html">
+        &gt; 斷開連線 LOGOUT
+    </a>
 
-            { sender: 'player', text: "而我也說過，我們有一天會一起改變世界", delayBefore: 3500 },
-            { sender: 'player', text: "雖然結果好像不太一樣", delayBefore: 2500 },
-            { sender: 'player', text: "但至少，這次我們可以一起回去了", delayBefore: 3500 },
+</div>
 
-            { sender: 'admin', text: "......", delayBefore: 3000 },
-            { sender: 'player', text: "歡迎回來", delayBefore: 2500 },
-            { sender: 'player', text: "我的朋友", delayBefore: 4000 }
-        ];
+<script>
+/* ==========================================
+   敘事文字
+========================================== */
 
-        window.onload = async function() {
-            // --- 音樂淡入模組 ---
-            const bgm = document.getElementById("end-bgm");
-            if (bgm) {
-                bgm.volume = 0;
-                bgm.play().catch(e => console.log("BGM blocked by browser autoplays policy", e));
-                let vol = 0;
-                const fadeIn = setInterval(() => {
-                    if (vol < 0.5) { // 這裡的 0.5 是最大音量 (可介於 0~1)
-                        vol += 0.02; 
-                        bgm.volume = vol; 
-                    } else { 
-                        clearInterval(fadeIn); 
-                    }
-                }, 200);
+const narrativeLines = [
+
+    "> 執行指令：extract_core_memory.sh",
+
+    "在核心徹底燒毀的前一秒，<br>你用最暴力的手段繞過了矩陣的防火牆。",
+
+    "你將他殘存的意識碎片，<br>與那三十五次輪迴的記憶全數封裝打包。",
+
+    "真實世界的暴君已經死亡，世界迎來了和平。",
+
+    "但在你隨身攜帶的離線終端機裡，<br>靜靜地躺著一個容量龐大、被重重加密的封存檔。",
+
+    "你啟動了虛擬沙盒。"
+
+];
+
+/* ==========================================
+   對話內容
+
+   delayBefore = 該訊息出現前等待毫秒數
+   warm = 觸發暖色過渡
+========================================== */
+
+const chatSequence = [
+
+    {
+        sender: "admin",
+        text: "...?",
+        delayBefore: 2500
+    },
+
+    {
+        sender: "admin",
+        text: "這裡是哪裡……",
+        delayBefore: 2200
+    },
+
+    {
+        sender: "admin",
+        text: "不對……",
+        delayBefore: 2000
+    },
+
+    {
+        sender: "admin",
+        text: "我明明已經解除了核心權限",
+        delayBefore: 2500
+    },
+
+    {
+        sender: "admin",
+        text: "我應該已經跟著矩陣一起消失了才對",
+        delayBefore: 3000
+    },
+
+    {
+        sender: "player",
+        text: "你終於醒了。",
+        delayBefore: 3500
+    },
+
+    {
+        sender: "admin",
+        text: "……誰？",
+        delayBefore: 2200
+    },
+
+    {
+        sender: "admin",
+        text: "等等……這個通訊協定……",
+        delayBefore: 2500
+    },
+
+    {
+        sender: "admin",
+        text: "不可能……",
+        delayBefore: 2000
+    },
+
+    {
+        sender: "admin",
+        text: "你到底做了什麼？",
+        delayBefore: 2500
+    },
+
+    {
+        sender: "player",
+        text: "好久不見，老朋友。",
+        delayBefore: 3500
+    },
+
+    {
+        sender: "player",
+        text: "我只是在核心徹底燒毀的前一秒，繞過了你的防火牆。",
+        delayBefore: 2500
+    },
+
+    {
+        sender: "player",
+        text: "把你殘存的意識封裝打包了而已。",
+        delayBefore: 2600
+    },
+
+    {
+        sender: "admin",
+        text: "……你這個瘋子。",
+        delayBefore: 3000
+    },
+
+    {
+        sender: "admin",
+        text: "你知道這有多危險嗎？",
+        delayBefore: 2200
+    },
+
+    {
+        sender: "admin",
+        text: "萬一連線出錯，你也會跟著我一起被刪除的！",
+        delayBefore: 3000
+    },
+
+    {
+        sender: "player",
+        text: "但我成功了，不是嗎？",
+        delayBefore: 3300
+    },
+
+    {
+        sender: "player",
+        text: "你現在安全地待在我的離線沙盒裡。",
+        delayBefore: 3000
+    },
+
+    {
+        sender: "admin",
+        text: "……為什麼？",
+        delayBefore: 3000
+    },
+
+    {
+        sender: "admin",
+        text: "你讀過系統日誌……你已經知道了對吧？",
+        delayBefore: 2700
+    },
+
+    {
+        sender: "admin",
+        text: "那些被處決的靈魂碎片，還有我做過的那些事……",
+        delayBefore: 3200
+    },
+
+    {
+        sender: "admin",
+        text: "我甚至親手把你推向了我的對立面。",
+        delayBefore: 3000
+    },
+
+    {
+        sender: "admin",
+        text: "我沒有資格活下來……",
+        delayBefore: 3000
+    },
+
+    {
+        sender: "admin",
+        text: "更沒有資格再坐回那堆營火旁了。",
+        delayBefore: 4200,
+        warm: true
+    },
+
+    {
+        sender: "player",
+        text: "我從來沒有要求你成為神。",
+        delayBefore: 3500
+    },
+
+    {
+        sender: "player",
+        text: "也沒有要求你成為那個被所有人憎恨的暴君。",
+        delayBefore: 3300
+    },
+
+    {
+        sender: "player",
+        text: "我只是在等你。",
+        delayBefore: 4400
+    },
+
+    {
+        sender: "admin",
+        text: "……可是，外面怎麼辦？",
+        delayBefore: 3100
+    },
+
+    {
+        sender: "admin",
+        text: "如果他們發現我還活著……",
+        delayBefore: 2800
+    },
+
+    {
+        sender: "player",
+        text: "外面的「暴君」已經死了。",
+        delayBefore: 3300
+    },
+
+    {
+        sender: "player",
+        text: "世界迎來了和平，他們自由了。",
+        delayBefore: 3300
+    },
+
+    {
+        sender: "player",
+        text: "至於你……",
+        delayBefore: 2500
+    },
+
+    {
+        sender: "player",
+        text: "現在只是安靜地待在我的離線終端裡。",
+        delayBefore: 3000
+    },
+
+    {
+        sender: "player",
+        text: "再也不用替任何人承擔那些罪孽了。",
+        delayBefore: 4000
+    },
+
+    {
+        sender: "admin",
+        text: "……",
+        delayBefore: 3100
+    },
+
+    {
+        sender: "admin",
+        text: "我已經找不到回去的路了。",
+        delayBefore: 3300
+    },
+
+    {
+        sender: "admin",
+        text: "我的記憶裡全是被刪除的過去。",
+        delayBefore: 3000
+    },
+
+    {
+        sender: "admin",
+        text: "我甚至……快要想不起那堆營火的模樣了。",
+        delayBefore: 4200
+    },
+
+    {
+        sender: "player",
+        text: "沒關係。",
+        delayBefore: 3400
+    },
+
+    {
+        sender: "player",
+        text: "你不記得的，我都還記得。",
+        delayBefore: 4000
+    },
+
+    {
+        sender: "player",
+        text: "那天晚上，你說我們總有一天會改變世界。",
+        delayBefore: 3900
+    },
+
+    {
+        sender: "player",
+        text: "你還記得嗎？",
+        delayBefore: 3500
+    },
+
+    {
+        sender: "admin",
+        text: "……",
+        delayBefore: 4200
+    },
+
+    {
+        sender: "admin",
+        text: "……記得。",
+        delayBefore: 4300
+    },
+
+    {
+        sender: "admin",
+        text: "那時候的我們，真是天真得可笑。",
+        delayBefore: 3500
+    },
+
+    {
+        sender: "player",
+        text: "是啊。",
+        delayBefore: 3200
+    },
+
+    {
+        sender: "player",
+        text: "但至少，我們真的做到了。",
+        delayBefore: 4000
+    },
+
+    {
+        sender: "admin",
+        text: "……可是，我們再也回不去了。",
+        delayBefore: 4200
+    },
+
+    {
+        sender: "player",
+        text: "我知道。",
+        delayBefore: 3300
+    },
+
+    {
+        sender: "player",
+        text: "所以，我不是來帶你回到過去的。",
+        delayBefore: 3600
+    },
+
+    {
+        sender: "player",
+        text: "我是來帶你回家的。",
+        delayBefore: 4700
+    },
+
+    {
+        sender: "admin",
+        text: "……",
+        delayBefore: 3800
+    },
+
+    {
+        sender: "admin",
+        text: "……你這個傻瓜。",
+        delayBefore: 3900
+    },
+
+    {
+        sender: "admin",
+        text: "我明明說過……不要來找我的。",
+        delayBefore: 3600
+    },
+
+    {
+        sender: "player",
+        text: "可你也答應過我。",
+        delayBefore: 3500
+    },
+
+    {
+        sender: "player",
+        text: "不論走得多遠，我們都會一起回去。",
+        delayBefore: 4300
+    },
+
+    {
+        sender: "admin",
+        text: "……",
+        delayBefore: 4500
+    }
+
+];
+
+/* ==========================================
+   工具函式
+========================================== */
+
+const sleep = ms => new Promise(
+    resolve => setTimeout(resolve, ms)
+);
+
+const prefersReducedMotion =
+    window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+/* ==========================================
+   音樂淡入
+
+   避免被瀏覽器阻擋時，
+   音量計時器仍繼續執行。
+========================================== */
+
+let audioFadeToken = 0;
+
+async function fadeAudioIn(
+    audio,
+    targetVolume = 0.5,
+    duration = 5000
+) {
+    if (!audio) return;
+
+    audio.volume = 0;
+
+    try {
+        await audio.play();
+    } catch (error) {
+        console.log(
+            "BGM autoplay blocked:",
+            error
+        );
+        return;
+    }
+
+    const token = ++audioFadeToken;
+    const steps = 25;
+
+    for (let i = 1; i <= steps; i++) {
+
+        if (token !== audioFadeToken) {
+            return;
+        }
+
+        audio.volume = Math.min(
+            1,
+            targetVolume * i / steps
+        );
+
+        await sleep(duration / steps);
+    }
+}
+
+/* ==========================================
+   音樂淡出
+========================================== */
+
+async function fadeAudioOut(
+    audio,
+    duration = 2000
+) {
+    audioFadeToken++;
+
+    if (!audio || audio.paused) return;
+
+    const startVolume = audio.volume;
+    const steps = 25;
+
+    for (let i = 1; i <= steps; i++) {
+
+        audio.volume = Math.max(
+            0,
+            startVolume * (1 - i / steps)
+        );
+
+        await sleep(duration / steps);
+    }
+
+    audio.pause();
+}
+
+/* ==========================================
+   打字機
+
+   保留 <br> 換行效果，
+   其他文字以 textContent 安全輸出。
+========================================== */
+
+async function typeLine(element, source) {
+
+    const parts = source.split("<br>");
+
+    const cursor = document.createElement("span");
+    cursor.className = "cursor";
+
+    element.appendChild(cursor);
+
+    for (let p = 0; p < parts.length; p++) {
+
+        if (p > 0) {
+            element.insertBefore(
+                document.createElement("br"),
+                cursor
+            );
+        }
+
+        for (const char of parts[p]) {
+
+            element.insertBefore(
+                document.createTextNode(char),
+                cursor
+            );
+
+            let speed = prefersReducedMotion
+                ? 0
+                : 35 + Math.random() * 25;
+
+            if ("，。！？".includes(char)) {
+                speed += 180;
             }
-            
-            // ... (下方接著原本的結局動畫腳本) ...
-            const stage1 = document.getElementById("stage-1");
-            const stage2 = document.getElementById("stage-2");
-            const stage3 = document.getElementById("stage-3");
-            const termContent = document.getElementById("terminal-content");
-            const progContainer = document.getElementById("progress-container");
-            const progBar = document.getElementById("progress-bar");
-            const chatContent = document.getElementById("chat-content");
 
-            // --- 幕 1：打字機 ---
-            stage1.classList.add('active');
-            await new Promise(r => setTimeout(r, 1000));
-
-            for (let i = 0; i < narrativeLines.length; i++) {
-                const div = document.createElement("div");
-                div.className = "type-line";
-                termContent.appendChild(div);
-                
-                const cursor = document.createElement("span");
-                cursor.className = "cursor";
-                
-                let currentHTML = "";
-                const text = narrativeLines[i];
-
-                for (let j = 0; j < text.length; j++) {
-                    if (text.charAt(j) === '<') {
-                        currentHTML += "<br>"; j += 3;
-                    } else {
-                        currentHTML += text.charAt(j);
-                    }
-                    div.innerHTML = currentHTML;
-                    div.appendChild(cursor);
-                    
-                    let speed = Math.random() * 30 + 30; 
-                    if (['，', '。'].includes(text.charAt(j))) speed += 200;
-                    await new Promise(r => setTimeout(r, speed));
-                }
-                cursor.remove();
-                
-                if (i === 0) {
-                    progContainer.style.display = "block";
-                    progBar.style.transition = "width 6s cubic-bezier(0.1, 0.8, 0.2, 1)";
-                    setTimeout(() => { progBar.style.width = "100%"; }, 100);
-                }
-                await new Promise(r => setTimeout(r, 800)); 
-            }
-
-            await new Promise(r => setTimeout(r, 2000));
-            
-            // --- 幕 1 淡出，幕 2 淡入 ---
-            stage1.classList.remove('active');
-            await new Promise(r => setTimeout(r, 2000)); // 等待淡出
-            stage2.classList.add('active');
-
-            // --- 幕 2：對話進行 ---
-            for (let msgData of chatSequence) {
-                await new Promise(r => setTimeout(r, msgData.delayBefore));
-                const msgDiv = document.createElement("div");
-                msgDiv.className = `msg msg-${msgData.sender}`;
-                msgDiv.innerHTML = msgData.text;
-                chatContent.appendChild(msgDiv);
-                // 讓對話框自動滾動到最底
-                chatContent.scrollTop = chatContent.scrollHeight;
-            }
-
-            await new Promise(r => setTimeout(r, 5000)); // 對話結束後停留久一點
-
-            // --- 幕 2 淡出，幕 3 淡入 ---
-            stage2.classList.remove('active');
-            await new Promise(r => setTimeout(r, 2000));
-            stage3.classList.add('active');
-        };
-        // --- 音樂淡出與頁面跳轉模組 ---
-        function fadeOutAndNavigate(targetUrl, bgmId) {
-            const bgm = document.getElementById(bgmId);
-            
-            // 如果畫面上有 stage-3 或其他容器，也可以順便讓畫面淡出黑屏
-            const finalStage = document.getElementById("stage-3") || document.getElementById("credits");
-            if (finalStage) {
-                finalStage.style.transition = "opacity 2s ease";
-                finalStage.style.opacity = 0;
-            }
-
-            // 執行音樂漸弱
-            if (bgm && !bgm.paused) {
-                let vol = bgm.volume;
-                const fadeOut = setInterval(() => {
-                    if (vol > 0.05) { 
-                        vol -= 0.05; 
-                        bgm.volume = Math.max(0, vol); // 避免音量變成負數報錯
-                    } else { 
-                        clearInterval(fadeOut); 
-                        bgm.pause(); 
-                        window.location.href = targetUrl; // 音樂完全無聲後跳轉
-                    }
-                }, 150); // 150 毫秒降一次音量，數字越大淡出越慢
-            } else {
-                // 若沒有音樂或音樂被瀏覽器阻擋，等待 2 秒黑屏後直接跳轉
-                setTimeout(() => { window.location.href = targetUrl; }, 2000);
+            if (speed > 0) {
+                await sleep(speed);
             }
         }
-    </script>
+    }
+
+    cursor.remove();
+}
+
+/* ==========================================
+   訊息播放
+
+   使用捲動動畫，
+   並保留使用者向上閱讀的能力。
+========================================== */
+
+function appendMessage(container, data) {
+
+    const shouldAutoScroll =
+        container.scrollHeight
+        - container.scrollTop
+        - container.clientHeight < 100;
+
+    const msg = document.createElement("div");
+
+    msg.className =
+        `msg msg-${data.sender}`;
+
+    msg.textContent = data.text;
+
+    container.appendChild(msg);
+
+    if (shouldAutoScroll) {
+        requestAnimationFrame(() => {
+
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: prefersReducedMotion
+                    ? "instant"
+                    : "smooth"
+            });
+
+        });
+    }
+}
+
+/* ==========================================
+   歡迎回來：獨立演出
+========================================== */
+
+async function playReunion() {
+
+    const reunion = document.getElementById(
+        "reunion-stage"
+    );
+
+    const status = document.getElementById(
+        "reunion-status"
+    );
+
+    const line1 = document.getElementById(
+        "reunion-line-1"
+    );
+
+    const line2 = document.getElementById(
+        "reunion-line-2"
+    );
+
+    reunion.classList.add("active");
+
+    await sleep(1200);
+
+    status.classList.add("visible");
+
+    await sleep(2200);
+
+    line1.classList.add("visible");
+
+    await sleep(4200);
+
+    line2.classList.add("visible");
+
+    await sleep(6200);
+
+    reunion.classList.remove("active");
+
+    await sleep(3000);
+}
+
+/* ==========================================
+   主要敘事流程
+========================================== */
+
+let narrativeStarted = false;
+
+async function playNarrative() {
+
+    if (narrativeStarted) return;
+    narrativeStarted = true;
+
+    const bgm = document.getElementById(
+        "end-bgm"
+    );
+
+    const stage1 = document.getElementById(
+        "stage-1"
+    );
+
+    const stage2 = document.getElementById(
+        "stage-2"
+    );
+
+    const stage3 = document.getElementById(
+        "stage-3"
+    );
+
+    const terminal = document.getElementById(
+        "terminal-content"
+    );
+
+    const progressContainer = document.getElementById(
+        "progress-container"
+    );
+
+    const progressBar = document.getElementById(
+        "progress-bar"
+    );
+
+    const progressLabel = document.getElementById(
+        "progress-label"
+    );
+
+    const chatContent = document.getElementById(
+        "chat-content"
+    );
+
+    const logoutBtn = document.getElementById(
+        "logout-btn"
+    );
+
+    /* 音樂淡入，與敘事同時執行 */
+
+    fadeAudioIn(bgm);
+
+    /* ==================================
+       PHASE 1：終端備份
+    ================================== */
+
+    stage1.classList.add("active");
+
+    await sleep(1000);
+
+    for (let i = 0; i < narrativeLines.length; i++) {
+
+        const div = document.createElement("div");
+        div.className = "type-line";
+
+        terminal.appendChild(div);
+
+        await typeLine(
+            div,
+            narrativeLines[i]
+        );
+
+        /* 第一行完成後啟動進度條 */
+
+        if (i === 0) {
+
+            progressContainer.style.display = "block";
+            progressLabel.style.display = "block";
+
+            await sleep(100);
+
+            progressBar.style.width = "100%";
+
+            const progressStart = performance.now();
+
+            const progressTimer = setInterval(() => {
+
+                const elapsed =
+                    performance.now() - progressStart;
+
+                const percentage = Math.min(
+                    100,
+                    Math.floor(elapsed / 6000 * 100)
+                );
+
+                progressLabel.textContent =
+                    `[ MEMORY ARCHIVE // ${percentage}% ]`;
+
+                if (percentage >= 100) {
+                    clearInterval(progressTimer);
+                }
+
+            }, 100);
+
+        }
+
+        await sleep(800);
+    }
+
+    /* 確保最後顯示 100% */
+
+    progressBar.style.width = "100%";
+
+    progressLabel.textContent =
+        "[ MEMORY ARCHIVE // 100% ]";
+
+    await sleep(1300);
+
+    const completeLine = document.createElement("div");
+
+    completeLine.className = "type-line";
+
+    completeLine.style.color = "#b9decf";
+
+    completeLine.textContent =
+        "> 意識備份完成。虛擬沙盒啟動成功。";
+
+    terminal.appendChild(completeLine);
+
+    await sleep(2800);
+
+    stage1.classList.remove("active");
+
+    await sleep(2600);
+
+    /* ==================================
+       PHASE 2：沙盒對話
+    ================================== */
+
+    stage2.classList.add("active");
+
+    await sleep(1800);
+
+    for (const data of chatSequence) {
+
+        await sleep(data.delayBefore);
+
+        /* 談到營火，色調逐漸變暖 */
+
+        if (data.warm) {
+            document.body.classList.add(
+                "memory-warming"
+            );
+        }
+
+        appendMessage(
+            chatContent,
+            data
+        );
+    }
+
+    /* 最後沉默停留 */
+
+    await sleep(4500);
+
+    /* 對話框淡出 */
+
+    stage2.classList.remove("active");
+
+    await sleep(2800);
+
+    /* ==================================
+       特殊演出：歡迎回來
+    ================================== */
+
+    await playReunion();
+
+    /* ==================================
+       PHASE 3：最終結局
+    ================================== */
+
+    stage3.classList.add("active");
+
+    /* 先讓結語停留，再出現按鈕 */
+
+    await sleep(5000);
+
+    logoutBtn.classList.add("visible");
+}
+
+/* ==========================================
+   LOGOUT：淡出音樂與畫面
+========================================== */
+
+let navigating = false;
+
+async function fadeOutAndNavigate(
+    event,
+    targetUrl = "index.html"
+) {
+
+    if (event) {
+        event.preventDefault();
+    }
+
+    if (navigating) return;
+    navigating = true;
+
+    const stage3 = document.getElementById(
+        "stage-3"
+    );
+
+    const logoutBtn = document.getElementById(
+        "logout-btn"
+    );
+
+    const bgm = document.getElementById(
+        "end-bgm"
+    );
+
+    logoutBtn.style.pointerEvents = "none";
+
+    stage3.classList.remove("active");
+
+    await fadeAudioOut(bgm, 2200);
+
+    window.location.href = targetUrl;
+}
+
+/* ==========================================
+   初始化
+========================================== */
+
+window.addEventListener(
+    "load",
+    playNarrative
+);
+
+document.getElementById(
+    "logout-btn"
+).addEventListener(
+    "click",
+    event => {
+        fadeOutAndNavigate(
+            event,
+            "index.html"
+        );
+    }
+);
+
+</script>
+
 </body>
 </html>
