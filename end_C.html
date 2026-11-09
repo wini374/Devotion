@@ -24,6 +24,25 @@ body {
     font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
     overflow: hidden;
 }
+    
+/* 權限完成後的歡迎訊息 */
+
+#transfer-complete-message {
+    opacity: 0;
+    margin-top: 25px;
+    text-align: center;
+
+    color: #e0b9f2;
+    letter-spacing: 2px;
+    line-height: 2;
+
+    transition: opacity 1.4s ease-in-out;
+}
+
+#transfer-complete-message.visible {
+    opacity: 1;
+}
+
 
 /* ========================================
    Phase 1 → Phase 2：暗紫背景淡入
@@ -479,6 +498,9 @@ body.phase-3 #throne-glow {
         <div id="protocol-status">
             &gt; AUTHORITY TRANSFER: 36%
         </div>
+        <div id="transfer-complete-message">
+            &gt; [ 權限轉移完成。歡迎回來，管理員。 ]
+        </div>
 
     </div>
 
@@ -865,6 +887,13 @@ async function showPurgeProtocol() {
    進度條達到 100% 時，同步顯示歡迎訊息
 ======================================== */
 
+/* ========================================
+   權限轉移完成
+
+   36% → 100%
+   進度條完成後，同時顯示歡迎訊息。
+======================================== */
+
 async function finalizeProtocol() {
 
     const el = document.getElementById('protocol');
@@ -877,9 +906,55 @@ async function finalizeProtocol() {
         'protocol-status'
     );
 
-   const completeMessage = document.getElementById(
-    'transfer-complete-message'
+    const completeMessage = document.getElementById(
+        'transfer-complete-message'
     );
+
+    // 重設狀態
+    completeMessage.classList.remove('visible');
+
+    bar.style.transition = 'none';
+    bar.style.width = '36%';
+
+    status.textContent =
+        '> AUTHORITY TRANSFER: 36%';
+
+    // 顯示權限轉移介面
+    el.style.display = 'block';
+    el.style.opacity = '0';
+
+    await sleep(100);
+
+    el.style.opacity = '1';
+
+    await sleep(1200);
+
+    // 開始權限轉移
+    bar.style.transition = 'width 2.7s ease';
+    bar.style.width = '100%';
+
+    // 等待進度條到達 100%
+    await sleep(2700);
+
+    // 更新完成狀態與歡迎訊息
+    status.textContent =
+        '> AUTHORITY TRANSFER: 100%';
+
+    completeMessage.classList.add('visible');
+
+    // 保留畫面 4.3 秒
+    await sleep(4300);
+
+    // 淡出
+    completeMessage.classList.remove('visible');
+
+    el.style.opacity = '0';
+
+    await sleep(1500);
+
+    el.style.display = 'none';
+}
+
 
 // 進度條達到 100% 後
 completeMessage.classList.add('visible');
@@ -977,20 +1052,22 @@ async function play() {
 
     await finalizeProtocol();
 
-    /* =================================
-       最後的系統宣告
-    ================================= */
 
-   /* 最後的系統宣告 */
+/* =================================
+   「……我的摯友。」已經淡出
+================================= */
 
-/* 最後的承諾結束後，等待 2.5 秒 */
+/* 等待 2.5 秒 */
 await sleep(2500);
 
-/* 進度條與歡迎訊息同步演出 */
+/* 進度條從 36% 開始，
+   到達 100% 後顯示歡迎訊息 */
 await finalizeProtocol();
 
-/* 進入結局畫面 */
+/* 等待 1 秒後進入結局畫面 */
 await sleep(1000);
+
+
 
     /* =================================
        顯示結局畫面
