@@ -1,280 +1,208 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENDING B: ETERNITY</title>
-    <style>
-        body { 
-            background-color: #000000; 
-            color: #ffffff; 
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center;
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden; 
-            transition: background-color 0.1s ease;
-        }
-
-        /* --- 階段一：系統崩壞警告 (瞬間出現) --- */
-        #sys-warning-container {
-            position: absolute;
-            top: 45%;
-            width: 100%;
-            text-align: center;
-            font-family: "MingLiU", "Courier New", monospace;
-            display: none; 
-            z-index: 5;
-        }
-        .sys-alert-red {
-            color: #cc0000;
-            font-size: 1.3rem;
-            letter-spacing: 2px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-shadow: 0 0 8px rgba(204, 0, 0, 0.5);
-        }
-        .sys-alert-green {
-            color: #00aa00;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            opacity: 0.8;
-        }
-
-        /* 核心崩潰時的背景隨機微閃爍 */
-        .core-crashing {
-            animation: coreBlink 2s infinite;
-        }
-        @keyframes coreBlink {
-            0%, 40%, 60%, 100% { background-color: #000; }
-            50% { background-color: #080000; } 
-        }
-
-        /* --- 階段二：意識融合 (色彩分離、扭曲與雜訊) --- */
-        #noise-overlay {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)"/%3E%3C/svg%3E');
-            opacity: 0.25;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        .bg-glitch-active {
-            animation: heavyGlitchBg 0.15s infinite;
-        }
-        @keyframes heavyGlitchBg {
-            0%, 100% { background-color: #000; }
-            50% { background-color: #0a0303; }
-        }
-
-        /* 色彩分離與文字扭曲特效 */
-        .text-glitch-active {
-            animation: textDistortion 0.2s infinite;
-            text-shadow: 3px 0 1px rgba(255,0,0,0.8), -3px 0 1px rgba(0,255,255,0.8);
-        }
-        @keyframes textDistortion {
-            0% { transform: translate(-50%, -50%) skewX(0deg); }
-            25% { transform: translate(-51%, -49%) skewX(4deg); }
-            50% { transform: translate(-49%, -51%) skewX(-4deg); }
-            75% { transform: translate(-50%, -49%) skewX(2deg); }
-            100% { transform: translate(-50%, -50%) skewX(0deg); }
-        }
-
-        /* 瞬間強烈閃爍特效 (記憶與痛楚) */
-        body.warning-flash::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            z-index: 101;
-            pointer-events: none;
-            background: rgba(160, 0, 0, 0.2);
-            animation: warningFlash 0.35s ease-out forwards;
-        }
-        @keyframes warningFlash {
-            0% { opacity: 0; }
-            20% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        /* --- 電影式敘事字幕容器 --- */
-        #cinematic-stage {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 800px;
-            text-align: center;
-            z-index: 10;
-        }
-        .cine-text {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            font-size: 1.1rem;
-            letter-spacing: 4px;
-            line-height: 2.2;
-            opacity: 0;
-            transition: opacity 2s ease-in-out;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
-        }
-
-        /* --- 階段三：結局與按鈕 --- */
-        #ending-stage {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 800px; text-align: center; z-index: 20;
-            display: none; opacity: 0; transition: opacity 3s ease-in-out;
-        }
-        .epitaph { font-size: 1.2rem; letter-spacing: 4px; line-height: 2.2; color: #ddd; margin-bottom: 60px; text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
-        .title { font-size: 2.5rem; letter-spacing: 15px; margin-bottom: 20px; font-weight: bold; color: #fff; }
-        .sub { font-size: 1.1rem; letter-spacing: 3px; color: #aaa; margin-bottom: 50px; line-height: 1.8;}
-        
-        .btn { background: transparent; border: 1px solid #555; color: #888; padding: 10px 30px; cursor: pointer; text-decoration: none; letter-spacing: 3px; transition: all 0.5s; display: inline-block; }
-        .btn:hover { border-color: #fff; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENDING B: ETERNITY</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; min-height: 100svh; overflow: hidden;
+  background: #000; color: #fff; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+/* Phase 1：輕微背景暗紅脈動，不讓整頁突然變亮 */
+body.phase-1::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: #190305; opacity: 0; animation: subtlePulse 6s ease-in-out infinite;
+}
+@keyframes subtlePulse { 0%, 25%, 65%, 100% {opacity:0} 45% {opacity:.11} }
+#sys-warning-container {
+  display: none; position: absolute; z-index: 5; top: 45%; left: 50%;
+  transform: translate(-50%, -50%); width: 90%; text-align: center;
+  font-family: "MingLiU", "Courier New", monospace;
+}
+.sys-alert-red { color: #bb4242; font-size: 1.15rem; font-weight: bold; letter-spacing: 2px; line-height: 1.8; margin-bottom: 14px; }
+.sys-alert-green { color: #7ca58a; font-size: .9rem; letter-spacing: 1px; line-height: 1.8; }
+/* Phase 2：深紅數位矩陣；不使用雪花雜訊或快速閃爍 */
+#code-background {
+  display: none; position: fixed; inset: 0; z-index: 1; overflow: hidden;
+  pointer-events: none; background: radial-gradient(ellipse at center, #29070b 0%, #110307 55%, #000 100%);
+}
+#code-background::before {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(to bottom, transparent 0 5px, rgba(180,35,40,.035) 6px 7px);
+}
+#code-background::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(140,12,22,.08), transparent);
+  animation: codeGlow 9s ease-in-out infinite alternate;
+}
+#code-lines {
+  position: absolute; inset: -15%; display: flex; flex-direction: column; justify-content: space-around;
+  transform: rotate(-7deg); font: 13px/2 "Courier New", monospace;
+  letter-spacing: 3px; white-space: nowrap; color: rgba(204,70,70,.18);
+  text-shadow: 0 0 14px rgba(145,15,25,.35);
+  animation: codeDrift 18s linear infinite alternate;
+}
+#code-lines span:nth-child(even) { color: rgba(126,45,54,.20); padding-left: 10%; }
+body.phase-2 #code-background { display: block; }
+@keyframes codeDrift { from {transform: translateY(0) rotate(-7deg)} to {transform: translateY(-35px) rotate(-7deg)} }
+@keyframes codeGlow { from {opacity:.45} to {opacity:.8} }
+/* 字幕 */
+#cinematic-stage {
+  position: absolute; z-index: 10; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 90%; max-width: 800px; text-align: center;
+}
+.cine-text {
+  position: absolute; top: 50%; left: 50%; width: 100%; opacity: 0;
+  transform: translate(-50%,-50%); font-size: 1.1rem; letter-spacing: 4px;
+  line-height: 2.2; overflow-wrap: anywhere; transition: opacity 1.5s ease-in-out;
+  text-shadow: 0 0 9px rgba(255,255,255,.28);
+}
+.glitch-low { text-shadow: 1px 0 rgba(175,35,45,.55), -1px 0 rgba(45,110,135,.35); }
+.glitch-medium { text-shadow: 2px 0 rgba(175,35,45,.62), -2px 0 rgba(45,110,135,.42); animation: softJitter 2.2s ease-in-out infinite; }
+.glitch-high { text-shadow: 2px 0 rgba(175,35,45,.75), -2px 0 rgba(45,110,135,.48); animation: softJitter 1.5s ease-in-out infinite; }
+@keyframes softJitter {
+  0%, 40%, 65%, 100% {transform:translate(-50%,-50%)}
+  45% {transform:translate(calc(-50% + 2px),-50%)}
+  55% {transform:translate(calc(-50% - 2px),-50%)}
+}
+/* 單次慢速紅色警告：不反覆爆閃 */
+body.warning-flash::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 15;
+  background: rgba(105, 10, 18, .19); animation: gentleWarning 1.7s ease-in-out forwards;
+}
+@keyframes gentleWarning { 0% {opacity:0} 45% {opacity:.5} 100% {opacity:0} }
+/* Phase 3：立即回歸完全黑色與靜止 */
+body.phase-3 { background:#000 !important; }
+body.phase-3::before, body.phase-3::after { display:none !important; }
+body.phase-3 #code-background { display:none !important; }
+body.phase-3 .cine-text { animation:none !important; transform:translate(-50%,-50%) !important; text-shadow:0 0 8px rgba(255,255,255,.18); }
+#ending-stage {
+  display:none; opacity:0; position:absolute; z-index:20; top:50%; left:50%;
+  transform:translate(-50%,-50%); width:90%; max-width:800px;
+  text-align:center; transition:opacity 3s ease-in-out;
+}
+.epitaph {font-size:1.2rem; letter-spacing:4px; line-height:2.2; color:#ddd; margin-bottom:60px;}
+.title {font-size:2.5rem; letter-spacing:15px; font-weight:bold; margin-bottom:20px;}
+.sub {font-size:1.1rem; letter-spacing:3px; color:#aaa; line-height:1.8; margin-bottom:50px;}
+.btn {display:inline-block; padding:10px 30px; background:transparent; border:1px solid #555; color:#888; text-decoration:none; letter-spacing:3px; transition:all .5s;}
+.btn:hover, .btn:focus-visible {border-color:#fff; color:#fff; box-shadow:0 0 15px rgba(255,255,255,.25);}
+@media (max-width:600px) {
+  .sys-alert-red {font-size:.95rem} .sys-alert-green {font-size:.7rem; overflow-wrap:anywhere}
+  .cine-text {font-size:.95rem; letter-spacing:2px; line-height:2}
+  .epitaph {font-size:1rem; letter-spacing:2px; margin-bottom:42px}
+  .title {font-size:1.8rem; letter-spacing:9px}
+  .sub {font-size:.9rem; letter-spacing:2px; margin-bottom:38px}
+}
+@media (prefers-reduced-motion:reduce) {
+  *, *::before, *::after {animation:none !important; transition-duration:.01ms !important;}
+}
+</style>
 </head>
 <body>
-
-    <!-- 結局音樂 -->
-    <audio id="end-bgm" src="B.mp3" loop></audio>
-
-    <!-- 雜訊特效層 -->
-    <div id="noise-overlay"></div>
-
-    <!-- 階段一：系統警告 -->
-    <div id="sys-warning-container">
-        <div class="sys-alert-red">[ 警告：偵測到外部意識強行上傳至崩壞核心... ]</div>
-        <div class="sys-alert-green">> UPLOAD_OVERRIDE_INITIATED // NEURAL_LINK_ESTABLISHED</div>
-    </div>
-
-    <!-- 電影敘事舞台 -->
-    <div id="cinematic-stage"></div>
-
-    <!-- 階段三：結局畫面 -->
-    <div id="ending-stage">
-        <div class="epitaph">
-            <br>世界終將消失，<br>但我們永遠留在彼此身邊。
-        </div>
-        <div class="title">DEVOTION</div>
-        <div class="sub">ENDING B - ETERNITY 永恆</div>
-        <a onclick="fadeOutAndNavigate('index.html', 'end-bgm')" class="btn">斷開連線 LOGOUT</a>
-    </div>
-
-    <script>
-        const narrativeLines = [
-            { text: "矩陣的邊界開始溶解，現實的輪廓逐漸崩塌。", phase: 1 },
-            { text: "強行連結崩毀的終端，意味著你的自我將被永久抹除。", phase: 1 },
-            { text: "看著螢幕上那句「毀滅我」，你終究還是無法做到。", phase: 2 },
-            { text: "「如果這個世界需要你變成怪物才能團結...」", phase: 2 },
-            { text: "「那就讓他們自己去打吧。」", phase: 2 },
-            { text: "但你沒有停下。", phase: 2 },
-            { text: "記憶與痛楚被撕裂成混亂的數據碎片。", phase: 2 },
-            { text: "意識正被龐大的虛空吞噬......", phase: 2 },
-            { text: "在無盡冰冷的代碼與黑暗中，你終於牽住了他的手。", phase: 3 }
-        ];
-
-        window.onload = async function() {
-            const bgm = document.getElementById("end-bgm");
-            if (bgm) {
-                bgm.volume = 0;
-                bgm.play().catch(e => console.log("BGM blocked", e));
-                let vol = 0;
-                const fadeIn = setInterval(() => {
-                    if (vol < 0.6) { vol += 0.02; bgm.volume = vol; } 
-                    else { clearInterval(fadeIn); }
-                }, 200);
-            }
-
-            const sysWarning = document.getElementById("sys-warning-container");
-            const cineStage = document.getElementById("cinematic-stage");
-            const noiseOverlay = document.getElementById("noise-overlay");
-            const endingStage = document.getElementById("ending-stage");
-
-            await new Promise(r => setTimeout(r, 1000));
-
-            // --- 階段 1. 開場：系統崩壞警告 ---
-            document.body.classList.add("core-crashing");
-            sysWarning.style.display = "block";
-            await new Promise(r => setTimeout(r, 3000));
-            sysWarning.style.display = "none";
-            await new Promise(r => setTimeout(r, 1000));
-
-            // --- 階段 2. 電影字幕與意識融合演出 ---
-            for (let i = 0; i < narrativeLines.length; i++) {
-                const line = narrativeLines[i];
-                const div = document.createElement("div");
-                
-                // 觸發「記憶與痛楚」的瞬間紅屏閃爍
-                if (line.text.includes("記憶與痛楚")) {
-                    document.body.classList.remove("warning-flash");
-                    void document.body.offsetWidth; // 強制重繪以重啟動畫
-                    document.body.classList.add("warning-flash");
-                }
-
-                if (line.phase === 2) {
-                    noiseOverlay.style.display = "block";
-                    document.body.classList.add("bg-glitch-active");
-                    div.className = "cine-text text-glitch-active";
-                } else if (line.phase === 3) {
-                    noiseOverlay.style.display = "none";
-                    document.body.className = ""; 
-                    div.className = "cine-text";
-                } else {
-                    div.className = "cine-text";
-                }
-
-                div.innerHTML = line.text;
-                cineStage.appendChild(div);
-                
-                setTimeout(() => { div.style.opacity = 1; }, 50);
-                
-                if (line.phase === 3) {
-                    await new Promise(r => setTimeout(r, 5000)); 
-                } else {
-                    const stayTime = 2500 + (line.text.length * 80); 
-                    await new Promise(r => setTimeout(r, stayTime));
-                }
-                
-                div.style.opacity = 0;
-                await new Promise(r => setTimeout(r, 2000)); 
-                div.remove();
-            }
-
-            // --- 階段 3. 結尾：永恆迴音 ---
-            await new Promise(r => setTimeout(r, 1000));
-            endingStage.style.display = "block";
-            setTimeout(() => { endingStage.style.opacity = 1; }, 50);
-        };
-
-        function fadeOutAndNavigate(targetUrl, bgmId) {
-            const finalStage = document.getElementById("ending-stage");
-            const bgm = document.getElementById(bgmId);
-
-            if (finalStage) {
-                finalStage.style.transition = "opacity 2s ease";
-                finalStage.style.opacity = 0;
-            }
-
-            if (bgm && !bgm.paused) {
-                let vol = bgm.volume;
-                const fadeOut = setInterval(() => {
-                    if (vol > 0.05) { 
-                        vol -= 0.05; 
-                        bgm.volume = Math.max(0, vol); 
-                    } else { 
-                        clearInterval(fadeOut); 
-                        bgm.pause(); 
-                        window.location.href = targetUrl; 
-                    }
-                }, 150); 
-            } else {
-                setTimeout(() => { window.location.href = targetUrl; }, 2500);
-            }
-        }
-    </script>
+<audio id="end-bgm" src="B.mp3" loop preload="auto"></audio>
+<div id="code-background" aria-hidden="true">
+  <div id="code-lines">
+    <span>01001110 01010101 01001100 01001100 // MEMORY_FRAGMENT_036 // SIGNAL LOST</span>
+    <span>CORE COLLAPSE // ACCESS DENIED // RECOVERY POINT NOT FOUND</span>
+    <span>00110110 00110011 00110000 00110001 // TIMELINE_UNSTABLE // NULL</span>
+    <span>CONSCIOUSNESS TRANSFER // NEURAL LINK // OVERRIDE ACCEPTED</span>
+    <span>01000100 01000101 01010110 01001111 01010100 01001001 01001111 01001110</span>
+    <span>ERROR_036 // SOUL FRAGMENT DETECTED // DATA CORRUPTION</span>
+    <span>01001000 01001111 01001101 01000101 // ABYSS // MEMORY LOST</span>
+    <span>SECURITY BREACH // NETWORK ISOLATED // NO RETURN</span>
+    <span>01100101 01110100 01100101 01110010 01101110 01101001 01110100 01111001</span>
+  </div>
+</div>
+<div id="sys-warning-container">
+  <div class="sys-alert-red">[ 警告：偵測到外部意識強行上傳至崩壞核心... ]</div>
+  <div class="sys-alert-green">&gt; UPLOAD_OVERRIDE_INITIATED // NEURAL_LINK_ESTABLISHED</div>
+</div>
+<div id="cinematic-stage" aria-live="polite"></div>
+<div id="ending-stage">
+  <div class="epitaph">世界終將消失，<br>但我們永遠留在彼此身邊。</div>
+  <div class="title">DEVOTION</div>
+  <div class="sub">ENDING B - ETERNITY 永恆</div>
+  <a class="btn" href="index.html" onclick="fadeOutAndNavigate(event, 'index.html', 'end-bgm')">斷開連線 LOGOUT</a>
+</div>
+<script>
+const narrativeLines = [
+  {text:"矩陣的邊界開始溶解，現實的輪廓逐漸崩塌。", phase:1},
+  {text:"強行連結崩毀的終端，意味著你的自我將被永久抹除。", phase:1},
+  {text:"看著螢幕上那句「毀滅我」，你終究還是無法做到。", phase:2, glitch:"low"},
+  {text:"「如果這個世界需要你變成怪物才能團結...」", phase:2, glitch:"low"},
+  {text:"「那就讓他們自己去打吧。」", phase:2, glitch:"medium"},
+  {text:"但你沒有停下。", phase:2, glitch:"medium"},
+  {text:"記憶與痛楚被撕裂成混亂的數據碎片。", phase:2, glitch:"high", warning:true},
+  {text:"意識正被龐大的虛空吞噬......", phase:2, glitch:"high"},
+  {text:"在無盡冰冷的代碼與黑暗中，你終於牽住了他的手。", phase:3}
+];
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+function setPhase(phase) {
+  document.body.classList.remove("phase-1","phase-2","phase-3","warning-flash");
+  document.body.classList.add(`phase-${phase}`);
+}
+function triggerWarningFlash() {
+  document.body.classList.remove("warning-flash");
+  void document.body.offsetWidth;
+  document.body.classList.add("warning-flash");
+}
+async function fadeAudioIn(audio, target=.6, duration=5000) {
+  if (!audio) return;
+  audio.volume = 0;
+  try { await audio.play(); } catch(e) { console.log("BGM blocked:",e); return; }
+  const steps = 30;
+  for(let i=1;i<=steps;i++) { audio.volume = target*i/steps; await sleep(duration/steps); }
+}
+async function playNarrative() {
+  const bgm = document.getElementById("end-bgm");
+  const warning = document.getElementById("sys-warning-container");
+  const stage = document.getElementById("cinematic-stage");
+  const ending = document.getElementById("ending-stage");
+  void fadeAudioIn(bgm);
+  await sleep(1000);
+  setPhase(1);
+  warning.style.display = "block";
+  await sleep(3000);
+  warning.style.display = "none";
+  await sleep(900);
+  for(const line of narrativeLines) {
+    setPhase(line.phase);
+    const div = document.createElement("div");
+    div.className = "cine-text";
+    if(line.phase===2 && line.glitch) div.classList.add(`glitch-${line.glitch}`);
+    if(line.warning) triggerWarningFlash();
+    div.textContent = line.text;
+    stage.appendChild(div);
+    requestAnimationFrame(() => requestAnimationFrame(() => div.style.opacity="1"));
+    await sleep(line.phase===3 ? 6500 : 2600 + line.text.length*75);
+    div.style.opacity = "0";
+    await sleep(1600);
+    div.remove();
+  }
+  setPhase(3);
+  await sleep(1200);
+  ending.style.display="block";
+  requestAnimationFrame(() => requestAnimationFrame(() => ending.style.opacity="1"));
+}
+let navigating = false;
+async function fadeOutAndNavigate(event, url, bgmId) {
+  event.preventDefault();
+  if(navigating) return;
+  navigating = true;
+  const ending = document.getElementById("ending-stage");
+  const audio = document.getElementById(bgmId);
+  ending.style.transition="opacity 1.5s ease";
+  ending.style.opacity="0";
+  if(audio && !audio.paused) {
+    const startingVolume=audio.volume;
+    for(let i=19;i>=0;i--) { audio.volume=startingVolume*i/20; await sleep(75); }
+    audio.pause();
+  } else { await sleep(1500); }
+  window.location.href=url;
+}
+window.addEventListener("load", playNarrative);
+</script>
 </body>
 </html>
