@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENDING B: ETERNITY</title>
     <style>
-        
+        /* 瞬間強烈閃爍特效 */
+        .warning-flash {
+            animation: severeFlash 0.8s ease-out !important;
+        }
+        @keyframes severeFlash {
+            0% { background-color: #cc0000; } /* 瞬間變成暗紅色 */
+            100% { background-color: #000000; } /* 慢慢褪回純黑 */
+        }
 /* ================================
    PHASE 1：正常電影字幕
 ================================ */
@@ -345,8 +352,22 @@ body.phase-3 #text-container .final-line {
     20% { opacity: 1; }
     100% { opacity: 0; }
 }
-        if (line.text.includes("記憶與痛楚")) {
-    document.body.classList.remove("warning-flash");
+      // --- 階段 2. 電影字幕與意識融合演出 ---
+            for (let i = 0; i < narrativeLines.length; i++) {
+                const line = narrativeLines[i];
+                const div = document.createElement("div");
+                
+                // 【正確位置】放在定義完 line 之後，根據台詞觸發閃爍
+                if (line.text.includes("記憶與痛楚")) {
+                    document.body.classList.remove("warning-flash");
+                    void document.body.offsetWidth; // 強制重新觸發動畫
+                    document.body.classList.add("warning-flash");
+                }
+
+                // 根據階段切換特效
+                if (line.phase === 2) {
+                    noiseOverlay.style.display = "block";
+                    // ... 後面維持原樣 ...
 
     // 強制重新觸發動畫
     void document.body.offsetWidth;
