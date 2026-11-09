@@ -540,74 +540,67 @@ body.phase-3 #throne-glow {
 
 </main>
 
+
 <script>
+/* ========================================
+   DEVOTION — ENDING C
+   INHERITANCE
+   完整修正版
+======================================== */
 
 /* ========================================
-   劇本與階段定義
+   劇情字幕
 ======================================== */
 
 const narrativeLines = [
-
     {
         text: '你沒有按下自毀程序',
         phase: 1
     },
-
     {
         text: '你終於明白了，為什麼他寧願背負所有人的仇恨，<br>也不願將這個世界交還給它原本的模樣',
         phase: 1
     },
-
     {
         text: '失去了共同的敵人，曾經並肩作戰的陣營終將再次分裂。<br>猜忌會重新滋長，貪婪會再次點燃戰火。<br>而那些用無數生命換來的和平，也將隨之化為灰燼',
         phase: 2
     },
-
     {
         text: '你不能讓他的犧牲，成為第三十七次輪迴的開端',
         phase: 2,
         kind: 'resolve'
     },
-
     {
         text: '於是，在核心徹底崩毀之前，<br>你伸手接過了那份他曾獨自背負的權限。',
         phase: 2
     },
-
     {
         text: '你將他殘存的靈魂碎片逐一抹除，<br>讓那些被三十六次輪迴囚禁的記憶，終於歸於寂靜',
         phase: 2,
         event: 'purge'
     },
-
     {
         text: '這是你最後一次替他做出選擇<br>也是他第一次，不必再為這個世界承受苦難',
         phase: 2
     },
-
     {
         text: '然後，你拾起了那頂沾滿鮮血的王冠',
         phase: 3,
         kind: 'coronation',
         event: 'crown'
     },
-
     {
         text: '它比你想像的更加沉重<br>彷彿三十六次輪迴裡所有未曾說出口的遺憾，<br>都在這一刻落到了你的肩上',
         phase: 3
     },
-
     {
         text: '王座之外，天空依舊灰暗<br>反抗軍驚恐地發現，舊的暴君雖已殞落，<br>但那個掌控世界的神明，從未真正消失',
         phase: 3
     },
-
     {
         text: '只是這一次，坐在王座上的人，換成了你',
         phase: 3
     },
-
-   
     {
         text: '「我會替你把這場戲演完的。」',
         phase: 3,
@@ -618,12 +611,10 @@ const narrativeLines = [
         phase: 3,
         kind: 'resolve'
     }
-
-
 ];
 
 /* ========================================
-   等待工具
+   基礎工具
 ======================================== */
 
 const sleep = ms => new Promise(
@@ -634,8 +625,16 @@ const reducedMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)'
 ).matches;
 
+function fadeInElement(element) {
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            element.style.opacity = '1';
+        });
+    });
+}
+
 /* ========================================
-   C.mp3 音樂控制
+   C.mp3 音樂
 ======================================== */
 
 let audioFadeToken = 0;
@@ -645,36 +644,30 @@ async function fadeInAudio(
     target = 0.55,
     duration = 5000
 ) {
-
-    audio.volume = 0;
+    if (!audio) return;
 
     const token = ++audioFadeToken;
 
+    audio.volume = 0;
+
     try {
-
         await audio.play();
-
     } catch (error) {
-
-        console.info(
-            '瀏覽器阻止自動播放音樂；字幕仍會正常播放。',
+        console.warn(
+            '音樂無法自動播放：',
             error
         );
-
         return;
     }
 
     const steps = 25;
 
-    for (
-        let n = 1;
-        n <= steps && token === audioFadeToken;
-        n++
-    ) {
+    for (let i = 1; i <= steps; i++) {
+        if (token !== audioFadeToken) return;
 
         audio.volume = Math.min(
             1,
-            target * n / steps
+            target * i / steps
         );
 
         await sleep(duration / steps);
@@ -685,19 +678,17 @@ async function fadeOutAudio(
     audio,
     duration = 1800
 ) {
-
     ++audioFadeToken;
 
-    if (audio.paused) return;
+    if (!audio || audio.paused) return;
 
-    const initial = audio.volume;
+    const initialVolume = audio.volume;
     const steps = 20;
 
-    for (let n = 1; n <= steps; n++) {
-
+    for (let i = 1; i <= steps; i++) {
         audio.volume = Math.max(
             0,
-            initial * (1 - n / steps)
+            initialVolume * (1 - i / steps)
         );
 
         await sleep(duration / steps);
@@ -707,11 +698,10 @@ async function fadeOutAudio(
 }
 
 /* ========================================
-   切換 Phase
+   Phase 切換
 ======================================== */
 
 function setPhase(phase) {
-
     document.body.classList.remove(
         'phase-1',
         'phase-2',
@@ -724,25 +714,24 @@ function setPhase(phase) {
 }
 
 /* ========================================
-   顯示系統訊息
+   系統訊息
 ======================================== */
 
 async function showSystemMessage(
-    text,
+    message,
     duration = 2600
 ) {
-
-    const el = document.getElementById(
+    const element = document.getElementById(
         'system-message'
     );
 
-    el.textContent = text;
+    element.textContent = message;
 
-    el.style.opacity = '1';
+    element.style.opacity = '1';
 
     await sleep(duration);
 
-    el.style.opacity = '0';
+    element.style.opacity = '0';
 
     await sleep(
         reducedMotion ? 80 : 1450
@@ -750,30 +739,28 @@ async function showSystemMessage(
 }
 
 /* ========================================
-   播放敘事文字
+   劇情字幕播放
 ======================================== */
 
 async function showNarrativeLine(line) {
-
     setPhase(line.phase);
 
     const host = document.getElementById(
         'story'
     );
 
-    const el = document.createElement('div');
+    const element = document.createElement('div');
 
-    el.className =
-        'line' + (line.kind ? ' ' + line.kind : '');
+    element.className =
+        'line' +
+        (line.kind ? ' ' + line.kind : '');
 
-    el.innerHTML = line.text;
+    element.innerHTML = line.text;
 
-    host.appendChild(el);
+    host.appendChild(element);
 
-    /* 新王登基前，短暫黑屏 */
-
+    /* 新王登基黑屏 */
     if (line.event === 'crown') {
-
         const cover = document.getElementById(
             'purge-screen'
         );
@@ -788,59 +775,44 @@ async function showNarrativeLine(line) {
     }
 
     /* 字幕淡入 */
+    fadeInElement(element);
 
-    requestAnimationFrame(() => {
-
-        requestAnimationFrame(() => {
-
-            el.style.opacity = '1';
-
-        });
-    });
-
-    /* 計算字幕停留時間 */
-
-    const plain = line.text.replace(
+    const plainText = line.text.replace(
         /<br\s*\/?\s*>/gi,
         ''
     );
 
-    const stayTime =
+    const duration =
         Math.max(
             3200,
-            2300 + plain.length * 75
+            2300 + plainText.length * 75
         ) +
         (line.kind === 'resolve' ? 1500 : 0);
 
-    await sleep(stayTime);
+    await sleep(duration);
 
     /* 字幕淡出 */
-
-    el.style.opacity = '0';
+    element.style.opacity = '0';
 
     await sleep(
         reducedMotion ? 100 : 1650
     );
 
-    el.remove();
+    element.remove();
 
-    /* 靈魂抹除後播放權限協定 */
-
+    /* 靈魂抹除協定 */
     if (line.event === 'purge') {
-
         await showPurgeProtocol();
     }
 }
 
 /* ========================================
-   靈魂抹除協定
-
-   此時權限尚未完成轉移。
+   靈魂抹除
+   權限暫停於 36%
 ======================================== */
 
 async function showPurgeProtocol() {
-
-    const el = document.getElementById(
+    const protocol = document.getElementById(
         'protocol'
     );
 
@@ -852,20 +824,22 @@ async function showPurgeProtocol() {
         'protocol-status'
     );
 
-    el.style.display = 'block';
+    const message = document.getElementById(
+        'transfer-complete-message'
+    );
 
-    requestAnimationFrame(() => {
-
-        requestAnimationFrame(() => {
-
-            el.style.opacity = '1';
-
-        });
-    });
-
-    await sleep(1000);
+    message.classList.remove('visible');
 
     bar.style.width = '36%';
+
+    status.textContent =
+        '> AUTHORITY TRANSFER: 36%';
+
+    protocol.style.display = 'block';
+
+    fadeInElement(protocol);
+
+    await sleep(1000);
 
     await sleep(1800);
 
@@ -874,29 +848,24 @@ async function showPurgeProtocol() {
 
     await sleep(2000);
 
-    el.style.opacity = '0';
+    protocol.style.opacity = '0';
 
     await sleep(1100);
 
-    el.style.display = 'none';
+    protocol.style.display = 'none';
 }
 
-
 /* ========================================
-   權限轉移完成
-   進度條達到 100% 時，同步顯示歡迎訊息
-======================================== */
-
-/* ========================================
-   權限轉移完成
+   最終權限轉移
 
    36% → 100%
-   進度條完成後，同時顯示歡迎訊息。
+   100% 與歡迎訊息同時出現
 ======================================== */
 
 async function finalizeProtocol() {
-
-    const el = document.getElementById('protocol');
+    const protocol = document.getElementById(
+        'protocol'
+    );
 
     const bar = document.getElementById(
         'protocol-progress'
@@ -906,12 +875,12 @@ async function finalizeProtocol() {
         'protocol-status'
     );
 
-    const completeMessage = document.getElementById(
+    const message = document.getElementById(
         'transfer-complete-message'
     );
 
-    // 重設狀態
-    completeMessage.classList.remove('visible');
+    /* 重設 */
+    message.classList.remove('visible');
 
     bar.style.transition = 'none';
     bar.style.width = '36%';
@@ -919,127 +888,74 @@ async function finalizeProtocol() {
     status.textContent =
         '> AUTHORITY TRANSFER: 36%';
 
-    // 顯示權限轉移介面
-    el.style.display = 'block';
-    el.style.opacity = '0';
+    protocol.style.opacity = '0';
+    protocol.style.display = 'block';
 
+    /* 先確定進度條從 36% 開始 */
     await sleep(100);
 
-    el.style.opacity = '1';
+    fadeInElement(protocol);
 
     await sleep(1200);
 
-    // 開始權限轉移
+    /* 進度條開始向 100% 移動 */
     bar.style.transition = 'width 2.7s ease';
     bar.style.width = '100%';
 
-    // 等待進度條到達 100%
     await sleep(2700);
 
-    // 更新完成狀態與歡迎訊息
+    /* 完成時同步顯示歡迎文字 */
     status.textContent =
         '> AUTHORITY TRANSFER: 100%';
 
-    completeMessage.classList.add('visible');
+    message.classList.add('visible');
 
-    // 保留畫面 4.3 秒
+    /* 保留畫面 */
     await sleep(4300);
 
-    // 淡出
-    completeMessage.classList.remove('visible');
+    /* 淡出 */
+    message.classList.remove('visible');
 
-    el.style.opacity = '0';
+    protocol.style.opacity = '0';
 
     await sleep(1500);
 
-    el.style.display = 'none';
-}
-
-
-// 進度條達到 100% 後
-completeMessage.classList.add('visible');
-
-// 淡出時
-completeMessage.classList.remove('visible');
-
-    // 顯示權限轉移介面
-    el.style.display = 'block';
-    el.style.opacity = '0';
-
-    // 確保進度條從 36% 開始
-    bar.style.transition = 'none';
-    bar.style.width = '36%';
-    status.textContent = '> AUTHORITY TRANSFER: 36%';
-
-    await sleep(100);
-
-    el.style.opacity = '1';
-
-    await sleep(1200);
-
-    // 進度條開始移動至 100%
-    bar.style.transition = 'width 2.7s ease';
-    bar.style.width = '100%';
-
-    // 等待進度條跑完
-    await sleep(2700);
-
-    // 進度條完成的同時更新文字
-    status.textContent = '> AUTHORITY TRANSFER: 100%';
-
-    systemMessage.textContent =
-        '> [ 權限轉移完成。歡迎回來，管理員。 ]';
-
-    systemMessage.style.opacity = '1';
-
-    // 保持畫面 4.3 秒
-    await sleep(4300);
-
-    // 同時淡出進度條與系統訊息
-    systemMessage.style.opacity = '0';
-    el.style.opacity = '0';
-
-    await sleep(1500);
-
-    el.style.display = 'none';
+    protocol.style.display = 'none';
 }
 
 /* ========================================
-   主劇情播放流程
-======================================== */
-
-/* ========================================
-   主劇情播放流程（修正版）
+   主播放流程
 ======================================== */
 
 async function play() {
+    const audio = document.getElementById(
+        'end-bgm'
+    );
 
-    const audio = document.getElementById('end-bgm');
-
-    // C.mp3 音樂淡入
+    /* 嘗試播放 C.mp3 */
     void fadeInAudio(audio);
 
     await sleep(1200);
 
-    // Phase 1：權限轉移中
+    /* 開場系統訊息 */
     await showSystemMessage(
         '> [ 權限轉移中... ]',
         2900
     );
 
-    // 播放故事字幕
+    /* Phase 1 → Phase 2 → Phase 3 */
     for (const line of narrativeLines) {
         await showNarrativeLine(line);
     }
 
-    // 「……我的摯友。」淡出後停頓
+    /* 「……我的摯友。」淡出 */
+
     await sleep(2500);
 
-    // 唯一一次權限轉移完成動畫
-    // 36% → 100%，同步顯示歡迎訊息
+    /* 權限轉移完成 */
     await finalizeProtocol();
 
-    // 轉入 Ending C
+    /* 進入結局畫面 */
     await sleep(1000);
 
     const ending = document.getElementById(
@@ -1048,96 +964,9 @@ async function play() {
 
     ending.style.display = 'block';
 
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            ending.style.opacity = '1';
-        });
-    });
+    fadeInElement(ending);
 
-    // 結局畫面出現後等待 5 秒
-    await sleep(5000);
-
-    // LOGOUT 按鈕以 CSS 設定的 4 秒淡入
-    document.getElementById(
-        'logout-btn'
-    ).classList.add('visible');
-}
-
-
-  
-
-    /* =================================
-       開場：權限轉移中
-    ================================= */
-
-    await showSystemMessage(
-        '> [ 權限轉移中... ]',
-        2900
-    );
-
-    /* =================================
-       播放所有敘事
-    ================================= */
-
-    for (const line of narrativeLines) {
-
-        await showNarrativeLine(line);
-    }
-
-    /* =================================
-       最後的承諾已經結束
-
-       先讓畫面安靜 2.5 秒。
-    ================================= */
-
-    await sleep(2500);
-
-    /* =================================
-       權限轉移進度達到 100%
-    ================================= */
-
-    await finalizeProtocol();
-
-
-/* =================================
-   「……我的摯友。」已經淡出
-================================= */
-
-/* 等待 2.5 秒 */
-await sleep(2500);
-
-/* 進度條從 36% 開始，
-   到達 100% 後顯示歡迎訊息 */
-await finalizeProtocol();
-
-/* 等待 1 秒後進入結局畫面 */
-await sleep(1000);
-
-
-
-    /* =================================
-       顯示結局畫面
-    ================================= */
-
-    const ending = document.getElementById(
-        'ending-stage'
-    );
-
-    ending.style.display = 'block';
-
-    requestAnimationFrame(() => {
-
-        requestAnimationFrame(() => {
-
-            ending.style.opacity = '1';
-
-        });
-    });
-
-    /* =================================
-       延遲 5 秒顯示按鈕
-    ================================= */
-
+    /* 延遲 5 秒後讓 LOGOUT 淡入 */
     await sleep(5000);
 
     document.getElementById(
@@ -1146,65 +975,58 @@ await sleep(1000);
 }
 
 /* ========================================
-   初始化新紀元
-   音樂、畫面淡出並返回首頁
+   LOGOUT
 ======================================== */
 
 let leaving = false;
 
 document.getElementById(
     'logout-btn'
-).addEventListener(
-    'click',
-    async event => {
+).addEventListener('click', async event => {
+    event.preventDefault();
 
-        event.preventDefault();
+    if (leaving) return;
 
-        if (leaving) return;
+    leaving = true;
 
-        leaving = true;
+    const button = document.getElementById(
+        'logout-btn'
+    );
 
-        const btn = document.getElementById(
-            'logout-btn'
-        );
+    button.style.pointerEvents = 'none';
 
-        btn.style.pointerEvents = 'none';
+    const ending = document.getElementById(
+        'ending-stage'
+    );
 
-        const ending = document.getElementById(
-            'ending-stage'
-        );
+    ending.style.transition = 'opacity 1.8s ease';
+    ending.style.opacity = '0';
 
-        ending.style.transition =
-            'opacity 1.8s ease';
+    await Promise.all([
+        fadeOutAudio(
+            document.getElementById('end-bgm')
+        ),
+        sleep(1800)
+    ]);
 
-        ending.style.opacity = '0';
-
-        await Promise.all([
-
-            fadeOutAudio(
-                document.getElementById('end-bgm')
-            ),
-
-            sleep(1800)
-
-        ]);
-
-        window.location.href = 'index.html';
-    }
-);
+    window.location.href = 'index.html';
+});
 
 /* ========================================
-   啟動
+   啟動劇情
 ======================================== */
 
-window.addEventListener(
-    'load',
-    () => {
-        void play();
-    }
-);
+window.addEventListener('load', () => {
+    play().catch(error => {
+        console.error(
+            'ENDING C 播放失敗：',
+            error
+        );
+    });
+});
 
 </script>
+
 
 </body>
 </html>
