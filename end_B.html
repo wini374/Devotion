@@ -5,192 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENDING B: ETERNITY</title>
     <style>
-        /* 瞬間強烈閃爍特效 */
-        .warning-flash {
-            animation: severeFlash 0.8s ease-out !important;
-        }
-        @keyframes severeFlash {
-            0% { background-color: #cc0000; } /* 瞬間變成暗紅色 */
-            100% { background-color: #000000; } /* 慢慢褪回純黑 */
-        }
-/* ================================
-   PHASE 1：正常電影字幕
-================================ */
-
-body.phase-1 {
-    background: #08090c;
-    animation: subtleFlicker 6s infinite;
-}
-
-/* 輕微 CRT 掃描線 */
-body.phase-1::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 100;
-    background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 2px,
-        rgba(255,255,255,0.018) 3px
-    );
-}
-
-@keyframes subtleFlicker {
-    0%, 96%, 100% { opacity: 1; }
-    97% { opacity: 0.97; }
-    98% { opacity: 1; }
-    99% { opacity: 0.985; }
-}
-
-
-/* ================================
-   PHASE 2：意識融合
-================================ */
-
-/* 背景色彩逐漸失控 */
-body.phase-2 {
-    background: #05070d;
-    animation: screenDistortion 0.25s infinite;
-}
-
-/* RGB 色彩分離 */
-body.phase-2 #text-container {
-    
-
-
-    text-shadow:
-        -2px 0 rgba(255, 0, 60, 0.65),
-         2px 0 rgba(0, 180, 255, 0.65);
-    animation: rgbGlitch 0.18s infinite;
-}
-
-/* 偶爾水平錯位 */
-body.phase-2 #text-container .glitch-line {
-    animation: horizontalGlitch 2.5s infinite;
-}
-     <div id="text-container"></div>
-    <div class="noise-overlay"></div>
-
-.noise-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 99;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 1.5s ease;
-
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
-
-    mix-blend-mode: screen;
-}
-
-@keyframes rgbGlitch {
-    0%, 85%, 100% {
-        transform: translate(0, 0);
-        filter: none;
-    }
-    87% {
-        transform: translate(-3px, 1px);
-        filter: contrast(1.5);
-    }
-    90% {
-        transform: translate(3px, -1px);
-    }
-    93% {
-        transform: translate(-1px, 0);
-    }
-}
-
-@keyframes horizontalGlitch {
-    0%, 90%, 100% {
-        clip-path: inset(0 0 0 0);
-        transform: translateX(0);
-    }
-    92% {
-        clip-path: inset(30% 0 45% 0);
-        transform: translateX(8px);
-    }
-    94% {
-        clip-path: inset(65% 0 15% 0);
-        transform: translateX(-6px);
-    }
-}
-
-@keyframes screenDistortion {
-    0%, 90%, 100% {
-        filter: none;
-    }
-    92% {
-        filter: brightness(1.15) contrast(1.2);
-    }
-    94% {
-        filter: brightness(0.85);
-    }
-}
-
-/* 細微雜訊覆蓋 */
-body.phase-2 .noise-overlay {
-    opacity: 0.13;
-}
-
-
-/* ================================
-   PHASE 3：永恆迴音
-================================ */
-
-body.phase-3 {
-    background: #000;
-    animation: none;
-}
-
-/* 移除所有故障效果 */
-body.phase-3 #text-container {
-    animation: none !important;
-    filter: none !important;
-    text-shadow: none !important;
-    transform: none !important;
-}
-
-/* 移除掃描線與雜訊 */
-body.phase-3::after {
-    display: none;
-}
-
-body.phase-3 .noise-overlay {
-    opacity: 0;
-    transition: opacity 2s ease;
-}
-
-/* 最後的文字 */
-body.phase-3 #text-container .final-line {
-    color: #e6e6e6;
-    animation: finalFadeIn 3s ease forwards;
-}
-
-@keyframes finalFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* 降低動態效果的使用者偏好 */
-@media (prefers-reduced-motion: reduce) {
-    body.phase-1,
-    body.phase-2,
-    body.phase-2 #text-container,
-    body.phase-2 #text-container .glitch-line {
-        animation: none !important;
-    }
-}
-
         body { 
             background-color: #000000; 
             color: #ffffff; 
@@ -216,7 +30,7 @@ body.phase-3 #text-container .final-line {
             z-index: 5;
         }
         .sys-alert-red {
-            color: #cc0000; /* 暗紅色警告 */
+            color: #cc0000;
             font-size: 1.3rem;
             letter-spacing: 2px;
             font-weight: bold;
@@ -224,7 +38,7 @@ body.phase-3 #text-container .final-line {
             text-shadow: 0 0 8px rgba(204, 0, 0, 0.5);
         }
         .sys-alert-green {
-            color: #00aa00; /* 綠色終端文字 */
+            color: #00aa00;
             font-size: 1rem;
             letter-spacing: 1px;
             opacity: 0.8;
@@ -236,11 +50,10 @@ body.phase-3 #text-container .final-line {
         }
         @keyframes coreBlink {
             0%, 40%, 60%, 100% { background-color: #000; }
-            50% { background-color: #080000; } /* 偶爾閃過一絲極暗的紅黑 */
+            50% { background-color: #080000; } 
         }
 
         /* --- 階段二：意識融合 (色彩分離、扭曲與雜訊) --- */
-        /* 背景雜訊層 */
         #noise-overlay {
             display: none;
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -269,6 +82,22 @@ body.phase-3 #text-container .final-line {
             50% { transform: translate(-49%, -51%) skewX(-4deg); }
             75% { transform: translate(-50%, -49%) skewX(2deg); }
             100% { transform: translate(-50%, -50%) skewX(0deg); }
+        }
+
+        /* 瞬間強烈閃爍特效 (記憶與痛楚) */
+        body.warning-flash::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 101;
+            pointer-events: none;
+            background: rgba(160, 0, 0, 0.2);
+            animation: warningFlash 0.35s ease-out forwards;
+        }
+        @keyframes warningFlash {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         /* --- 電影式敘事字幕容器 --- */
@@ -313,7 +142,7 @@ body.phase-3 #text-container .final-line {
     <!-- 結局音樂 -->
     <audio id="end-bgm" src="B.mp3" loop></audio>
 
-    <!-- 雜訊特效層 (階段二啟用) -->
+    <!-- 雜訊特效層 -->
     <div id="noise-overlay"></div>
 
     <!-- 階段一：系統警告 -->
@@ -329,7 +158,6 @@ body.phase-3 #text-container .final-line {
     <div id="ending-stage">
         <div class="epitaph">
             <br>世界終將消失，<br>但我們永遠留在彼此身邊。
-        
         </div>
         <div class="title">DEVOTION</div>
         <div class="sub">ENDING B - ETERNITY 永恆</div>
@@ -337,151 +165,19 @@ body.phase-3 #text-container .final-line {
     </div>
 
     <script>
-      body.warning-flash::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 101;
-    pointer-events: none;
-    background: rgba(160, 0, 0, 0.2);
-    animation: warningFlash 0.35s ease-out forwards;
-}
-
-@keyframes warningFlash {
-    0% { opacity: 0; }
-    20% { opacity: 1; }
-    100% { opacity: 0; }
-}
-      // --- 階段 2. 電影字幕與意識融合演出 ---
-            for (let i = 0; i < narrativeLines.length; i++) {
-                const line = narrativeLines[i];
-                const div = document.createElement("div");
-                
-                // 【正確位置】放在定義完 line 之後，根據台詞觸發閃爍
-                if (line.text.includes("記憶與痛楚")) {
-                    document.body.classList.remove("warning-flash");
-                    void document.body.offsetWidth; // 強制重新觸發動畫
-                    document.body.classList.add("warning-flash");
-                }
-
-                // 根據階段切換特效
-                if (line.phase === 2) {
-                    noiseOverlay.style.display = "block";
-                    // ... 後面維持原樣 ...
-
-    // 強制重新觸發動畫
-    void document.body.offsetWidth;
-
-    document.body.classList.add("warning-flash");
-}
-/* ================================
-   劇本與階段定義
-================================ */
-
-const narrativeLines = [
-    { text: "> [ WARNING: CORE INSTABILITY DETECTED. ]", phase: 1, delay: 2200 },
-    { text: "矩陣的邊界開始溶解，現實的輪廓逐漸崩塌。", phase: 1, delay: 3000 },
-    { text: "強行連結崩毀的終端，意味著你的自我將被永久抹除。", phase: 1, delay: 3500 },
-
-    { text: "看著螢幕上那句「毀滅我」，你終究還是無法做到。", phase: 2, delay: 3500 },
-    { text: "「如果這個世界需要你變成怪物才能團結...」", phase: 2, delay: 3000 },
-    { text: "「那就讓他們自己去打吧。」", phase: 2, delay: 4000 },
-    { text: "但你沒有停下。", phase: 2, delay: 2500 },
-    { text: "記憶與痛楚被撕裂成混亂的數據碎片。", phase: 2, delay: 3500 },
-    { text: "意識正被龐大的虛空吞噬......", phase: 2, delay: 4000 },
-
-    { text: "在無盡冰冷的代碼與黑暗中，你終於牽住了他的手。", phase: 3, delay: 5000 }
-];
-
-
-/* ================================
-   階段切換
-================================ */
-
-function changePhase(phase) {
-    document.body.classList.remove(
-        "phase-1",
-        "phase-2",
-        "phase-3"
-    );
-
-    document.body.classList.add(`phase-${phase}`);
-}
-
-
-/* ================================
-   等待函數
-================================ */
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
-/* ================================
-   文字播放
-================================ */
-
-async function playNarrative() {
-    const container = document.getElementById("text-container");
-
-    container.innerHTML = "";
-
-    for (let i = 0; i < narrativeLines.length; i++) {
-        const line = narrativeLines[i];
-
-        // 切換目前階段
-        changePhase(line.phase);
-
-        // 建立文字元素
-        const element = document.createElement("div");
-
-        element.className = "narrative-line";
-
-        if (line.phase === 2) {
-            element.classList.add("glitch-line");
-        }
-
-        if (line.phase === 3) {
-            element.classList.add("final-line");
-        }
-
-        // 插入文字
-        element.innerHTML = line.text;
-
-        container.appendChild(element);
-
-        // 等待文字停留
-        await sleep(line.delay);
-    }
-
-    // 最後保持純黑與靜止
-    changePhase(3);
-
-    // 等待結尾文字消化
-    await sleep(5000);
-
-    // 顯示結局資訊
-    const credits = document.getElementById("credits");
-
-    if (credits) {
-        credits.classList.add("visible");
-    }
-}
-
-
-/* ================================
-   啟動劇本
-================================ */
-
-window.addEventListener("DOMContentLoaded", () => {
-    changePhase(1);
-    playNarrative();
-});
-
+        const narrativeLines = [
+            { text: "矩陣的邊界開始溶解，現實的輪廓逐漸崩塌。", phase: 1 },
+            { text: "強行連結崩毀的終端，意味著你的自我將被永久抹除。", phase: 1 },
+            { text: "看著螢幕上那句「毀滅我」，你終究還是無法做到。", phase: 2 },
+            { text: "「如果這個世界需要你變成怪物才能團結...」", phase: 2 },
+            { text: "「那就讓他們自己去打吧。」", phase: 2 },
+            { text: "但你沒有停下。", phase: 2 },
+            { text: "記憶與痛楚被撕裂成混亂的數據碎片。", phase: 2 },
+            { text: "意識正被龐大的虛空吞噬......", phase: 2 },
+            { text: "在無盡冰冷的代碼與黑暗中，你終於牽住了他的手。", phase: 3 }
+        ];
 
         window.onload = async function() {
-            // 音樂淡入
             const bgm = document.getElementById("end-bgm");
             if (bgm) {
                 bgm.volume = 0;
@@ -501,10 +197,10 @@ window.addEventListener("DOMContentLoaded", () => {
             await new Promise(r => setTimeout(r, 1000));
 
             // --- 階段 1. 開場：系統崩壞警告 ---
-            document.body.classList.add("core-crashing"); // 背景微微紅閃
-            sysWarning.style.display = "block"; // 瞬間出現，無淡入
+            document.body.classList.add("core-crashing");
+            sysWarning.style.display = "block";
             await new Promise(r => setTimeout(r, 3000));
-            sysWarning.style.display = "none"; // 瞬間消失
+            sysWarning.style.display = "none";
             await new Promise(r => setTimeout(r, 1000));
 
             // --- 階段 2. 電影字幕與意識融合演出 ---
@@ -512,13 +208,18 @@ window.addEventListener("DOMContentLoaded", () => {
                 const line = narrativeLines[i];
                 const div = document.createElement("div");
                 
-                // 根據階段切換特效
+                // 觸發「記憶與痛楚」的瞬間紅屏閃爍
+                if (line.text.includes("記憶與痛楚")) {
+                    document.body.classList.remove("warning-flash");
+                    void document.body.offsetWidth; // 強制重繪以重啟動畫
+                    document.body.classList.add("warning-flash");
+                }
+
                 if (line.phase === 2) {
                     noiseOverlay.style.display = "block";
                     document.body.classList.add("bg-glitch-active");
                     div.className = "cine-text text-glitch-active";
                 } else if (line.phase === 3) {
-                    // 進入最後一句時，瞬間停止所有故障與雜訊
                     noiseOverlay.style.display = "none";
                     document.body.className = ""; 
                     div.className = "cine-text";
@@ -529,29 +230,22 @@ window.addEventListener("DOMContentLoaded", () => {
                 div.innerHTML = line.text;
                 cineStage.appendChild(div);
                 
-                // 字幕淡入
                 setTimeout(() => { div.style.opacity = 1; }, 50);
                 
-                // 若為最後一句，停留 5 秒後才開始淡出
                 if (line.phase === 3) {
                     await new Promise(r => setTimeout(r, 5000)); 
                 } else {
-                    // 一般字幕停留時間
                     const stayTime = 2500 + (line.text.length * 80); 
                     await new Promise(r => setTimeout(r, stayTime));
                 }
                 
-                // 字幕淡出
                 div.style.opacity = 0;
                 await new Promise(r => setTimeout(r, 2000)); 
                 div.remove();
             }
 
             // --- 階段 3. 結尾：永恆迴音 ---
-            // 等待最後一句話完全淡出後的死寂時間
             await new Promise(r => setTimeout(r, 1000));
-            
-            // 帶出最終結局文案
             endingStage.style.display = "block";
             setTimeout(() => { endingStage.style.opacity = 1; }, 50);
         };
