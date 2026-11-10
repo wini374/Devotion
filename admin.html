@@ -342,7 +342,12 @@ const adminLines = [
                 }, 200);
             }
 
-            playAdminLog();
+            // Returning from any archived ending bypasses typewriter playback.
+            if (new URLSearchParams(window.location.search).get("resume") === "choice") {
+                restoreAdminChoice();
+            } else {
+                playAdminLog();
+            }
         };
 
         async function playAdminLog() {
@@ -398,16 +403,38 @@ const adminLines = [
                 await new Promise(r => setTimeout(r, pauseTime)); 
             }
             
-            // 腳本全數結束後，在橘框最下方生成結局 D 按鈕，並加上淡入 class
-            const backupBtn = document.createElement("a");
-            backupBtn.className = "backup-btn fade-in-anim";
-            backupBtn.innerHTML = "<span>> [ 偵測到未加密的記憶區塊，是否執行 virtual_backup.sh ？ ]</span>";
-            backupBtn.onclick = function() { fadeOutAndNavigate('end_D.html', 'sad-bgm'); };
-            container.appendChild(backupBtn);
-            
-            // 顯示橘框下方的 A, B 結局按鈕
+        // 供正常日誌播放與結局返回共同使用的結局選項。
+        function showAdminChoice(animate = true) {
+            const container = document.getElementById("terminal-container");
+            if (!container.querySelector(".backup-btn")) {
+                const backupBtn = document.createElement("a");
+                backupBtn.className = animate ? "backup-btn fade-in-anim" : "backup-btn";
+                backupBtn.innerHTML = "<span>> [ 偵測到未加密的記憶區塊，是否執行 virtual_backup.sh ？ ]</span>";
+                backupBtn.onclick = function() { fadeOutAndNavigate('end_D.html', 'sad-bgm'); };
+                container.appendChild(backupBtn);
+            }
             document.getElementById("action-section").style.display = "flex";
             window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        // 封存結局返回時：直接恢復日誌全文與抉擇，不播放逐字動畫。
+        function restoreAdminChoice() {
+            const container = document.getElementById("terminal-container");
+            container.innerHTML = "";
+            const fragment = document.createDocumentFragment();
+            for (const lineData of adminLines) {
+                const div = document.createElement("div");
+                div.className = lineData.class;
+                div.textContent = lineData.text;
+                div.style.whiteSpace = "pre-line";
+                fragment.appendChild(div);
+            }
+            container.appendChild(fragment);
+            showAdminChoice(false);
+            requestAnimationFrame(() => window.scrollTo(0, document.body.scrollHeight));
+        }
+
+            showAdminChoice(true);
         }
 
         function fadeOutAndNavigate(targetUrl, bgmId) {
