@@ -146,39 +146,183 @@
 
     <script>
         // --- 劇情腳本設定 ---
-        const scriptLines = [
-            { class: 'sys-msg', text: "> 正在存取管理員資產日誌 (GHOST_TRAIL_LOGS)..." },
-            { class: 'sys-msg', text: "> 權限已覆寫。正在載入 資產_01, 資產_02, 資產_03 的實體行動數據..." },
-            { class: 'sys-msg', instant: true, text: "==================================================" },
-            { class: 'log-data', text: "[ 實體活動時間軸比對 // 第36週期 ]\n> 資產_01 (阿斯蘭朵) 啟動區間：00:00:00 - 07:59:59\n> 資產_02 (新星聯邦) 啟動區間：08:00:00 - 15:59:59\n> 資產_03 (灰燼之地) 啟動區間：16:00:00 - 23:59:59" },
+        
+const scriptLines = [
 
-             // 加密偏移量直接放在這裡瞬間顯示
-            { class: 'sys-alert', instant: true, text: "> [ 系統提示：底層資料發生位移，加密偏移量 (OFFSET) : -3 ]" },
-            // 異常報告瞬間顯示
-            { class: 'sys-alert', instant: true, text: "> [ 異常報告 ]：三名資產的出現時間「絕對互斥」。生命體徵重疊率 0.00%。\n> [ 系統結論 ]：此為單一意識的多重線程切換。\n> 正在追蹤底層 IP 來源..." },
-           
-            
-            { class: 'log-data', text: "資產_01 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n資產_02 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n資產_03 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]" },
-            
-            // 分隔線瞬間顯示
-            { class: 'sys-msg', instant: true, text: "--------------------------------------------------" },
-            
-            // 盲文區塊 (與系統文字相同格式綠色，字體稍大一點方便辨識)
-            { class: 'sys-msg', text: "⠚⠧&nbsp;&nbsp;&nbsp;⠞⠋⠏⠑", style: "font-size: 2.5rem; letter-spacing: 8px; margin: 20px 0;" },
+    // PHASE 1：追蹤資產來源
 
-            { class: 'sys-msg', text: "> 系統狀態：世界熵值崩壞邊緣。啟動最終安全協議。" },
-            { class: 'sys-msg', text: "> EXECUTE: TIME_REVERT(-3_YEARS)" },
-            { class: 'sys-msg', text: "> 正在啟動時間軸回溯協定...\n> 逆轉因果律中... 10% ... 45% ... 89% ..." },
-            
-            // 致命錯誤瞬間顯示，並引發震動
-            { class: 'fatal-error', instant: true, text: "> [ 錯誤 ]：因果律悖論！本體靈魂質量嚴重耗損，無法達到回溯閾值。" },
-            { class: 'sys-alert', instant: true, text: "> [ 系統判定 ]：管理員靈魂質量不足，無法回溯至三年前。" },
-            
-            // 心聲一閃而過 (flash: true)
-            { class: 'admin-override', flash: true, text: "「為什麼...為什麼這次不行？」" },
-            { class: 'admin-override', flash: true, text: "「我明明已經解決了所有可能...我明明已經習慣了被你憎恨...」" },
-            { class: 'admin-override', flash: true, text: "「我只是...想回到最開始的時候...回到我們還是朋友的時候...」" }
-        ];
+    {
+        class: 'sys-msg',
+        text: "> 正在存取管理員資產日誌 (GHOST_TRAIL_LOGS)..."
+    },
+    {
+        class: 'sys-msg',
+        text: "> 權限已覆寫。正在載入 資產_01、資產_02、資產_03 的底層資料..."
+    },
+    {
+        class: 'sys-msg',
+        instant: true,
+        text: "=================================================="
+    },
+    {
+        class: 'log-data',
+        text: "[ 靈魂實體交叉比對 // 第36週期 ]\n" +
+              "> 資產_01：阿斯蘭朵區域 [ TERMINATED ]\n" +
+              "> 資產_02：新星聯邦 [ TERMINATED ]\n" +
+              "> 資產_03：灰燼之地 [ TERMINATED ]"
+    },
+    {
+        class: 'sys-alert',
+        instant: true,
+        text: "> [ 異常報告 ]：三名資產具有獨立意識與記憶紀錄。\n" +
+              "> [ 警告 ]：所有實體的靈魂特徵碼完全一致。\n" +
+              "> 正在追蹤底層意識來源..."
+    },
+    {
+        class: 'log-data',
+        text: "資產_01 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n" +
+              "資產_02 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]\n" +
+              "資產_03 來源 IP: 127.0.0.1 [ LOCAL_HOST_ADMIN ]"
+    },
+
+    // PHASE 2：靈魂切片真相
+
+    {
+        class: 'sys-msg',
+        instant: true,
+        text: "--------------------------------------------------"
+    },
+    {
+        class: 'sys-alert',
+        text: "> [ 系統異常 ]：來源資料並非一般監視程式。\n" +
+              "> 偵測到獨立人格與完整感官紀錄。"
+    },
+    {
+        class: 'log-data',
+        text: "> 資產類型：SOUL_FRAGMENT\n" +
+              "> 靈魂來源：ADMINISTRATOR\n" +
+              "> 傳輸模式：CONDITIONAL_SYNC\n" +
+              "> 同步條件：主動訊號 / 生命終止"
+    },
+    {
+        class: 'sys-alert',
+        instant: true,
+        text: "> [ 警告 ]：資產終止後，靈魂結構無法復原。\n" +
+              "> 已消耗的靈魂切片無法重新分配。"
+    },
+    {
+        class: 'sys-msg',
+        text: "> 正在重建管理員本體靈魂狀態..."
+    },
+    {
+        class: 'sys-alert',
+        instant: true,
+        text: "> [ 異常 ]：靈魂完整性低於安全閾值。\n" +
+              "> 偵測到大量不可逆的靈魂損耗。"
+    },
+
+    // PHASE 3：隱藏密鑰
+
+    {
+        class: 'sys-msg',
+        instant: true,
+        text: "--------------------------------------------------"
+    },
+    {
+        class: 'sys-msg',
+        text: "> 偵測到未完成的管理員底層指令。\n" +
+              "> 指令已加密。正在還原殘存密鑰..."
+    },
+    {
+        class: 'sys-alert',
+        instant: true,
+        text: "> [ 系統提示 ]：加密偏移量 (OFFSET) : -3"
+    },
+    {
+        class: 'sys-msg',
+        text: "⠏⠃&nbsp;&nbsp;&nbsp;⠵⠇⠧⠅",
+        style: "font-size: 2.5rem; letter-spacing: 8px; margin: 20px 0;"
+    },
+
+    // PHASE 4：回溯失敗
+
+    {
+        class: 'sys-msg',
+        instant: true,
+        text: "--------------------------------------------------"
+    },
+    {
+        class: 'sys-msg',
+        text: "> 正在讀取最後一次回溯紀錄..."
+    },
+    {
+        class: 'sys-msg',
+        text: "> [ 系統狀態 ]：世界穩定性持續下降。\n" +
+              "> 最終回溯程序已被請求。"
+    },
+    {
+        class: 'sys-msg',
+        text: "> EXECUTE: TIME_REVERT(-3_YEARS)"
+    },
+    {
+        class: 'sys-msg',
+        text: "> 正在驗證因果律回溯協定...\n" +
+              "> 時間錨點確認... 10%\n" +
+              "> 記憶同步檢查... 45%\n" +
+              "> 靈魂完整性驗證... 89%"
+    },
+    {
+        class: 'fatal-error',
+        instant: true,
+        text: "> [ 錯誤 ]：靈魂完整性不足！回溯程序遭到強制中止。"
+    },
+    {
+        class: 'sys-alert',
+        instant: true,
+        text: "> [ FATAL ERROR: SOUL_INTEGRITY_BELOW_THRESHOLD ]\n" +
+              "> [ 系統判定 ]：管理員已無法支撐下一次時間回溯。"
+    },
+    {
+        class: 'fatal-error',
+        instant: true,
+        text: "> [ 警告 ]：第37週期無法建立。\n" +
+              "> 回溯權限仍然有效，但執行條件已永久喪失。"
+    },
+
+    // PHASE 5：管理員無意間留下的心聲
+
+    {
+        class: 'admin-override',
+        flash: true,
+        text: "「......不可能。」"
+    },
+    {
+        class: 'admin-override',
+        flash: true,
+        text: "「再試一次......只要再一次就好......」"
+    },
+    {
+        class: 'admin-override',
+        flash: true,
+        text: "「我明明......已經犧牲了那麼多......」"
+    },
+    {
+        class: 'admin-override',
+        flash: true,
+        text: "「為什麼......連最後一次機會都不肯留給我......」"
+    },
+    {
+        class: 'admin-override',
+        flash: true,
+        text: "「......對不起。」"
+    },
+    {
+        class: 'admin-override',
+        flash: true,
+        text: "「這一次......我真的沒辦法再帶你回去了。」"
+    }
+
+];
 
         window.onload = function() {
             const bgm = document.getElementById("terminal-bgm");
@@ -186,7 +330,12 @@
             bgm.play().catch(e => console.log("BGM blocked", e));
             let vol = 0;
             const fadeIn = setInterval(() => {
-                if (vol < 0.6) { vol += 0.05; bgm.volume = vol; }
+             if (vol < 0.6) {
+                vol = Math.min(0.6, vol + 0.05);
+                bgm.volume = vol;
+            } else {
+                clearInterval(fadeIn);
+            }
                 else clearInterval(fadeIn);
             }, 200);
 
@@ -207,10 +356,22 @@
                 const text = lineData.text;
 
                 // 處理震動 (移除切換音樂)
-                if (lineData.class === 'fatal-error' && text.includes("因果律悖論")) {
+              
+                if (
+                    lineData.class === 'fatal-error' &&
+                    text.includes("靈魂完整性不足")
+                ) {
+                    document.body.classList.remove("screen-shake");
+                
+                    void document.body.offsetWidth;
+                
                     document.body.classList.add("screen-shake");
-                    setTimeout(() => document.body.classList.remove("screen-shake"), 600);
+                
+                    setTimeout(() => {
+                        document.body.classList.remove("screen-shake");
+                    }, 600);
                 }
+
 
                 // 判斷是否為「瞬間顯示」
                 if (lineData.instant) {
