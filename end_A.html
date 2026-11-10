@@ -225,7 +225,24 @@
             padding: 24px;
             box-sizing: border-box;
         }
-        #credits-end.show { display: flex; }
+        /* 最終選單：先顯示但保持透明，再柔和淡入；離開時淡出 */
+        #credits-end {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 1.6s ease-in-out, visibility 0s linear 1.6s;
+        }
+        #credits-end.show {
+            display: flex;
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 1.6s ease-in-out, visibility 0s;
+        }
+        #credits-end.fade-away {
+            opacity: 0;
+            pointer-events: none;
+        }
         #credits-end h1 { letter-spacing: .25em; }
         #credits-end p { color: #aaa; }
         .ending-quote {
@@ -411,6 +428,7 @@
     <script>
         let glitchInterval;
         let creditsStarted = false;
+        let creditsLeaving = false;
 
         function startCredits() {
             if (creditsStarted) return;
@@ -431,16 +449,41 @@
             // 保留 end-bgm 持續播放，不重新開始音樂。
             roll.addEventListener('animationend', () => {
                 roll.style.display = 'none';
-                document.getElementById('credits-end').classList.add('show');
+                // 讓畫面先回到純黑，再讓最後的選單淡入。
+                const endScreen = document.getElementById('credits-end');
+                setTimeout(() => endScreen.classList.add('show'), 350);
             }, { once: true });
         }
+        function fadeOutFinalScreen(navigate) {
+            if (creditsLeaving) return;
+            creditsLeaving = true;
+            const endScreen = document.getElementById('credits-end');
+            endScreen.classList.add('fade-away');
+            // 畫面淡出時，背景音樂同步緩緩降低音量。
+            const bgm = document.getElementById('end-bgm');
+            const duration = 1600;
+            if (bgm && !bgm.paused) {
+                const initialVolume = bgm.volume;
+                const started = performance.now();
+                function fadeAudio(now) {
+                    const progress = Math.min((now - started) / duration, 1);
+                    bgm.volume = Math.max(0, initialVolume * (1 - progress));
+                    if (progress < 1) requestAnimationFrame(fadeAudio);
+                    else bgm.pause();
+                }
+                requestAnimationFrame(fadeAudio);
+            }
+            setTimeout(navigate, duration + 100);
+        }
         function leaveCredits(target) {
-            window.location.href = target;
+            fadeOutFinalScreen(() => { window.location.href = target; });
         }
         function returnToChoice() {
-            // 返回上一個頁面；如上一頁不是抉擇畫面，須配合首頁的抉擇狀態邏輯修改。
-            if (window.history.length > 1) window.history.back();
-            else window.location.href = 'index.html';
+            // 返回上一頁，是否能直接顯示抉擇仍取決於上一頁的狀態管理。
+            fadeOutFinalScreen(() => {
+                if (window.history.length > 1) window.history.back();
+                else window.location.href = 'index.html';
+            });
         }
 
 
