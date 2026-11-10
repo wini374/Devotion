@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADMIN_ROOT_LOG</title>
+    <script>
+        // 進站前標記返回模式：先隱藏日誌，完成定位後再淡入。
+        if (new URLSearchParams(location.search).get("resume") === "choice") {
+            document.documentElement.classList.add("choice-returning");
+        }
+    </script>
     <style>
         /* ================= 基礎終端機樣式 ================= */
         body {
@@ -26,6 +32,19 @@
             border: 1px solid #ffaa00;
             box-shadow: 0 0 20px rgba(255, 170, 0, 0.1);
             padding-bottom: 60px;
+        }
+
+        /* 片尾返回：日誌及所有結局選項同步淡入，避免先閃現。 */
+        html.choice-returning #terminal-container,
+        html.choice-returning #action-section,
+        html.choice-returning #hidden-c {
+            opacity: 0;
+            transition: opacity 1.8s ease-in-out;
+        }
+        html.choice-returning.choice-visible #terminal-container,
+        html.choice-returning.choice-visible #action-section,
+        html.choice-returning.choice-visible #hidden-c {
+            opacity: 1;
         }
 
         /* 文字層級與顏色 */
@@ -412,6 +431,7 @@ const adminLines = [
             if (!container.querySelector(".backup-btn")) {
                 const backupBtn = document.createElement("a");
                 backupBtn.className = animate ? "backup-btn fade-in-anim" : "backup-btn";
+                if (!animate) backupBtn.style.opacity = "1";
                 backupBtn.innerHTML = "<span>> [ 偵測到未加密的記憶區塊，是否執行 virtual_backup.sh ？ ]</span>";
                 backupBtn.onclick = function() { fadeOutAndNavigate('end_D.html', 'sad-bgm'); };
                 container.appendChild(backupBtn);
@@ -434,7 +454,13 @@ const adminLines = [
             }
             container.appendChild(fragment);
             showAdminChoice(false);
-            requestAnimationFrame(() => window.scrollTo(0, document.body.scrollHeight));
+            window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
+            requestAnimationFrame(() => {
+                window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
+                requestAnimationFrame(() => {
+                    document.documentElement.classList.add("choice-visible");
+                });
+            });
         }
 
         function fadeOutAndNavigate(targetUrl, bgmId) {
