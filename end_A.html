@@ -193,7 +193,7 @@
             right: 0;
             top: 0;
             padding: 0 24px;
-            animation: creditsRoll 85s linear forwards;
+            animation: creditsRoll 55s linear forwards;
         }
         @keyframes creditsRoll {
             from { transform: translateY(100vh); }
@@ -205,6 +205,10 @@
         .credit-group p { margin: 10px 0; line-height: 1.8; overflow-wrap: anywhere; }
         .credit-group a { color: inherit; text-decoration: none; transition: color .3s ease; }
         .credit-group a:hover, .credit-group a:focus-visible { color: #b8a3e0; text-decoration: underline; }
+        /* 曲名與創作者分行，保持電影片尾風格 */
+        .music-entry { margin: 0 0 20px; }
+        .music-entry .music-title { margin: 0; color: #dedbe7; }
+        .music-entry .music-artist { margin: 2px 0 0; font-size: .88rem; color: #a9a4b8; }
         .credit-group .music-license { margin-top: 25px; font-size: .85em; color: #888; }
         .credit-group .music-license a { color: #b8a3e0; }
         #credits-end {
@@ -221,18 +225,44 @@
         #credits-end.show { display: flex; }
         #credits-end h1 { letter-spacing: .25em; }
         #credits-end p { color: #aaa; }
-        .credits-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-top: 30px; }
+        .ending-quote {
+            margin: 26px 0 8px;
+            color: #c8c3d2;
+            text-align: center;
+            letter-spacing: .04em;
+            line-height: 1.9;
+        }
+        .ending-quote .quote-en { font-size: .98rem; color: #d5d1dc; }
+        .ending-quote .quote-zh { font-size: .88rem; color: #9993a5; margin-top: 12px; }
+        .credits-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 28px;
+            width: min(100%, 365px);
+        }
         .credits-buttons button {
             background: transparent;
             border: 1px solid #777;
+            border-radius: 7px;
             color: #ddd;
-            padding: 12px 20px;
+            padding: 14px 14px;
             cursor: pointer;
             font: inherit;
-            letter-spacing: 1px;
+            font-size: .95rem;
+            letter-spacing: 0;
+            width: 100%;
+            min-height: 56px;
+            transition: border-color .3s ease, color .3s ease;
         }
         .credits-buttons button:hover { border-color: #b8a3e0; color: #b8a3e0; }
-        @media (max-width: 600px) { .credit-group p { font-size: .85rem; } .credits-buttons { flex-direction: column; } }
+        @media (max-width: 600px) {
+            .credit-group p { font-size: .85rem; }
+            .ending-quote .quote-en { font-size: .86rem; }
+            .ending-quote .quote-zh { font-size: .8rem; }
+            .credits-buttons button { font-size: .82rem; padding: 12px 8px; }
+        }
     </style>
 </head>
 <body>
@@ -263,41 +293,52 @@
         </section>
 
         <section class="credit-group">
-           
-    <h3>MUSIC</h3>
-            
-<p><a href="https://pixabay.com/zh/music/crime-scene-horror-piano-background-music-617911/" target="_blank" rel="noopener noreferrer">Horror Piano - Background Music</a> — Cinematic-Soul</p>
-
-<p><a href="https://pixabay.com/zh/music/crime-scene-halloween-intro-background-music-617910/" target="_blank" rel="noopener noreferrer">Halloween Intro - Background Music</a> — Cinematic-Soul</p>
-
-<p><a href="https://pixabay.com/zh/music/nostalgia-love-story-sad-music-background-336560/" target="_blank" rel="noopener noreferrer">Love Story - Sad Music Background</a> — Pocketbeats</p>
-
-<p><a href="https://pixabay.com/zh/music/trap-no-copyright-music-2-576256/" target="_blank" rel="noopener noreferrer">No Copyright Music 2</a> — APALONBeats</p>
-
-<p><a href="https://pixabay.com/zh/music/solo-piano-half-of-me-sad-sorrowful-piano-music-445494/" target="_blank" rel="noopener noreferrer">Half Of Me / Sad Sorrowful Piano Music</a> — MiroMaxMusic</p>
-
-<p><a href="https://pixabay.com/zh/music/meditationspiritual-peaceful-garden-healing-light-piano-for-meditation-zen-landscapes-112199/" target="_blank" rel="noopener noreferrer">Peaceful Garden - Healing Light Piano</a> — HarumachiMusic</p>
-
-<p><a href="https://pixabay.com/music/adventure-documentary-documentary-music-614437/" target="_blank" rel="noopener noreferrer">Documentary - Documentary Music</a> — DailyVibe</p>
-
-<p><a href="https://pixabay.com/zh/music/modern-classical-momiji-no-niwa-reflective-piano-615856/" target="_blank" rel="noopener noreferrer">Momiji no Niwa - Reflective Piano</a> — HarumachiMusic</p>
-
-<p><a href="https://pixabay.com/music/orchestral-dramatic-cinematic-documentary-609202/" target="_blank" rel="noopener noreferrer">Dramatic Cinematic Documentary</a> — _musicdream_</p>
-
-<p><a href="https://pixabay.com/zh/music/solo-piano-sad-628074/" target="_blank" rel="noopener noreferrer">Sad</a> — leberch</p>
-
-
-    <p class="music-license">
-        Music sourced from
-        <a href="https://pixabay.com/music/"
-           target="_blank"
-           rel="noopener noreferrer">
-            Pixabay
-        </a>
-        <br>
-        Used under the Pixabay Content License
-    </p>
-</section>
+            <h3>MUSIC</h3>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/zh/music/crime-scene-horror-piano-background-music-617911/" target="_blank" rel="noopener noreferrer">Horror Piano - Background Music</a></p>
+                <p class="music-artist">Cinematic-Soul</p>
+            </div>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/zh/music/crime-scene-halloween-intro-background-music-617910/" target="_blank" rel="noopener noreferrer">Halloween Intro - Background Music</a></p>
+                <p class="music-artist">Cinematic-Soul</p>
+            </div>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/zh/music/nostalgia-love-story-sad-music-background-336560/" target="_blank" rel="noopener noreferrer">Love Story - Sad Music Background</a></p>
+                <p class="music-artist">Pocketbeats</p>
+            </div>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/zh/music/trap-no-copyright-music-2-576256/" target="_blank" rel="noopener noreferrer">No Copyright Music 2</a></p>
+                <p class="music-artist">APALONBeats</p>
+            </div>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/zh/music/solo-piano-half-of-me-sad-sorrowful-piano-music-445494/" target="_blank" rel="noopener noreferrer">Half Of Me / Sad Sorrowful Piano Music</a></p>
+                <p class="music-artist">MiroMaxMusic</p>
+            </div>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/zh/music/meditationspiritual-peaceful-garden-healing-light-piano-for-meditation-zen-landscapes-112199/" target="_blank" rel="noopener noreferrer">Peaceful Garden - Healing Light Piano</a></p>
+                <p class="music-artist">HarumachiMusic</p>
+            </div>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/music/adventure-documentary-documentary-music-614437/" target="_blank" rel="noopener noreferrer">Documentary - Documentary Music</a></p>
+                <p class="music-artist">DailyVibe</p>
+            </div>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/zh/music/modern-classical-momiji-no-niwa-reflective-piano-615856/" target="_blank" rel="noopener noreferrer">Momiji no Niwa - Reflective Piano</a></p>
+                <p class="music-artist">HarumachiMusic</p>
+            </div>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/music/orchestral-dramatic-cinematic-documentary-609202/" target="_blank" rel="noopener noreferrer">Dramatic Cinematic Documentary</a></p>
+                <p class="music-artist">_musicdream_</p>
+            </div>
+            <div class="music-entry">
+                <p class="music-title"><a href="https://pixabay.com/zh/music/solo-piano-sad-628074/" target="_blank" rel="noopener noreferrer">Sad</a></p>
+                <p class="music-artist">leberch</p>
+            </div>
+            <p class="music-license">
+                Music sourced from <a href="https://pixabay.com/music/" target="_blank" rel="noopener noreferrer">Pixabay</a>
+                <br>Used under the Pixabay Content License
+            </p>
+        </section>
 
         <section class="credit-group">
             <h3>SPECIAL THANKS</h3>
@@ -311,6 +352,11 @@
 
         <h1>DEVOTION</h1>
         <p>Thank you for playing.</p>
+
+        <div class="ending-quote">
+            <div class="quote-en">Every ending is a choice.<br>Every choice leaves something behind.</div>
+            <div class="quote-zh">每一個結局，都是一次抉擇。<br>而每一次抉擇，都會留下某些無法挽回的事物。</div>
+        </div>
 
         <div class="credits-buttons">
             <button onclick="leaveCredits('index.html')">
@@ -356,7 +402,7 @@
         </div>
         <div class="title">DEVOTION</div>
         <div class="sub">ENDING A - يأبرني 願你埋葬我</div>
-        <a id="logout-btn" onclick="startCredits()" class="btn">查看製作名單 CREDITS</a>
+        <a id="logout-btn" onclick="startCredits()" class="btn">封存結局 ARCHIVE ENDING</a>
     </div>
 
     <script>
