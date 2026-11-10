@@ -177,7 +177,7 @@
 
         /* 電影式片尾：覆蓋畫面，保留同一首背景音樂 */
         #credits-overlay {
-            display: none;
+            display: block;
             position: fixed;
             inset: 0;
             z-index: 10000;
@@ -186,9 +186,11 @@
             overflow: hidden;
             text-align: center;
             opacity: 0;
-            transition: opacity 1.2s ease-in-out;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 1.2s ease-in-out, visibility 0s linear 1.2s;
         }
-        #credits-overlay.show { display: block; }
+        #credits-overlay.show { visibility: visible; pointer-events: auto; transition: opacity 1.2s ease-in-out, visibility 0s; }
         #credits-overlay.visible { opacity: 1; }
         #credits-scroll {
             position: absolute;
@@ -196,8 +198,9 @@
             right: 0;
             top: 0;
             padding: 0 24px;
-            animation: creditsRoll 55s linear forwards;
+            animation: none;
         }
+        #credits-scroll.playing { animation: creditsRoll 55s linear forwards; }
         @keyframes creditsRoll {
             from { transform: translateY(100vh); }
             to { transform: translateY(-100%); }
@@ -436,16 +439,14 @@
             const stage = document.getElementById('stage-4');
             const overlay = document.getElementById('credits-overlay');
             const roll = document.getElementById('credits-scroll');
-            // 封存結局：先讓結局畫面淡出至黑色，再淡入製作名單。
+            // 保留結局畫面在覆蓋層下方，避免中間出現一幀閃爍。
             stage.style.pointerEvents = 'none';
-            stage.classList.remove('active');
-            stage.style.opacity = '0';
-            setTimeout(() => {
-                overlay.classList.add('show');
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => overlay.classList.add('visible'));
-                });
-            }, 1600);
+            overlay.classList.add('show');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => overlay.classList.add('visible'));
+            });
+            // 完全淡入黑色後才開始捲動，音樂持續播放。
+            setTimeout(() => roll.classList.add('playing'), 1300);
             // 保留 end-bgm 持續播放，不重新開始音樂。
             roll.addEventListener('animationend', () => {
                 roll.style.display = 'none';
