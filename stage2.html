@@ -301,6 +301,11 @@ const scriptLines = [
         flash: true,
         text: "「再試一次......只要再一次就好......」"
     },
+     {
+        class: 'admin-override',
+        flash: true,
+        text: "「已經三十六次了……為什麼……還是沒能改變結局？」"
+    },
     {
         class: 'admin-override',
         flash: true,
@@ -309,17 +314,17 @@ const scriptLines = [
     {
         class: 'admin-override',
         flash: true,
-        text: "「為什麼......連最後一次機會都不肯留給我......」"
+        text: "「......我真的已經盡力了。」"
     },
     {
         class: 'admin-override',
         flash: true,
-        text: "「......對不起。」"
+        text: "「到頭來......我還是什麼都沒能改變。」"
     },
     {
         class: 'admin-override',
         flash: true,
-        text: "「這一次......我真的沒辦法再帶你回去了。」"
+        text: "「......已經沒有下一次了嗎？」"
     }
 
 ];
@@ -328,18 +333,18 @@ const scriptLines = [
             const bgm = document.getElementById("terminal-bgm");
             bgm.volume = 0;
             bgm.play().catch(e => console.log("BGM blocked", e));
-            let vol = 0;
-            const fadeIn = setInterval(() => {
-             if (vol < 0.6) {
-                vol = Math.min(0.6, vol + 0.05);
-                bgm.volume = vol;
-            } else {
-                clearInterval(fadeIn);
-            }
-                else clearInterval(fadeIn);
-            }, 200);
+            
+let vol = 0;
 
-            playScript();
+const fadeIn = setInterval(() => {
+    if (vol < 0.6) {
+        vol = Math.min(0.6, vol + 0.05);
+        bgm.volume = vol;
+    } else {
+        clearInterval(fadeIn);
+    }
+}, 200);
+
         };
 
         async function playScript() {
