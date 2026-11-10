@@ -32,7 +32,6 @@ body {
     opacity: 0;
     margin-top: 25px;
     text-align: center;
-    animation-delay: 3s;
 
     color: #e0b9f2;
     letter-spacing: 2px;
@@ -262,24 +261,6 @@ body.phase-3 #throne-glow {
 
     transition: opacity 3s ease;
 }
-    <div id="transfer-complete-message">
-    &gt; [ 權限轉移完成。歡迎回來，管理員。 ]
-</div>
-    #transfer-complete-message {
-    opacity: 0;
-    margin-top: 25px;
-    text-align: center;
-    color: #e0b9f2;
-    letter-spacing: 2px;
-    line-height: 2;
-
-    transition: opacity 1.4s ease-in-out;
-}
-
-#transfer-complete-message.visible {
-    opacity: 1;
-}
-
 .protocol-title {
     font-weight: bold;
     color: #ead3f5;
@@ -861,7 +842,7 @@ async function showPurgeProtocol() {
    最終權限轉移
 
    36% → 100%
-   100% 與歡迎訊息同時出現
+   100% 後延遲 2.5 秒顯示歡迎訊息
 ======================================== */
 
 async function finalizeProtocol() {
@@ -906,14 +887,16 @@ async function finalizeProtocol() {
 
     await sleep(2700);
 
-    /* 完成時同步顯示歡迎文字 */
+    /* 進度條到達 100%，先顯示完成狀態 */
     status.textContent =
         '> AUTHORITY TRANSFER: 100%';
 
+    /* 進度條已達 100%，再等待 2.5 秒才出現訊息 */
+    await sleep(2500);
     message.classList.add('visible');
 
-    /* 保留畫面 */
-    await sleep(4300);
+    /* 訊息淡入並停留 */
+    await sleep(3500);
 
     /* 淡出 */
     message.classList.remove('visible');
@@ -950,24 +933,11 @@ async function play() {
         await showNarrativeLine(line);
     }
 
-/* ========================================
-   「……我的摯友。」結束
-======================================== */
+    /* 最後一句字幕結束後，等待音樂節奏 */
+    await sleep(2500);
 
-/* 等待 2.5 秒，配合音樂節奏 */
-await sleep(2500);
-
-/* 不再顯示紫色權限轉移框 */
-
-/* 只顯示最後的系統訊息 */
-await showSystemMessage(
-    '> [ 權限轉移完成。歡迎回來，管理員。 ]',
-    4300
-);
-
-/* 等待 1 秒後進入結局畫面 */
-await sleep(1000);
-
+    /* 重新顯示紫色權限轉移框：36% → 100% → 延遲歡迎訊息 */
+    await finalizeProtocol();
 
     /* 進入結局畫面 */
     await sleep(1000);
