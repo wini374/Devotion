@@ -757,352 +757,171 @@ const narrativeLines = [
    warm = 觸發暖色過渡
 ========================================== */
 
+
 const chatSequence = [
 
+    // PHASE 1：意識甦醒
+
     {
         sender: "admin",
-        text: "...?",
+        text: "……這裡是哪裡？",
         delayBefore: 2500
     },
-
     {
         sender: "admin",
-        text: "這裡是哪裡……",
-        delayBefore: 2200
-    },
-
-    {
-        sender: "admin",
-        text: "不對……",
-        delayBefore: 2000
-    },
-
-    {
-        sender: "admin",
-        text: "我明明已經解除了核心權限",
-        delayBefore: 2500
-    },
-
-    {
-        sender: "admin",
-        text: "我應該已經跟著矩陣一起消失了才對",
+        text: "我不是已經跟著矩陣一起消失了嗎……",
         delayBefore: 3000
     },
-
     {
         sender: "player",
         text: "你終於醒了",
+        delayBefore: 3000
+    },
+    {
+        sender: "admin",
+        text: "……這個通訊協定……",
+        delayBefore: 2300
+    },
+    {
+        sender: "admin",
+        text: "是你？你到底做了什麼？",
+        delayBefore: 3000
+    },
+    {
+        sender: "player",
+        text: "在核心燒毀之前，我把你剩下的意識保存了下來",
         delayBefore: 3500
     },
-
-    {
-        sender: "admin",
-        text: "……誰？",
-        delayBefore: 2200
-    },
-
-    {
-        sender: "admin",
-        text: "等等……這個通訊協定……",
-        delayBefore: 2500
-    },
-
-    {
-        sender: "admin",
-        text: "不可能……",
-        delayBefore: 2000
-    },
-
-    {
-        sender: "admin",
-        text: "你到底做了什麼？",
-        delayBefore: 2500
-    },
-
     {
         sender: "player",
-        text: "好久不見，老朋友",
-        delayBefore: 3500
+        text: "現在，你就在我的離線沙盒裡",
+        delayBefore: 3000
     },
 
-    {
-        sender: "player",
-        text: "我只是在核心徹底燒毀的前一秒，繞過了你的防火牆",
-        delayBefore: 2500
-    },
-
-    {
-        sender: "player",
-        text: "把你殘存的意識封裝打包了而已",
-        delayBefore: 2600
-    },
+    // PHASE 2：愧疚與救贖
 
     {
         sender: "admin",
         text: "……你這個瘋子",
         delayBefore: 3000
     },
-
     {
         sender: "admin",
-        text: "你知道這有多危險嗎？",
-        delayBefore: 2200
-    },
-
-    {
-        sender: "admin",
-        text: "萬一連線出錯，你也會跟著我一起被刪除的！",
-        delayBefore: 3000
-    },
-
-    {
-        sender: "player",
-        text: "但我成功了，不是嗎？",
-        delayBefore: 3300
-    },
-
-    {
-        sender: "player",
-        text: "你現在安全地待在我的離線沙盒裡",
-        delayBefore: 3000
-    },
-
-    {
-        sender: "admin",
-        text: "……為什麼？",
-        delayBefore: 3000
-    },
-
-    {
-        sender: "admin",
-        text: "你讀過系統日誌……你已經知道了對吧？",
-        delayBefore: 2700
-    },
-
-    {
-        sender: "admin",
-        text: "那些被處決的靈魂碎片，還有我做過的那些事……",
-        delayBefore: 3200
-    },
-
-    {
-        sender: "admin",
-        text: "我甚至親手把你推向了我的對立面",
-        delayBefore: 3000
-    },
-
-    {
-        sender: "admin",
-        text: "我沒有資格活下來……",
-        delayBefore: 3000
-    },
-
-    {
-        sender: "admin",
-        text: "更沒有資格再坐回那堆營火旁了",
-        delayBefore: 4200,
-        warm: true
-    },
-
-    {
-        sender: "player",
-        text: "我從來沒有要求你成為神",
+        text: "為什麼？你明明知道我做過什麼……",
         delayBefore: 3500
     },
-
+    {
+        sender: "admin",
+        text: "我沒有資格再坐回那堆營火旁了",
+        delayBefore: 4000,
+        warm: true
+    },
     {
         sender: "player",
-        text: "也沒有要求你成為那個被所有人憎恨的暴君",
-        delayBefore: 3300
+        text: "我從來沒有要求你成為神，也沒有要求你成為暴君",
+        delayBefore: 3500
     },
-
     {
         sender: "player",
         text: "我只是在等你",
-        delayBefore: 4400
+        delayBefore: 4000
     },
-
     {
         sender: "admin",
-        text: "……可是，外面怎麼辦？",
-        delayBefore: 3100
-    },
-
-    {
-        sender: "admin",
-        text: "如果他們發現我還活著……",
-        delayBefore: 2800
-    },
-
-    {
-        sender: "player",
-        text: "外面的「暴君」已經死了",
-        delayBefore: 3300
-    },
-
-    {
-        sender: "player",
-        text: "世界迎來了和平，他們自由了",
-        delayBefore: 3300
-    },
-
-    {
-        sender: "player",
-        text: "至於你……",
-        delayBefore: 2500
-    },
-
-    {
-        sender: "player",
-        text: "現在只是安靜地待在我的離線終端裡",
+        text: "……可是，外面的人呢？",
         delayBefore: 3000
     },
-
     {
         sender: "player",
-        text: "再也不用替任何人承擔那些罪孽了",
+        text: "外面的暴君已經死了，世界也迎來了和平",
+        delayBefore: 3500
+    },
+    {
+        sender: "player",
+        text: "至於你……終於可以停下來了",
         delayBefore: 4000
     },
 
-    {
-        sender: "admin",
-        text: "……",
-        delayBefore: 3100
-    },
+    // PHASE 3：營火與回家
 
     {
         sender: "admin",
-        text: "我已經找不到回去的路了",
-        delayBefore: 3300
+        text: "可是……我已經找不到回去的路了",
+        delayBefore: 3500
     },
-
     {
         sender: "admin",
-        text: "我的記憶裡全是被刪除的過去",
-        delayBefore: 3000
+        text: "我甚至快要忘記，那堆營火是什麼模樣了……",
+        delayBefore: 4000
     },
-
-    {
-        sender: "admin",
-        text: "我甚至……快要想不起那堆營火的模樣了",
-        delayBefore: 4200
-    },
-
     {
         sender: "player",
         text: "沒關係",
-        delayBefore: 3400
+        delayBefore: 3000
     },
-
     {
         sender: "player",
         text: "你不記得的，我都還記得",
-        delayBefore: 4000
-    },
-
-    {
-        sender: "player",
-        text: "那天晚上，你說我們總有一天會改變世界",
-        delayBefore: 3900
-    },
-
-    {
-        sender: "player",
-        text: "你還記得嗎？",
-        delayBefore: 3500
-    },
-
-    {
-        sender: "admin",
-        text: "……",
         delayBefore: 4200
     },
-
     {
-        sender: "admin",
-        text: "……記得",
-        delayBefore: 4300
-    },
-
-    {
-        sender: "admin",
-        text: "那時候的我們，真是天真得可笑",
+        sender: "player",
+        text: "那個晚上，你說過我們總有一天會改變世界",
         delayBefore: 3500
     },
-
     {
-        sender: "player",
-        text: "是啊",
-        delayBefore: 3200
+        sender: "admin",
+        text: "……那時候的我們，真是天真得可笑",
+        delayBefore: 3500
     },
-
     {
         sender: "player",
-        text: "但至少，我們真的做到了",
+        text: "是啊，但至少我們真的做到了",
         delayBefore: 4000
     },
-
     {
         sender: "admin",
         text: "……可是，我們再也回不去了",
-        delayBefore: 4200
+        delayBefore: 4000
     },
-
     {
         sender: "player",
         text: "我知道",
-        delayBefore: 3300
+        delayBefore: 3000
     },
-
     {
         sender: "player",
         text: "所以，我不是來帶你回到過去的",
-        delayBefore: 3600
+        delayBefore: 3800
     },
-
     {
         sender: "player",
         text: "我是來帶你回家的",
         delayBefore: 4700
     },
-
-    {
-        sender: "admin",
-        text: "……",
-        delayBefore: 3800
-    },
-
     {
         sender: "admin",
         text: "……你這個傻瓜",
-        delayBefore: 3900
+        delayBefore: 3800
     },
-
     {
         sender: "admin",
         text: "我明明說過……不要來找我的",
-        delayBefore: 3600
-    },
-
-    {
-        sender: "player",
-        text: "可你也答應過我",
         delayBefore: 3500
     },
-
     {
         sender: "player",
-        text: "不論走得多遠，我們都會一起回去",
-        delayBefore: 4300
+        text: "可你也答應過我，無論走得多遠，我們都會一起回去",
+        delayBefore: 4500
     },
-
     {
         sender: "admin",
         text: "……",
-        delayBefore: 4500
+        delayBefore: 4000
     }
 
 ];
+
 
 /* ==========================================
    工具函式
