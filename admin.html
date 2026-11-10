@@ -403,6 +403,9 @@ const adminLines = [
                 await new Promise(r => setTimeout(r, pauseTime)); 
             }
             
+            showAdminChoice(true);
+        }
+
         // 供正常日誌播放與結局返回共同使用的結局選項。
         function showAdminChoice(animate = true) {
             const container = document.getElementById("terminal-container");
@@ -432,9 +435,6 @@ const adminLines = [
             container.appendChild(fragment);
             showAdminChoice(false);
             requestAnimationFrame(() => window.scrollTo(0, document.body.scrollHeight));
-        }
-
-            showAdminChoice(true);
         }
 
         function fadeOutAndNavigate(targetUrl, bgmId) {
