@@ -881,15 +881,35 @@ async function finalizeProtocol() {
 
     await sleep(1200);
 
-    /* 進度條開始向 100% 移動 */
-    bar.style.transition = 'width 2.7s ease';
-    bar.style.width = '100%';
+    /* 進度條與數字同步從 36% 增長到 100% */
+    const startValue = 36;
+    const endValue = 100;
+    const duration = 2700;
+    const startTime = performance.now();
 
-    await sleep(2700);
+    bar.style.transition = 'none';
 
-    /* 進度條到達 100%，先顯示完成狀態 */
-    status.textContent =
-        '> AUTHORITY TRANSFER: 100%';
+    await new Promise(resolve => {
+        function updateProgress(now) {
+            const elapsed = Math.min((now - startTime) / duration, 1);
+            // 使用 ease-out，讓結尾稍微放慢
+            const eased = 1 - Math.pow(1 - elapsed, 3);
+            const value = Math.min(endValue,
+                Math.floor(startValue + (endValue - startValue) * eased));
+
+            bar.style.width = value + '%';
+            status.textContent = '> AUTHORITY TRANSFER: ' + value + '%';
+
+            if (elapsed < 1) {
+                requestAnimationFrame(updateProgress);
+            } else {
+                bar.style.width = '100%';
+                status.textContent = '> AUTHORITY TRANSFER: 100%';
+                resolve();
+            }
+        }
+        requestAnimationFrame(updateProgress);
+    });
 
     /* 進度條已達 100%，再等待 2.5 秒才出現訊息 */
     await sleep(2500);
