@@ -198,9 +198,17 @@
             right: 0;
             top: 0;
             padding: 0 24px;
+            /* 製作名單必須在黑幕完全淡入後才出現，避免先閃出內容。 */
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(100vh);
             animation: none;
         }
-        #credits-scroll.playing { animation: creditsRoll 55s linear forwards; }
+        #credits-scroll.playing {
+            visibility: visible;
+            opacity: 1;
+            animation: creditsRoll 55s linear forwards;
+        }
         @keyframes creditsRoll {
             from { transform: translateY(100vh); }
             to { transform: translateY(-100%); }
