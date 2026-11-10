@@ -185,8 +185,11 @@
             color: #dedbe7;
             overflow: hidden;
             text-align: center;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
         }
         #credits-overlay.show { display: block; }
+        #credits-overlay.visible { opacity: 1; }
         #credits-scroll {
             position: absolute;
             left: 0;
@@ -415,10 +418,17 @@
             const stage = document.getElementById('stage-4');
             const overlay = document.getElementById('credits-overlay');
             const roll = document.getElementById('credits-scroll');
-            stage.classList.remove('active');
+            // 封存結局：先讓結局畫面淡出至黑色，再淡入製作名單。
             stage.style.pointerEvents = 'none';
-            overlay.classList.add('show');
-            // 不停止 end-bgm，所以原結局音樂會持續播放到片尾。
+            stage.classList.remove('active');
+            stage.style.opacity = '0';
+            setTimeout(() => {
+                overlay.classList.add('show');
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => overlay.classList.add('visible'));
+                });
+            }, 1600);
+            // 保留 end-bgm 持續播放，不重新開始音樂。
             roll.addEventListener('animationend', () => {
                 roll.style.display = 'none';
                 document.getElementById('credits-end').classList.add('show');
