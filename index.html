@@ -129,7 +129,9 @@
 
         /* 階段五：零號檔案內容 */
         #content { 
-            display: none; 
+            display: none;
+            opacity: 1;
+            transition: opacity 900ms ease-in-out;
             max-width: 800px;
             margin: 0 auto;
             padding-bottom: 50px;
@@ -935,18 +937,52 @@
         // --- 新增：處理點擊按鈕切換區塊的函數 ---
         // 傳入 event，使用 stopPropagation() 阻止點擊事件擴散到 body，
         // 避免再次觸發 handleScreenClick()
+        // 單一內容舞台：先淡出，再替換內容，防止上一段警告殘留。
+        let sectionTransitioning = false;
+
+        function switchStoryPart(partName) {
+            if (sectionTransitioning) return;
+            const content = document.getElementById('content');
+            const part2 = document.getElementById('part2');
+            const part3 = document.getElementById('part3');
+            const target = document.getElementById(partName);
+            if (!content || !target) return;
+
+            sectionTransitioning = true;
+            content.style.opacity = '0';
+
+            window.setTimeout(() => {
+                // 保存 part2/part3 的 DOM 節點，不會重新綁定或遺失按鈕事件。
+                // 完整移除 part1，確保進入玩家段落時不會殘留紅字。
+                if (partName === 'part2') {
+                    content.replaceChildren(part2, part3);
+                    part2.style.display = 'block';
+                    part3.style.display = 'none';
+                } else {
+                    content.replaceChildren(part3);
+                    part3.style.display = 'block';
+                }
+
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        content.style.opacity = '1';
+                        window.setTimeout(() => {
+                            sectionTransitioning = false;
+                        }, 900);
+                    });
+                });
+            }, 950);
+        }
+
         function showPart2(event) {
             event.stopPropagation();
-            document.getElementById('part1').style.display = 'none';
-            document.getElementById('part2').style.display = 'block';
-            window.scrollTo(0, 0); // 切換後回到畫面頂端
+            switchStoryPart('part2');
         }
 
         function showPart3(event) {
             event.stopPropagation();
-            document.getElementById('part2').style.display = 'none';
-            document.getElementById('part3').style.display = 'block';
-            window.scrollTo(0, 0);
+            switchStoryPart('part3');
         }
         // --- 新增：處理音樂淡出與換頁的函數 ---
         function fadeAndNavigate(event, url) {
